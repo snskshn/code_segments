@@ -1,2 +1,27 @@
 This is the code segment repository for simple linux-based applications.
 You can use this for learning system call or linux library through simple test routines.
+
+Belows are how to make this git repository at http://github.com
+---------------------------------------------------------------
+1. register free accounts at http://github.com.
+2. install git
+    apt-get insatll git-core git-gui git-doc
+3. make ssh key pairs
+    ssh-keygen -t rsa -C "snskshn@gmail.com"
+4. register public key at github.com.
+5. test connection to github.com
+    ssh -T git@github.com
+6. global account settings at host
+    git-config --global user.name "Seokshin Son"
+    git-config --global user.email "snskshn@gmail.com"
+    git-config --global github.user snskshn
+    git-config --global github.token j29083fj02983fj09283j09fj09823f (from www.github.com)
+7. make repository (code_segments) at http://github.com
+8. commit at host
+    git init
+    git add README
+    git commit
+    git remote add origin git@github.com:snskshn/code_segments.git
+    git push -u origin master
+9. download repository to specific directory
+    git clone git://github.com/snskshn/code_segments.git
