@@ -1,0 +1,321 @@
+.\" /*
+.\"     userver -- (pronounced you-server or micro-server).
+.\"     This file is part of the userver, a high-performance web server designed for
+.\"     performance experiments.
+.\" 
+.\"     Copyright (C) 2005-2010 Tim Brecht
+.\"     Based on the file originally Copyright (C) 2004  Hewlett-Packard Company
+.\" 
+.\"     Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+.\"     See AUTHORS file for list of contributors to the project.
+.\"   
+.\"     This program is free software; you can redistribute it and/or
+.\"     modify it under the terms of the GNU General Public License as
+.\"     published by the Free Software Foundation; either version 2 of the
+.\"     License, or (at your option) any later version.
+.\"   
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\"     General Public License for more details.
+.\"   
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program; if not, write to the Free Software
+.\"     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+.\"     02111-1307 USA
+.\" */
+.\" 
+.\"
+.\"---------------------------------------------------------------------
+.TH SEND 2 "24 June 2003"
+.\" .IX send
+.\"---------------------------------------------------------------------
+.SH NAME
+send_init, send_init_buf, send_ctl
+.sp 1
+Scalable Event Notification and Delivery
+.sp 1
+An experimental prototype for an interface for efficiently obtaining
+event information from the Linux kernel.
+.\"---------------------------------------------------------------------
+.SH SYNOPSIS
+.nf
+#include <linux/event.h>
+
+int send_init(struct event_control* buf);
+
+int send_init_buf(struct event_control*, 
+    ecbptr, struct event*, evtbuf, int, elements);
+
+int send_ctl(int event, int command, void* data, int len);
+.fi
+.\"
+.\"---------------------------------------------------------------------
+.SH DESCRIPTION
+One of the main differences between 
+SEND (Scalable Event Notification and Delivery) interfaces and 
+mechanisms and other approaches like select, poll and epoll
+is that with SEND the kernel and user-program communicate through
+memory that is shared between the user and kernel address spaces.
+For example, no system call is required in order to get events
+information from the kernel. All that is required is to check
+that events have been placed in the shared event buffer.
+For each event buffer specified by the application the kernel
+adds events to and updates the tail and the application consumes
+events from and updates the head.
+Additionally, the delivery (queuing) and notification of event 
+arrivals is controlled by modifying bits in shared memory.
+.PP
+The send_init call is used to tell the kernel the location
+of an mmapped event control structure.
+The parameters is the address of the mmapped event control structure.
+Note that after this call returns
+the control structure is known and configured but
+no event buffers are known or set up.
+This call returns a value less than 0 on a failure and sets the errno
+to an appropriate value.
+.PP
+The send_init_buf call is used to tell the kernel
+the location of an mmapped array of event structures.
+This array is used to communicate events from the kernel
+to the application.
+This call can be used to specify multiple buffers to the kernel
+so that one can control which events are delivered to each
+of the different buffers.
+Which events are placed in each of the specified buffers is
+currently controlled by the corresponding fdset field in the 
+event control structure.
+When attempting to deliver an event the kernel checks the
+fdset associated with each buffer and if the fd associated
+with the event is set in the fdset assoicated with that buffer
+it is placed in that buffer. 
+If there is no match the kernel places the event in the
+default buffer (EVT_DEFAULT_BUF).
+.PP
+A possible addition to providing further control would be to
+also specify a bitmap for the event type so that in addition
+to matching based on the fd a match would also be required based on
+the event type (this is currently not implemented).
+.PP
+The current prototype places a kernel defined upper limit on
+the maximum number of buffers a user can specify.
+.PP
+On success
+the call returns the kernel's notion of the index value for the
+buffer. On failure a negative value is returned and the errno
+is set to an appropriate value.
+.\"---------------------------------------------------------------------
+.SH RETURN VALUE
+On success send_init returns 0 and send_buf_init returns
+the index of buffer entry in the event control block (ecb).
+On error a value less than 0 is returned and errno is set appropriately.
+.\"---------------------------------------------------------------------
+.SH ERRORS
+.TP
+.B ENONMEM
+The kernel was unable to allocate enough memory for
+required internal data structures.
+.TP
+.B EALREADY
+The send_init call has already been made for this thread.
+.TP
+.B EINVAL 
+One of the parameters to send_buf_init is invalid.
+The number of elements is negative.
+The pointer to the event control block (ecb)
+doesn't match the value given to send_init.
+The send_init call hasn't been done prior to making this call
+(i.e., the thread isn't set up to handle SEND events).
+.TP
+.B ENOSPC
+Indicates that send_init_buf has been called too many times.
+In the current protype the kernel has limit on the maximum number of 
+different event buffers that can be specified.
+
+.\"---------------------------------------------------------------------
+.SH EXAMPLE
+.nf
+#define EVT_DEFAULT_BUF  (0)
+#define EVT_ACCEPT_BUF   (1)
+#define EVT_IO_BUF       (2)
+
+/* initialize the event control block and some event buffers */
+int 
+init_ecb_array(int num_evts)
+{
+  int ret;
+  int size = 0;
+  int alt_size = 0;
+  int i = 0;
+  int zero_fd;
+  
+  /* we will mmap to a non existant file */
+  zero_fd = open("/dev/zero", O_RDONLY);
+  if (zero_fd < 0) {
+    perror("open /dev/zero");
+    exit(-1);
+  }
+  printf("init_ecb_array: zero_fd = %d\n", zero_fd);
+
+  size = sizeof(struct event_control);
+  alt_size = round_to_page_size(size);
+
+  /* mmap the event control block */
+  ecb = (struct event_control *) mmap(0, alt_size,
+  PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE, zero_fd, 0);
+
+  if (!ecb) {
+    printf("init_ecb_array: - no memory\n");
+    exit(1);
+  }
+  printf("init_ecb_array: ecb size = %d\n", alt_size);
+  printf("init_ecb_array: ecb = %p\n", ecb);
+  printf("ecb = %p\n", ecb);
+
+  /* Now make a system call to tell the kernel about it */
+  ret = send_init(ecb);
+  if (ret < 0) {
+    printf("init_ecb_array: bad init_event %i %s\n", errno, strerror(errno));
+    printf("init_ecb_array: ret = %d\n", ret);
+    if (errno == ENOSYS) {
+      printf("send_init: system call not supported in this kernel\n");
+    }
+    exit(-1);
+  }
+
+  printf("init_ecb_array: num_evts = %d\n", num_evts);
+  printf("init_ecb_array: sizeof(struct event) = %d\n", sizeof(struct event));
+
+  /* Allocate 100 elements for the default - mainly used for signals. */
+  /* Used when no fdset match is made on other buffers */
+  /* 0'th element */
+  evt_buf_elements[EVT_DEFAULT_BUF] = 100;
+
+  /* Allocate 100 elements for notification of incoming connection requests */
+  /* We'll later set the fdset to be zero except for the accepting socket */
+  /* 1'st element */
+  evt_buf_elements[EVT_ACCEPT_BUF] = 100;
+
+  /* Allocate num_evts elements for read/write I/O events */
+  /* We'll later set the fdset to be set for all fds > the accepting socket */
+  /* 2'nd element */
+  evt_buf_elements[EVT_IO_BUF] = num_evts;
+
+
+  for (i=0; i<EVT_BUFS; i++) {
+
+    size = evt_buf_elements[i] * sizeof(struct event);
+    printf("init_ecb_array: sizeof(struct event) = %d elements = %d\n", 
+        sizeof(struct event), evt_buf_elements[i]);
+    printf("init_ecb_array: ecb size = %d\n", size);
+
+    /* round size to next highest page size */
+    alt_size = round_to_page_size(size);
+    printf("rounded up ecb alt_size = %d\n", alt_size);
+    assert(alt_size % PAGE_SIZE == 0);
+
+    ecb->eventbuf[i] = (struct event *) mmap(0, alt_size,
+     PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE, zero_fd, 0);
+
+    if (!ecb->eventbuf[i]) {
+      printf("init_ecb_array: - no memory for eventbuf %d\n", i);
+      exit(1);
+    }
+
+    /* Now make the system call to tell the kernel about this buffer */
+    /* We later set the fdset associated with this buffer */
+    ret = send_init_buf(ecb, (struct event *) ecb->eventbuf[i], 
+                        evt_buf_elements[i]);
+    if (ret < 0) {
+      printf("send_init_buf failed ret = %d errno = %d\n", ret, errno);
+      exit(1);
+    }
+    assert(ret == i);
+
+    printf("init_ecb_array: ecb->eventbuf[%d] = %p\n", i, ecb->eventbuf[i]);
+    printf("init_ecb_array: ecb->event_list_size[%d] = %d\n",
+      i, ecb->event_list_size[i]);
+    printf("init_ecb_array: ecb->eventbuf[ecb->event_list_size[%d]-1] = %p\n", 
+      i, &ecb->eventbuf[ecb->event_list_size[i]-1]);
+    printf("init_ecb_array: ecb->head[%d] = %d\n", i, ecb->head[i]);
+    printf("init_ecb_array: ecb->tail[%d] = %d\n", i, ecb->tail[i]);
+
+    ecb->threshold[i] = 0;
+
+    /* TODO: still need to set fdset info */
+  }
+
+  /* This will make the sent_ctl call for the accepting socket */
+  init_evt_control();
+
+  stack = allocate_stack(STACK_SIZE, zero_fd);
+
+  printf("init_ecb_array: stack top = %p\n", stack);
+  stack+= STACK_SIZE - 4; /* 4092; */
+  printf("init_ecb_array: stack bottom = %p\n", stack);
+
+  /* Set stack for event handler */
+  ecb->stack = stack;
+  printf("init_ecb_array: ECB: notify:%08x pid:%i\n",
+      (u32) ecb->notify, getpid());
+  printf("init_ecb_array: ECB: ecb: %08x stack: %08x\n",
+      (unsigned) ecb, (u32) ecb->stack);
+
+  if (ecb->stack == NULL) {
+    printf("init_ecb_array: Bad ECB stack %p\n", __builtin_return_address(0));
+    exit(-1);
+  }
+
+  /* Tell the kernel that we don't want to queue any events */
+  ecb->queue = 0;
+  /* Tell the kernel that we don't want to be notified of any events */
+  ecb->notify = 0;
+  /* Tell the kernel the where to find the event handler */
+  ecb->handler = &send_handler;
+
+  ecb->no_block = 0;
+ 
+  init_send_sig();
+
+  return 0;
+}
+.fi
+.\"---------------------------------------------------------------------
+.SH NOTES
+These interface are highly experimental and subject to frequent change.
+.PP
+Note that SEND highjacks the signals mechanisms so an application
+that is using SEND receives notification of signals through the
+appropriate event buffer.
+As a result things like gprof that rely on signals don't work.
+.\"---------------------------------------------------------------------
+.SH SEE ALSO
+.BR send_init(2),
+.BR send_init_buf(2),
+.BR send_ctl(2),
+.BR linux/event.h
+.\"---------------------------------------------------------------------
+.SH AUTHORS
+.B SEND
+was originally designed and implemented by
+Michal Ostrowski on a Linux 2.4.0 kernel.
+It was later ported to a 2.4.19 kernel and
+modified to support the interface described here.
+.\"---------------------------------------------------------------------
+.SH BUGS
+Probably many.
+.PP
+
+.\"---------------------------------------------------------------------
+.SH REFERENCES
+
+.IP [Brecht-2001] 17
+Tim Brecht and Michal Ostrowski,
+Exploring the Performance of Select-based Internet Servers,
+HP Labs Technical Report HPL-2001-314, November, 2001. 
+
+.IP [Ostrowski-2000] 17
+Michal Ostrowski,
+A Mechanism for Scalable Event Notification and Delivery in Linux,
+M.Math Thesis, Department of Computer Science, University of Waterloo,
+November, 2000. 

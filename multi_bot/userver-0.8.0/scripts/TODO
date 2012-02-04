@@ -1,0 +1,6 @@
+Do a better job of the run scripts.
+
+Maybe ?
+run -persist -conns # -time #
+run -conns #
+run -mix -req_per_conn # -time #

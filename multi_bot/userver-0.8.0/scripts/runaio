@@ -1,0 +1,206 @@
+#!/bin/csh
+set CLIENT = localhost
+# Client userver home
+set CHOME = /home/lsnp/testing/userver
+set SERVER = localhost
+set SHOME = /home/lsnp/testing/userver
+set USERVER = $SHOME/userver
+
+set CSH = /bin/csh
+
+# --use-aio-wait
+set AIO_OPTS = "-C --use-socket-aio --aio-accept-thold=10 -D 0xffffffff"
+
+echo "------ Running AIO Test Subset ------------"
+
+echo "Running test 1 - should get 1 replies and 0 errors"
+$USERVER -c 2 -f 30 -m 1 $AIO_OPTS >& test1.out &
+sleep 4
+$CSH -c "ssh $CLIENT $CHOME/scripts/runaddr $SERVER 1 >& test1-httperf.out"
+echo ssh/httperf $status
+egrep 'Reply status:|Errors:' test1-httperf.out
+echo egrep $status
+sleep 2
+$CHOME/scripts/kill-server
+echo kill-server $status
+sleep 2
+
+exit
+
+testaio2:
+	@echo "Running test 2 - should get 2 replies and 0 errors"
+	$(CSH) -c "./userver -c 2 -f 30 -m 1 $(AIO_OPTS) >& test2.out &"
+	sleep 4
+	$(CSH) -c "./scripts/run 2 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio3:
+	@echo "Running test 3 - should get 10 replies and 0 errors"
+	$(CSH) -c "./userver -c 2 -f 30 -m 1 $(AIO_OPTS) >& test3.out &"
+	sleep 4
+	$(CSH) -c "./scripts/run 10 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio4:
+	@echo "Running test 4 - should get 100 replies and 0 errors"
+	$(CSH) -c "./userver -c 2 -f 30 -m 1 $(AIO_OPTS) >& test4.out &"
+	sleep 4
+	$(CSH) -c "./scripts/run 100 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio5:
+	@echo "Running test 5 - should get 500 replies and 0 errors"
+	$(CSH) -c "./userver -c 300 -f 500 -m 1 $(AIO_OPTS) >& test5.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 50 500 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio6:
+	@echo "Running test 6 - should get 1000 replies and 0 errors"
+	$(CSH) -c "./userver -c 300 -f 500 -m 1 $(AIO_OPTS) >& test6.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runpersist 1000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio7:
+	@echo "Running test 7 - should get 1000 replies and 0 errors"
+	$(CSH) -c "./userver -c 300 -f 500 -m 1 $(AIO_OPTS) >& test7.out &"
+	sleep 4
+	$(CSH) -c "./scripts/run 1000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio8:
+	@echo "Running test 8 - should get 1000 replies and 0 errors"
+	$(CSH) -c "./userver -c 300 -f 500 -m 1 $(AIO_OPTS) >& test8.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 100 1000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio9:
+	@echo "Running test 9 - should get 10000 replies and 0 errors"
+	$(CSH) -c "./userver -c 300 -f 500 -m 1 $(AIO_OPTS) >& test9.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 100 10000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+
+testaio10:
+	@echo "Running test 10 - should get 1000 replies and 0 errors"
+	$(CSH) -c "./userver -c 300 -f 500 -m 1 $(AIO_OPTS) -C >& test10.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 100 1000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio11:
+	@echo "Running test 11 - should get 8000 replies and 0 errors"
+	$(CSH) -c "./userver -c 500 -f 1024 -m 10 $(AIO_OPTS) >& test11.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 200 8000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio12:
+	@echo "Running test 12 - should get 1000 replies and 0 errors"
+	$(CSH) -c "./userver -c 15000 -f 32000 -m 1 $(AIO_OPTS) -C >& test12.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 100 1000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio13:
+	@echo "Running test 13 - should get 9000 replies and 0 errors"
+	$(CSH) -c "./userver -c 15000 -f 32000 -m 1 $(AIO_OPTS) -C >& test13.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 1000 9000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaio14:
+	@echo "Running test 14 - should get 20000 replies and 0 errors"
+	$(CSH) -c "./userver -c 15000 -f 32000 -m 1 $(AIO_OPTS) -C >& test14.out &"
+	sleep 4
+	$(CSH) -c "./scripts/runrate 5000 50000 |& egrep 'Reply status:|Errors:'"
+	sleep 2
+	@./scripts/kill-server
+	sleep 2
+
+testaionew: testaionew1
+
+AIO_NEW_OPTS = --use-socket-aio --aio-read-before-accept --aio-accept-thold=1 -D 0xffffffff
+
+testaionew1:
+	$(CSH) -c "./userver -c 1 -f 20 $(AIO_NEW_OPTS) >& test1.out"
+
+
+install: FORCE
+	mv $(PGMS) $(BIN)
+
+clean: FORCE
+	rm -f *.o
+
+vclean: FORCE
+	-rm -f *.o $(PGMS) core .depend userver.trace cscope.out
+	-rm -f userver.ps userver.pdf userver.txt userver.html \
+	       userver.exe userver.exe.stackdump userver.pid test*.out
+	    
+
+ctags: FORCE
+	ctags *.[ch]
+
+tags: FORCE
+	ctags *.[ch]
+
+DIST_DEST = ../$(DIST_NAME)
+SCRIPTS_DEST = ../$(DIST_NAME)/scripts
+TESTS_DEST = ../$(DIST_NAME)/docs
+INCLUDE_DEST = ../$(DIST_NAME)
+
+dist: userver.txt userver.ps userver.pdf userver.html
+	-mkdir $(DIST_DEST)
+	-mkdir $(SCRIPTS_DEST)
+	-mkdir $(TESTS_DEST)
+	-mkdir $(INCLUDE_DEST)
+	cp -p $(DIST_LIST) $(DIST_DEST)
+	cp -p $(SCRIPTS) $(SCRIPTS_DEST)
+	cp -p $(TESTDOCS) $(TESTS_DEST)
+	cp -pr $(INCLUDE) $(INCLUDE_DEST)
+	rm -rf $(INCLUDE_DEST)/include/CVS $(INCLUDE_DEST)/include/*/CVS $(INCLUDE_DEST)/include/*/*/CVS
+	$(CSH) -c "cd .. ; pwd ; tar -czf $(DIST_NAME).tar.gz $(DIST_NAME)/"
+	@echo "Don't forget to upload the distribution (make updist)"
+	@echo "and tag the CVS tree (make cvstag) !!!"
+
+updist:
+	scp CHANGELOG bcr2.uwaterloo.ca:www/userver/src/CHANGELOG-$(DIST_VER).txt
+	scp ../$(DIST_NAME).tar.gz bcr2.uwaterloo.ca:www/userver/src
+	ssh bcr2.uwaterloo.ca 'chmod a+r www/userver/src/*'
+	@echo "Don't forget to tag the CVS tree!!!"
+
+cvstag:
+	cvs tag Ver-$(CVS_TAG_VER)
+
+# upindex:
+#  	scp index.html bcr2:www/userver/src
+
+FORCE:
+

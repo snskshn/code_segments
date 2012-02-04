@@ -1,0 +1,34 @@
+#!/bin/csh
+# FCGI dynamic requests through httperf
+# Some basic configuration
+set show_replies = 1 
+set show_req = 0
+set server      = "127.0.0.1"
+
+# Empty here becase we do one request at a time
+# See also runrate
+set rate        = ""
+
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 10"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog"
+
+if ($show_replies) then
+  set printreply = "--print-reply"
+else
+  set printreply = ""
+endif  
+
+if ($show_req) then
+  set printreq = "--print-request"
+else
+  set printreq = ""
+endif
+
+set uri = "/test-fcgi.pl?param1=val1&param2=val2"
+$httperf $extraopts --server $server $port $httpversion \
+         $timeout $printreply $printreq $rate \
+         --uri="$uri"
+

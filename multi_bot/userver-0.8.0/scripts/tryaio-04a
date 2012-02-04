@@ -1,0 +1,2 @@
+#!/bin/csh
+./userver -c 15 -f 40 -m 1 --ip-addr 15.0.117.3  --use-socket-aio --aio-accept-thold=2 -D 0xffffffff -C

@@ -1,0 +1,87 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004-2010  Tim Brecht
+#    Based on the file originally Copyright (C) 2004  Hewlett-Packard Company
+#
+#    Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+#
+
+ifeq ($(OS),HP-UX)
+SEND isn't supported on HP-UX
+else
+ifeq ($(OS),SunOS)
+SEND isn't supported on SunOS
+endif
+endif
+
+
+GPROF = 
+
+SEND  += -DSEND 
+# This was experimental and hasn't been completed.
+# SEND  += -DACCEPT_SEND    # New accept system call for use with SEND
+
+# This is needed for some SEND kernel mods/fixes.
+SEND  += -DTBB  
+
+# Turn this on if ARRAY_OF_BUFS is defined in the SEND
+# kernel that will be used to run the server.
+# See the Makefile in the SEND kernel source directory.
+# SEND  += -DARRAY_OF_BUFS 
+
+# As with the ARRAY_OF_BUFS above this should be
+# used if it is used in the SEND kernel.
+# This is used to actually change and define a
+# new __FD_SETSIZE inside of the kernel being built.
+# Some of the ARRAY_OF_BUFS code and the userver
+# code depends on the size of an fdset so it is
+# important that these are defined correctly in both cases.
+# SEND  += -DSEND_BIGGER_FD_SETSIZE 
+
+# For now we aren't sure if things work with SEND and the userver
+# portion that uses SEND with more than one listener.
+SEND  += -DONE_LISTENER
+
+# We need to find and use the include files used
+# by the SEND kernel this points to them
+SEND  += -I/home/brecht/linux/include/ 
+# SEND  += -DSEND_AUTO_ACCEPT_CONTROL
+
+# These were/are experimental. I've been playing
+# with trying to expose the number of sockets in
+# the accept queue to the application.
+# SEND  += # -DTBB_KINFO # -DTBB_QLENS
+
+include Makefile.base
+
+userver-send: $(OBJS)
+	$(CC) $(OBJS) -o userver-send $(LDFLAGS) 
+
+userver-send-depend: FORCE .depend
+	$(MKDEP) $(CPPFLAGS) $(CFLAGS) $(CSRC) > .depend
+
+.depend: FORCE
+
+include .depend
+
+FORCE:
+

@@ -1,0 +1,5 @@
+#!/bin/csh
+# Assumes this is run from same directory where userver started.
+# Normally this would point to something like /var/appropriatedir
+# but we often have many people running the userver at the same time.
+kill -9 `cat userver.pid`

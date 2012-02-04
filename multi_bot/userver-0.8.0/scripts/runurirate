@@ -1,0 +1,35 @@
+#!/bin/csh
+# Request a specified file.
+
+# Some basic configuration
+set show_replies = 0
+set server      = "127.0.0.1"
+
+if ($#argv != 3) then
+  echo "Usage : $0 rate calls pathname"
+  exit 1
+endif
+
+echo "Using rate = $1"
+set rate        = "--rate $1"
+echo "Using connections = $2"
+set conns       = "--num-conns $2"
+echo "Trying to get file = $3"
+set uri         = "--uri $3"
+
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 3"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog --rate-interval 1"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion $uri \
+         $conns $timeout $print $rate
+
+exit $status

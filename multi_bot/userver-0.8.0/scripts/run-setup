@@ -1,0 +1,39 @@
+#!/bin/csh
+set FILE_MAX=32768
+set RTSIG_MAX=15128
+# Not sure what the default is
+set DEFAULT_SYN_BACKLOG=1024
+# set SYN_BACKLOG=320000
+set SYN_BACKLOG=1024
+
+echo -n "/proc/sys/fs/file-max "
+cat /proc/sys/fs/file-max
+echo $FILE_MAX > /proc/sys/fs/file-max
+echo -n "/proc/sys/fs/file-max "
+cat /proc/sys/fs/file-max
+
+echo -n "/proc/sys/kernel/rtsig-max "
+cat /proc/sys/kernel/rtsig-max
+echo $RTSIG_MAX > /proc/sys/kernel/rtsig-max
+echo -n "/proc/sys/kernel/rtsig-max "
+cat /proc/sys/kernel/rtsig-max
+echo ""
+
+
+echo -n "/proc/sys/net/ipv4/tcp_max_syn_backlog "
+cat /proc/sys/net/ipv4/tcp_max_syn_backlog
+echo $SYN_BACKLOG > /proc/sys/net/ipv4/tcp_max_syn_backlog
+echo -n "/proc/sys/net/ipv4/tcp_max_syn_backlog "
+cat /proc/sys/net/ipv4/tcp_max_syn_backlog
+
+echo ""
+limit
+
+# NOTE: must raise the hard limit as well!
+limit -h openfiles $FILE_MAX
+limit openfiles $FILE_MAX
+limit -h descriptors $FILE_MAX
+limit descriptors $FILE_MAX
+
+echo ""
+limit

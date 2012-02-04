@@ -1,0 +1,33 @@
+#!/bin/csh
+# Request files at the specified rate for specified number of times
+
+# Some basic configuration
+set show_replies = 0
+set server      = "$1"
+
+if ($#argv != 3) then
+  echo "Usage : $0 addr rate num_requests"
+  exit 1
+endif
+
+set rate        = "--rate $2"
+set conns       = "--num-conns $3"
+
+# Request 10 byte file (assume userver is started in src dir)
+set uri         = "--uri docs/1K.txt"
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 3"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog --rate-interval 1"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion $uri \
+         $conns $timeout $print $rate
+
+exit $status

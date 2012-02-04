@@ -1,0 +1,17 @@
+#!/bin/csh
+# runlog #
+# Runs a simple test by requesting
+#   all of the files in logfile-#
+# 
+set logfile    = speclogfile-$1
+set server     =  localhost
+# set print    = --print-reply
+set print      = ""
+set timeout    = "--timeout 1"
+set port       = "--port 6800"
+set numcalls   = "--num-calls 1"
+set version    = "--http-version 1.1"
+set numconns   = "--num-conns `cat spec-requests-$1`"
+echo Using logfile = $logfile
+echo Number of connections = $numconns
+httperf $print $port $version $numcalls $timeout --wlog n,$logfile $numconns

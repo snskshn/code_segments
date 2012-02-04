@@ -1,0 +1,116 @@
+#!/bin/bash
+
+
+SCRIPT=$(basename $0)
+
+test_fcgi="test-fcgi.pl"
+specweb99_fcgi="specweb99-fcgi.pl"
+localsock=false
+localsockdir="/tmp"
+
+switches=
+
+
+OPTIND=1
+while getopts :CU switch; do
+  case "$switch" in
+  C)
+    test_fcgi="test-fcgi"
+    specweb99_fcgi="specweb99-fcgi"
+    switches="$switches -C"
+    ;;
+  U)
+    localsock=true
+    switches="$switches -U"
+    ;;
+  :)
+    echo "$SCRIPT: option requires an argument -- $OPTARG" >&2
+    echo "Type \"$SCRIPT -?\" for command usage." >&2
+    exit 1
+    ;;
+  \?)
+    case "$OPTARG" in
+    \?)
+      echo "$SCRIPT -- Start/stop SPECweb99 and test FastCGI processes"
+      echo "Usage: $SCRIPT [options] {start|restart} [num_spec_servers]"
+      echo "       $SCRIPT [options] stop"
+      echo "Options:"
+      echo "   -C     invoke \"C\" versions of the application servers"
+      echo "   -U     use UNIX (aka local) domain sockets instead of TCP"
+      exit 0
+      ;;
+    *)
+      echo "$SCRIPT: invalid option -- $OPTARG" >&2
+      echo "Type \"$SCRIPT -?\" for command usage." >&2
+      exit 1
+      ;;
+    esac
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+
+case "$1" in
+
+  start)
+    if [ -z "$2" ]; then
+      numapps=1
+    else
+      case "$2" in
+      [1-9]|[1-9][0-9]*)
+	numapps="$2"
+	;;
+      *)
+	echo "$SCRIPT: invalid usage" >&2
+	echo "Type \"$SCRIPT -?\" for command usage." >&2
+	exit 1
+	;;
+      esac
+    fi
+
+    umask 0
+
+    if $localsock; then
+      nohup "$test_fcgi" "$localsockdir/test-fcgi.sock" &>/dev/null &
+    else
+      nohup "$test_fcgi" :8000 &>/dev/null &
+    fi
+
+    n=0
+    while [ "$n" -lt "$numapps" ]; do
+      if $localsock; then
+	nohup "$specweb99_fcgi" "$localsockdir/specweb99-fcgi.$((1+n)).sock" &>/dev/null &
+      else
+	nohup "$specweb99_fcgi" :$((9000+n)) &>/dev/null &
+      fi
+      n=$((n+1))
+    done
+
+    exit 0
+    ;;
+
+  stop)
+    pkill test-fcgi.pl
+    pkill test-fcgi
+    rm -f "$localsockdir"/test-fcgi.sock
+    pkill -f ".*specweb99-fcgi.pl"
+    pkill -f ".*specweb99-fcgi"
+    rm -f "$localsockdir"/specweb99-fcgi.*.sock
+    ;;
+
+  restart)
+    "$0" $switches stop
+    "$0" $switches start $2
+    ;;
+
+  *)
+    echo "$SCRIPT: invalid usage" >&2
+    echo "Type \"$SCRIPT -?\" for command usage." >&2
+    exit 1
+    ;;
+
+esac
+
+
+exit 0

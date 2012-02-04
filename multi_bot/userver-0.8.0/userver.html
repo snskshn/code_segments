@@ -1,0 +1,2180 @@
+Content-type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of userver</TITLE>
+</HEAD><BODY>
+<H1>userver</H1>
+Section: User Commands  (1)<BR>Updated: 30 January 2011<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="ixAAB"></A>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+userver - Micro-server
+<BR>
+
+(A fairly simple web server designed for experimentation)
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>userver</B>
+
+<P>
+[<B>-A</B>|<B>--accepts-only</B>|<B>--close-after-accept</B>]
+
+[<B>-B</B>|<B>--block-for-send_events</B>]
+
+[<B>-C</B>|<B>--caching-on</B>]
+
+[<B>-D</B>|<B>--debug-mask</B>
+
+<I>[0x]N</I>]
+
+[<B>-E</B>|<B>--send-events</B>]
+
+[<B>-F</B>|<B>--reset-on-close</B>]
+
+[<B>-G</B>|<B>--use-getpid</B>]
+
+[<B>-H</B>|<B>-h</B>|<B>-?</B>|<B>--help</B>]
+
+[<B>-I</B>|<B>--rcv-sock-low-wat</B>
+
+<I>N</I>]
+
+[<B>-J</B>|<B>--snd-sock-low-wat</B>
+
+<I>N</I>]
+
+[<B>-K</B>|<B>--kdebug-mask</B>
+
+<I>[0x]N</I>]
+
+[<B>-L</B>|<B>--full-read</B>
+
+<I>N</I>]
+
+[<B>-M</B>|<B>--multi-accept</B>]
+
+[<B>-N</B>|<B>--send-loop</B>]
+
+[<B>-O</B>|<B>--select-timeout</B>
+
+<I>N</I>]
+
+[<B>-P</B>|<B>--count-sigpipes</B>]
+
+[<B>-Q</B>|<B>--ecb-hi-water</B>
+
+<I>N</I>]
+
+[<B>-R</B>|<B>--read-sockbuf-size</B>
+
+<I>N</I>]
+
+[<B>-S</B>|<B>--dont-intr-select</B>]
+
+[<B>-T</B>|<B>--port</B>
+
+<I>N</I>]
+
+[<B>-U</B>|<B>--auto-accept</B>]
+
+[<B>-V</B>|<B>--use-sendfile</B>]
+
+[<B>--auto-accept-aperture</B>]
+
+[<B>-W</B>|<B>--write-sockbuf-size</B>
+
+<I>N</I>]
+
+[<B>-Y</B>|<B>--send-io-events</B>]
+
+[<B>-Z</B>|<B>--content-type</B>]
+
+[<B>-a</B>|<B>--async-mode</B>]
+
+[<B>-b</B>|<B>--ecb-buf-entries</B>
+
+<I>N</I>]
+
+[<B>-c</B>|<B>--max-conns</B>
+
+<I>N</I>]
+
+[<B>-d</B>|<B>--delay</B>
+
+<I>N</I>]
+
+[<B>-e</B>|<B>--extra-accepts</B>
+
+<I>N</I>]
+
+[<B>-f</B>|<B>--max-fds</B>
+
+<I>N</I>]
+
+[<B>-g</B>|<B>--accept-on-close</B>]
+
+[<B>-i</B>|<B>--interactive</B>]
+
+[<B>-j</B>|<B>--kernel-info</B>]
+
+[<B>-k</B>|<B>--sigio-use-procmask</B>]
+
+[<B>-l</B>|<B>--listenq</B>
+
+<I>N</I>]
+
+[<B>-m</B>|<B>--accept-count</B>
+
+<I>N</I>]
+
+[<B>-n</B>|<B>--no-accepts</B>|<B>--listen-only</B>]
+
+[<B>-o</B>|<B>--process-fd-order</B> [<B>up</B>|<B>down</B>|<B>writes-down</B>|<B>writes-up</B>|<B>lru</B>|<B>lifo</B>|<B>fifo</B>]<B>]</B>
+
+[<B>-p</B>|<B>--procs</B>
+
+<I>N</I>]
+
+[<B>-q</B>|<B>--ecb-low-water</B>
+
+<I>N</I>]
+
+[<B>-r</B>|<B>--eager-reads</B>]
+
+[<B>-s</B>|<B>--conns-in-server-loop</B>]
+
+[<B>-t</B>|<B>--free-fd-threshold</B>
+
+<I>N</I>]
+
+[<B>-u</B>|<B>--track-max-fd</B>
+
+<I>N</I>]
+
+[<B>-v</B>|<B>--use-poll</B>]
+
+[<B>-w</B>|<B>--eager-writes</B>]
+
+[<B>-x</B>|<B>--sigio-accepts</B>]
+
+[<B>-y</B>|<B>--memcpy</B>]
+
+[<B>-z</B>|<B>--rejection-rate</B>]
+
+[<B>-1</B>|<B>--use-epoll</B>]
+
+[<B>-2</B>|<B>--use-epoll2</B>]
+
+[<B>-3</B>|<B>--use-epoll-ctlv</B>]
+
+[<B>--cfg-filename</B>
+
+<I>path</I>]
+
+[<B>--close-after-sock-init</B>]
+
+[<B>--close-after-read</B>]
+
+[<B>--close-after-parse</B>]
+
+[<B>--send-polls-for-accepts</B>]
+
+[<B>--cache-table-size</B>
+
+<I>N</I>]
+
+[<B>--cache-max-bytes</B>
+
+<I>N</I>]
+
+[<B>--cache-max-file-size</B>
+
+<I>N</I>]
+
+[<B>--cache-max-load-factor</B>
+
+<I>N</I>]
+
+[<B>--cache-lock-pages</B>]
+
+[<B>--cache-table-print</B>]
+
+[<B>--cache-for-spec</B>]
+
+[<B>--cache-warm=path</B>]
+
+[<B>--trace-summary</B>]
+
+[<B>--trace-summary-only</B>]
+
+[<B>--use-tcp-cork</B>]
+
+[<B>--use-madvise</B>]
+
+[<B>--use-accept-send</B>]
+
+[<B>--ip-addr</B>
+
+<I>N.N.N.N[:P]</I>]
+
+[<B>--use-aio-accept</B>]
+
+[<B>--use-aio-read</B>]
+
+[<B>--use-aio-write</B>]
+
+[<B>--use-aio-close</B>]
+
+[<B>--use-socket-aio</B>]
+
+[<B>--use-aio-wait</B>]
+
+[<B>--aio-read-before-accept</B>]
+
+[<B>--aio-read-before-write</B>]
+
+[<B>--aio-write-events-limit</B>
+
+<I>N</I>]
+
+[<B>--aio-read-events-limit</B>
+
+<I>N</I>]
+
+[<B>--aio-accept-events-limit</B>
+
+<I>N</I>]
+
+[<B>--aio-accept-thold</B>
+
+<I>N</I>]
+
+[<B>--aio-complq-count</B>
+
+<I>N</I>]
+
+[<B>--pid-filename</B>
+
+<I>path</I>]
+
+[<B>--trace-filename</B>
+
+<I>path</I>]
+
+[<B>--read-buffer-size</B>
+
+<I>N</I>]
+
+[<B>--reply-buffer-size</B>
+
+<I>N</I>]
+
+[<B>--dyn-buffer-size</B>
+
+<I>N</I>]
+
+[<B>--num-dyn-buffers</B>
+
+<I>N</I>]
+
+[<B>--num-dyn-buffers-per-app</B>
+
+<I>N</I>]
+
+[<B>--num-dyn-buffers-per-appserver</B>
+
+<I>N</I>]
+
+[<B>--dyn-lock-pages</B>]
+
+[<B>--dyn-touch-pages</B>]
+
+[<B>--stats-interval</B>
+
+<I>N</I>]
+
+[<B>--ignore-fd-setsize</B>]
+
+[<B>--use-cpu-mask</B>
+
+<I>[0x]N</I>]
+
+[<B>--idle-threshold</B>
+
+<I>N</I>]
+
+[<B>--doc-root</B>
+
+<I>path</I>]
+
+[<B>--hostname</B>
+
+<I>name</I>]
+
+[<B>--app</B>
+
+<I>uri,type[,path[,count]]</I>]
+
+[<B>--start-app-server</B>
+
+<I>path[,count][=exec_string]</I>]
+
+[<B>--app-req-queue-size</B>
+
+<I>N</I>]
+
+[<B>--skip-header</B>]
+
+[<B>--victim</B>
+
+<I>filepath</I>]
+
+[<B>--victim-skip</B>
+
+<I>N]</I>
+
+[<B>--cache-miss-skip</B>
+
+<I>N]</I>
+
+[<B>--call-stats</B>
+
+<I>N]</I>
+
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<B>userver</B>
+
+is a micro web server that is meant to be used to experiment with
+the design and implementation of web servers.
+In particular the original intention was to permit experimental comparisons
+of different event dispatch mechanisms within the same application
+framework.
+For this reason there are lots and lots and lots of parameters.
+They are mainly used to control the behaviour of the server.
+<P>
+Some of the design philosophy and experimental results obtained
+using this server are described in [Brecht-2001].
+One of note is
+that all data structures are allocated at initialization
+and are not resized (grown).
+This helps to ensure that experiments can be repeated because
+with dynamic sizing of data structures
+different loads could result in different server behaviour.
+<P>
+The userver uses an event driven architecture.
+The idea is to run one event driven server per processor.
+If using sendfile on Linux the file system buffer cache will
+be shared across all servers. For high-performance one would
+want to use sendfile since it doesn't involve extra copying
+from the file buffer cache to socket buffers (i.e., it's a zero copy
+implementation).
+<P>
+<P>
+<B>IMPORTANT:</B>
+
+This micro web server is not meant to be a full-blown web server.
+It is specifically designed for conducting performance experiments.
+For that reason design decisions were made in favour of
+producing repeatable experiments.
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+<P>
+<DL COMPACT>
+<DT>userver<DD>
+This starts the
+<B>userver</B>
+
+with all of its default options.
+<P>
+<DT>userver --max-conns 300 --accept-count 25<DD>
+This command causes the
+<B>userver</B>
+
+server to limit
+the number of simultaneous connections to 300.
+When an event indicating that a new connection is requested
+accept is called continuously until
+either 25 new connections are accepted,
+or there are no more outstanding connections.
+<P>
+<DT>userver --max-conns 300 --accept-count 0<DD>
+This command causes the
+<B>userver</B>
+
+server to limit
+the number of simultaneous connections to 300.
+When an event indicating that a new connection is requested
+accept is called repeatedly until
+there are no more outstanding connections.
+(Note that --accept-count=0 means an infinite number of connections,
+i.e., no limits).
+<P>
+<DT>userver --ip-addr 192.168.10.105 --max-conns 300 --listenq 128<DD>
+<DT>userver --ip-addr 192.168.20.105 --max-conns 300 --listenq 128<DD>
+This will start up two copies of the userver each accepting
+connections from a different interface.
+<P>
+<DT>userver --ip-addr 192.168.10.105:6801 --max-conns 300 --listenq 128<DD>
+<DT>userver --ip-addr 192.168.20.105:6802 --max-conns 300 --listenq 128<DD>
+Same as above except one listens on port 6801 and the other on
+port 6802.
+<P>
+<DT>userver --port 6800 --max-conns 300 --listenq 128<DD>
+This command causes
+<B>userver</B>
+
+to listen for incoming connection requests on port 6800.
+It uses a listen queue of length 128 and
+it will permit up to 300 simultaneous connections.
+Once there are 300 open connections it will not accept new
+connections until an existing connection is closed.
+<P>
+<DT>userver --port 6800 --max-conns 300 --listenq 128 --use-poll<DD>
+This is the same as above except using
+<I>select()</I>
+
+calls to get events the
+<B>userver</B>
+
+will use
+<I>poll().</I>
+
+<P>
+<DT>userver --port 6800 --max-conns 300 --listenq 128 --use-epoll<DD>
+This is the same as above except using
+<I>poll()</I>
+
+calls to get events the
+<B>userver</B>
+
+will use
+<I>epoll().</I>
+
+<P>
+<DT>userver -C --cache-table-size=10000 --cache-max-bytes=262144000 --cache-max-file-size=1048576<DD>
+Caching is turned on.
+Caching parameters limit the number of files that are cached to 10000,
+the total number of bytes cached to 250 MB,
+and the size of the largest file that can be cached to 1 MB.
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+
+<P>
+The operation of
+<B>userver</B>
+
+can be controlled through a number of options.
+The tool supports both
+short (one-character) and long (arbitrary-length) option names.
+Short options are prefixed with a single leading dash (-),
+long options with a double-dash (--).
+Multiple short options can be grouped together (e.g.,
+``<B>-rw</B>''
+
+is equivalent to
+``<B>-r -w</B>'')
+
+and long options can be abbreviated so long as they remain unique.
+Parameters to options can be specified either by following the long
+option name with an equal sign and the parameter value (e.g.,
+<B>--port=6800</B>)
+
+or by separating the option name and value with whitespace (e.g.,
+<B>--port 6800</B>).
+
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>OPTIONS (GENERAL)</H2>
+
+<P>
+<DL COMPACT>
+<DT><B>--idle-threshold=</B>N
+
+<DD>
+In a situation where the number of open connections has reached the limit
+(see --max-conns), the userver will close the least recently used connection
+if it has not seen activity in the last N seconds.
+<P>
+<DT><B>--use-cpu-mask= [0x]N</B>
+
+<DD>
+On systems that support the
+<I>sched_setaffinity()</I>
+
+system call, specifies a mask of schedulable CPUs for the userver process.
+If prefixed with '0x', the argument is interpreted as hexadecimal; otherwise
+it is interpreted as decimal.  The least significant bit corresponds to the
+first logical processor number on the system.
+<P>
+<DT><B>-f N </B>
+
+<DD>
+<DT><B>--max-fds=</B><I>N</I>
+
+<DD>
+The maximum number of open file descriptors permitted.
+I can't recall if this is actually enforced but it is used
+to size internal data structures.
+Note that there is a relationship between
+<B>--max-conns</B>
+
+and
+<B>--max-fds.</B>
+
+If files are not being cached you could (in the extreme case)
+have one fd used for the socket connection and one fd used
+for the open file.
+So one needs to set
+<B>--max-fds</B>
+
+= more than 2 x
+<B>--max-conns.</B>
+
+Note: it should be greater because of some descriptors
+that are used up by stdin, out, err, and a few open files, etc.
+<P>
+<DT><B>-m N </B>
+
+<DD>
+<DT><B>--accept-count=</B><I>N</I>
+
+<DD>
+Call accept repeatedly until either,
+<B>--max-conns</B>
+
+is reached,
+<B>accept()</B>
+
+returns EWOULDBLOCK,
+or
+<I>N</I>
+
+new connections have been accepted.
+Note that the value of
+<I>N</I>
+
+can make a substantial difference in the
+performance of event dispatch mechanisms
+under heavy loads.
+See [Brecht-2001].
+<P>
+<DT><B>-T N </B>
+
+<DD>
+<DT><B>--port=</B><I>N</I>
+
+<DD>
+Specify the port number that the server should listen for connections on.
+<P>
+<DT><B>-l N</B>
+
+<DD>
+<DT><B>--listenq=</B><I>N</I>
+
+<DD>
+Specify the length of the application's listen queue.
+This specifies how many connection requests are allowed to be queued
+in the application before the kernel rejects incoming connection
+requests.
+WARNING: on all version of Linux I've ever seen
+(up to and including several 2.6.5) the kernel silently
+converts any values of N that are greater than 128 to 128.
+For details see sys_listen and the value of SOMAXCONNS.
+<P>
+<DT><B>-L</B>[1 | 2]
+
+<DD>
+<DT><B>--full-read=</B>[1 | 2]
+
+<DD>
+Affects how calling read works.
+If this is set to 1
+the server will loop on reading
+the socket until the read fails.
+This mainly happens either because there is nothing left to read because
+the other end has been closed or until it would have blocked
+(EWOULDBLOCK).
+<P>
+If a value of 1 is used the loop on reads will only occur on
+calls to read that occur as a result of an event indicating that the first
+read should be done.
+If a value of 2 is used the loop on reads occur as above
+but if
+<B>--eager-reads</B>
+
+is also set the server will loop on eager reads
+(i.e., those that will be done immediately following a the
+acceptance and setup of a connection).
+<P>
+<DT><B>-H</B>
+
+<DD>
+<DT><B>-h</B>
+
+<DD>
+<DT><B>-?</B>
+
+<DD>
+<DT><B>--help</B>
+
+<DD>
+Print out the usage message.
+<P>
+<DT><B>-M N </B>
+
+<DD>
+<DT><B>--multi-accept=</B><I>N</I>
+
+<DD>
+Use the
+<I>multiaccept()</I>
+
+system call to perform accepts.
+NOTE: this was a system call that we added to and experimented
+with in Linux.
+The idea here is that since we are repeatedly calling
+<I>accept()</I>
+
+to accept a bunch of connections, why not provide a system
+call that allows up to a maximum of
+<I>N</I>
+
+connections to be accepted in one system call.
+<P>
+<DT><B>-S</B>
+
+<DD>
+<DT><B>--dont-intr-select</B>
+
+<DD>
+Disable asynchronous event notification when calling
+<I>select().</I>
+
+I believe that this was initially
+meant to work for SIGIO and for SEND.
+<P>
+<DT><B>-d N </B>
+
+<DD>
+<DT><B>--delay=</B><I>N</I>
+
+<DD>
+The idea was to introduce a delay that might simulate
+work being done by the server (like some computation and/or
+a dynamic request).
+I couldn't find a good method for delaying for a specified amount
+of time (note that it should be small) with a enough accuracy.
+<P>
+<DT><B>-e N </B>
+
+<DD>
+<DT><B>--extra-accepts=</B><I>N</I>
+
+<DD>
+While in the middle of processing events that have been obtained
+(e.g., from select, or some other mechanism)
+periodically poll for new connection requests.
+In this case every time
+<I>N</I>
+
+descriptors are processed we check for new connection requests.
+Note that this open was never used effectively.
+I found it easier to use and tune the
+<B>--accept-count</B>
+
+option.
+<P>
+<DT><B>-g</B>
+
+<DD>
+<DT><B>--accept-on-close</B>
+
+<DD>
+When a connection is closed check to see if there are any
+outstanding connection requests.
+Note: that this only occurs if the maximum number of connections
+was reached and now a closed connection will reduce the number
+of connections below
+<B>--max-conns.</B>
+
+<P>
+<DT><B>-o [up|down|writes-down|writes-up|lru|lifo|fifo]</B>
+
+<DD>
+<DT><B>--process-fd-order</B>
+
+<DD>
+<BR>
+
+[up|down|writes-down|writes-up|lru|lifo|fifo]
+<P>
+Change the order in which file descriptors are handled.
+They are numbered from 0 to
+<I>N</I>
+
+so the options are:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>up:<DD>
+from 0 to N
+<DT>down:<DD>
+from N to 0
+<DT>writes-down:<DD>
+to writes from N to 0, then reads from N to 0
+<DT>writes-up:<DD>
+to writes from 0 to N, then reads from 0 to N
+<DT>lru:<DD>
+least recently descriptor touched first
+<DT>lifo:<DD>
+first descriptor (connection) added to the set first
+<DT>filo:<DD>
+first descriptor (connection) added to the set last
+</DL>
+</DL>
+
+<P>
+<DT><B>-p N </B>
+
+<DD>
+<DT><B>--procs=</B><I>N</I>
+
+<DD>
+Start
+<I>N</I>
+
+copies of the server.
+Note that this option hasn't been tested in a long time
+and is almost certain to cause problems.
+<P>
+<DT><B>-s</B>
+
+<DD>
+<DT><B>--conns-in-server-loop</B>
+
+<DD>
+Add an additional poll for new connections each time through
+the server loop.
+<P>
+<DT><B>-t N </B>
+
+<DD>
+<DT><B>--free-fd-threshold=</B><I>N</I>
+
+<DD>
+When the maximum number of connections
+<B>--max-conns</B>
+
+is reached the server stops checking for incoming
+connections.
+This options controls when the server starts checking again.
+It starts checking again after
+<I>N</I>
+
+connections can be accommodated before
+reaching
+<B>--max-conns.</B>
+
+<P>
+<DT><B>-u</B>
+
+<DD>
+<DT><B>--track-max-fd</B>
+
+<DD>
+The server currently keeps track of the maximum fd ever used
+and uses that as a parameter to calls like select.
+This option implements code to dynamically keep track of the
+maximum file descriptor currently used.
+Note that this requires a bit of extra processing but
+it's probably not noticeable, especially if it can
+save extra overhead on copying fdsets and processing time
+in event mechanisms (e.g., select).
+<P>
+<DT><B>-r</B>
+
+<DD>
+<DT><B>--eager-reads</B>
+
+<DD>
+try to eagerly read from new connections.
+Call
+<I>read()</I>
+
+to try to read the request as soon as
+the new connection is accepted.
+In this mode the server optimistically assumes
+that data will be available for reading when a
+connection is made on a new socket (or very shortly after).
+If the assumption is incorrect,
+the read call
+simply returns with the error EWOULDBLOCK.
+Later the event notification mechanism will
+indicate when the socket is readable.
+<P>
+<DT><B>-w</B>
+
+<DD>
+<DT><B>--eager-writes</B>
+
+<DD>
+try to eagerly perform writes to new
+connections when the response is available.
+Both
+<B>--eager-read</B>
+
+and
+<B>--eager-write</B>
+
+also try to take advantage of
+any potential locality effects by working
+on the most recently used file descriptor
+and socket.
+<P>
+<DT><B>-y</B>
+
+<DD>
+<DT><B>--memcpy</B>
+
+<DD>
+Use the
+<B>memcpy</B>
+
+library call to copy interest sets before calling select.
+This is done rather than doing a straight assignment.
+This exists because the size of the interest set could be large and I
+don't know how clever a compiler would be about assigning
+large data structures.
+NOTE: it currently copies the side of an fd_set.
+This should be changed to only copy the amount of data required
+for the maximum fd of interest.
+<P>
+<DT><B>-z</B>
+
+<DD>
+<DT><B>--rejection-rate</B>
+
+<DD>
+Use the
+<B>rejection-rate</B>
+
+is not yet implemented.
+The ideas would be to specify the frequency with which
+new connection requests should be rejected.
+<P>
+<DT><B>-V</B>
+
+<DD>
+<DT><B>--use-sendfile</B>
+
+<DD>
+Use the
+<B>sendfile()</B>
+
+call on systems that have it available.
+This is only used for uncached files and dynamic content.
+<P>
+<DT><B>--use-madvise</B>
+
+<DD>
+Use
+<I>madvise()</I>
+
+calls to provide the kernel with hints that files are being read sequentially
+and when they should no longer be cached.
+<P>
+<DT><B>-v</B>
+
+<DD>
+<DT><B>--use-poll</B>
+
+<DD>
+Use
+<I>poll()</I>
+
+instead of
+<I>select()</I>
+
+to get events.
+<P>
+<DT><B>-1</B>
+
+<DD>
+<DT><B>--use-epoll</B>
+
+<DD>
+Use
+<I>epoll()</I>
+
+instead of
+<I>select()</I>
+
+to get events.
+<P>
+<DT><B>-2</B>
+
+<DD>
+<DT><B>--use-epoll2</B>
+
+<DD>
+Use
+<I>epoll()</I>
+
+instead of
+<I>select()</I>
+
+to get events,
+but attempt some optimizations to reduce the number of
+<I>epoll_ctl()</I>
+
+calls.
+We found the number of epoll_ctl calls to be excessive
+so this options calls epoll_ctl when a new connection
+is added and sets the interest to be READ and WRITE.
+This means that epoll_wait may return events that we
+aren't interested in (e.g., that a socket is writable
+even though we are busy reading) but we are exploring
+the tradeoffs between the two approaches (--use-epoll
+and --use-epoll2).
+<P>
+<DT><B>-3</B>
+
+<DD>
+<DT><B>--use-epoll-ctlv</B>
+
+<DD>
+Use
+<I>epoll_ctlv()</I>
+
+to update events.
+This requires the addition of a new system call, epoll_ctlv.
+This call permits one to collect a bunch of epoll_ctl calls
+and change interest in a bunch of fds at once instead of
+having to do one system call (epoll_ctl) per change.
+<P>
+<DT><B>--cfg-filename path</B>
+
+<DD>
+Read additional options from a file.  The format of the file is the same
+as the command line, i.e. long and/or short options separated by whitespace
+(spaces, tabs, linefeeds).  Lines with a '#' character in the first column
+are treated as comments and are ignored.  Config files can use
+<B>--cfg-filename</B>
+
+to nest other config files.
+<P>
+<DT><B>--ip-addr N.N.N.N</B>
+
+<DD>
+<DT><B>--ip-addr N.N.N.N:P</B>
+
+<DD>
+Specify an IP address to listen for new connections on.
+Optionally takes a port number P as well.
+The special option --ip-addr 0.0.0.0 specifies that the
+userver should listen on any address (this is the default).
+<P>
+<DT><B>--pid-filename path</B>
+
+<DD>
+Sets the name of the file where the userver stores its process ID number
+while running.  Specify an empty string (&quot;&quot;) to suppress pid file generation.
+If this option is not specified, a default value of &quot;userver.pid&quot; is used.
+<P>
+<DT><B>--read-buffer-size N</B>
+
+<DD>
+The number of bytes to allocate at initialization time for
+<I>read()</I>
+
+operations on each connection.
+<P>
+<DT><B>--reply-buffer-size N</B>
+
+<DD>
+The number of bytes to allocate at initialization time for
+<I>write()</I>
+
+operations on each connection (for static requests only).
+<P>
+<P>
+<DT><B>--stats-interval N</B>
+
+<DD>
+Print out some simple stats about related to server performance
+at a regularly specified interval.
+The interval is specified in seconds.
+NOTE: this options overrides the --select-timeout option
+in order to be able to print out stats according to the selected interval.
+<P>
+<DT><B>--ignore-fd-setsize</B>
+
+<DD>
+If permitted this causes the userver to
+ignore limits placed on the number of open connections
+and the maximum values of an open file descriptors
+that are required when using select (i.e., the FD_SETSIZE).
+This option does not work if --track-max-fd is defined
+or if the event mechanism being used is select or SEND.
+<P>
+<DT><B>-Z</B>
+
+<DD>
+<DT><B>--content-type</B>
+
+<DD>
+Use heuristics to guess what Content-Type header to return, based on the
+uri from the request.  For example, if the uri ended in &quot;.gif&quot;, the
+userver would assume a content type of &quot;image/gif&quot;.
+<P>
+<DT><B>--doc-root path</B>
+
+<DD>
+Set the directory of where to find the documents being
+server to the specified directory.
+When the document root is specified all requests are assumed
+to be relative to the specified directory.
+<P>
+<DT><B>--hostname name</B>
+
+<DD>
+Set the name of the machine that the userver is running on.
+By default, userver uses
+<I>gethostname()</I>
+
+to determine the hostname.
+The hostname is only used to set the SERVER_NAME CGI parameter when
+fulfilling FastCGI requests.
+<P>
+<P>
+<DT><B>--skip-header</B>
+
+<DD>
+Assume that all files being served contain a header in the
+actual file so there is no need for the server to generate
+and send a header.
+Useful for looking at the impact of things like cork/uncork
+when used with sendfile
+(i.e., if the header is in the file it's one sendfile system
+call instead of cork, write, sendfile, uncork).
+<P>
+<DT><B>--call-stats N</B>
+
+<DD>
+Track statistics for up to N calls/requests.
+This is designed to read the Client-Id: header that
+we have httperf send in order to correlate what is happening
+with requests from different clients on different servers.
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>OPTIONS (FOR CONTROLLING SOCKETS)</H2>
+
+
+<P>
+<DL COMPACT>
+<DT><B>-F</B>
+
+<DD>
+<DT><B>--reset-on-close</B>
+
+<DD>
+Calls
+<I>shutdown()</I>
+
+instead of
+<I>close().</I>
+
+<BR>
+
+WARNING do not use this for a real system!!!
+<P>
+<DT><B>-I N</B>
+
+<DD>
+<DT><B>--rcv-sock-low-wat=</B><I>N</I>
+
+<DD>
+Sets the sockets receive buffer's low water mark to
+<I>N.</I>
+
+Not available on all systems.
+<P>
+<DT><B>-J</B>N
+
+<DD>
+<DT><B>--snd-sock-low-wat=</B>N
+
+<DD>
+Sets the sockets send buffer's low water mark to
+<I>N.</I>
+
+Not available on all systems.
+<P>
+<DT><B>-O N </B>
+
+<DD>
+<DT><B>--select-timeout=</B><I>N</I>
+
+<DD>
+Set the timeout option to the
+<I>select()</I>
+
+system call.
+<P>
+<DT><B>-R N </B>
+
+<DD>
+<DT><B>--read-sockbuf-size=</B><I>N</I>
+
+<DD>
+<DT><B>-W N </B>
+
+<DD>
+<DT><B>--write-sockbuf-size=</B><I>N</I>
+
+<DD>
+Set the size of the read or write socket buffers.
+Note that increasing these may help significantly for large
+transfers.
+<P>
+<DT><B>--use-tcp-cork</B>
+
+<DD>
+Cork the TCP queue when writing the header for the reply.
+Currently only implemented for the sendfile portion of the code.
+<P>
+
+<P>
+<DT><B>-c N </B>
+
+<DD>
+<DT><B>--max-conns=</B><I>N</I>
+
+<DD>
+The maximum number of simultaneous connections the server will handle.
+Note that this is typically limited by the number of open file descriptors
+permitted.
+Once the maximum number of open connections is reached incoming
+connection requests are refused until an existing connection is close.
+Note that idle connections can be timed out eventually
+(but this hasn't been tested lately).
+This is also used to size a number of internal data structures that
+are allocated at initialization time.
+<P>
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>OPTIONS (FOR SERVING DYNAMIC CONTENT)</H2>
+
+
+<P>
+<P>
+<P>
+<DL COMPACT>
+<DT><B>--app uri,type[,path[,count]]</B>
+
+<DD>
+Define an application.  Applications are used to generate dynamic
+content.  An application is uniquely identified by the uri string, which
+is case sensitive.  The type string is not case sensitive, and can be
+one of
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>FastCGI:<DD>
+General-purpose FastCGI application.
+<P>
+The path argument specifies the address of a listening FastCGI application,
+in the form of either an INET domain socket address (addr:port) or a UNIX
+domain socket address (file path).  The optional count argument can be
+specified with INET domain socket addresses to specify that count
+consecutive ports, starting with port, are all listening FastCGI
+applications.  It is a shortcut to specifying them individually using
+multiple --app arguments.
+<DT>SPECweb99:<DD>
+SPECweb99 server application (only available if support is compiled in).
+The userver will treat requests of the specified uri as SPECweb99 requests,
+and will generate responses on the fly.
+<P>
+The path and count arguments are not applicable and must be omitted.
+</DL>
+</DL>
+
+<P>
+<DT><B>--start-app-server path[,count][=exec_string]</B>
+
+<DD>
+Tell the userver to start up the specified application server(s).  (By
+default, userver assumes that they are already started through some other
+means, e.g. manually or through a script).  The path and optional count
+arguments are as described for the
+<B>--app</B>
+
+option, above.  It is an error to try to start up any application servers
+that aren't defined using the
+<B>--app</B>
+
+option.  The optional exec_string argument is a string suitable for
+passing to execl() to start the application server(s).  Note that if
+exec_string contains spaces or shell metacharacters, you will have to enclose
+it in quotes and/or escape those metacharacters in order for the string to be
+seen correctly by userver.  If exec_string is omitted, then it is inferred by
+interpreting the uri in the corresponding application as an actual directory
+path rooted at the document root (see the
+<B>--doc-root</B>
+
+option).
+<P>
+<DT><B>--app-req-queue-size N</B>
+
+<DD>
+The number of queue spaces, per application (see the
+<B>--app</B>
+
+option above), to reserve for dynamic requests.  Requests need to be queued
+whenever an application server or some other resource (such as dynamic
+buffer space, see above) is temporarily unavailable.  Should the request
+queue ever become full, userver will respond to arriving requests with an
+HTTP 503 error.  If not specified, this option takes on the same value as
+<B>--max-conns</B>
+
+so that it is effectively impossible to overflow the request queue.
+<P>
+<P>
+<DT><B>--app=APP,PROTO,HOSTNAME:PORT,NUM</B>
+
+<DD>
+Registers one or more application servers with the userver. This means that
+dynamic requests for APP will be forwarded to the application server(s) 
+running on HOSTNAME and listening on PORT. The optional NUM argument specifies the number
+of application servers running on HOSTNAME. When NUM is greater than one, the
+application servers listen on consecutive ports, starting with PORT. The PROTO
+flag specifies the communication protocol. Currently, only the FASTCGI protocol
+is supported. Here is an example:
+<P>
+<B>--app=specweb99-fcgi.pl,FASTCGI,localhost:9000,24</B>
+
+<P>
+In this example, dynamic requests for the specweb99-fcgi.pl are handled by
+24 application servers running on the same machine as the userver. These application
+servers are listening on ports 9000 - 9023, and communicate with the userver
+using the FASTCGI protocol.
+<P>
+<P>
+<DT><B>--start-app-server=localhost:PORT,NUM=PATH,MASK</B>
+
+<DD>
+Causes the userver to start one or more application servers on the userver's localhost.
+The NUM parameter specifies the number of copies of the application server that will
+be started. If NUM is greater than 1, then the application server copies will listen
+on consecutive ports starting with PORT. The PATH parameter gives an absolute path
+to the application server executable. The MASK parameter is optional, and specifies
+the CPU affinity mask that will apply to the newly started application servers.
+Here is an example:
+<P>
+
+<P>
+<B>--start-app-server=localhost:9000,</B>
+
+<B>18=/usr/spec/specweb99-fcgi.pl,</B>
+
+<B>0x000d</B>
+
+<P>
+<P>
+In this example, 18 copies of the /usr/spec/specweb99-fcgi.pl script will be started.
+These application servers will listen on ports 9000 - 9017 on the userver's localhost.
+The MASK of 0x000d is the CPU affinity mask, as interpretd by the sched_setaffinity
+system call.
+<P>
+<P>
+<DT><B>--dyn-buffer-size N</B>
+
+<DD>
+The number of bytes to allocate at initialization time for buffering replies
+to dynamic requests.  The default is one megabyte (1048576 bytes).  The number
+of such buffers can be specified using
+<B>--num-dyn-buffers</B>
+
+or
+<B>--num-dyn-buffers-per-app</B>
+
+or
+<B>--num-dyn-buffers-per-appserver</B>
+
+(see below).  If none of these options is specified, then by default the
+userver allocates 2 buffers per application server.
+<P>
+<DT><B>--num-dyn-buffers N</B>
+
+<DD>
+The number of buffers to allocate at initialization time for buffering
+replies to dynamic requests.  If this option is specified, then the
+<B>--num-dyn-buffers-per-app</B>
+
+and
+<B>--num-dyn-buffers-per-appserver</B>
+
+options are ignored.
+<P>
+<DT><B>--num-dyn-buffers-per-app N</B>
+
+<DD>
+The number of buffers, per application (see the
+<B>--app</B>
+
+option below), to allocate at
+initialization time for buffering replies to dynamic requests.  If this
+option is specified, then the
+<B>--num-dyn-buffers-per-appserver</B>
+
+option is ignored.  This option is ignored if the
+<B>--num-dyn-buffers</B>
+
+option is specified.
+<P>
+<DT><B>--num-dyn-buffers-per-appserver N</B>
+
+<DD>
+The number of buffers, per application server (see the
+<B>--app</B>
+
+option below), to allocate at
+initialization time for buffering replies to dynamic requests.  The default
+is 2.  This option is ignored if either the
+<B>--num-dyn-buffers</B>
+
+or the
+<B>--num-dyn-buffers-per-app</B>
+
+option is specified.
+<P>
+<DT><B>--dyn-lock-pages</B>
+
+<DD>
+Lock all dynamic buffer pages into memory (must run as root for this to work).
+<P>
+<DT><B>--dyn-touch-pages</B>
+
+<DD>
+Touch each dynamic buffer page at initialization time.  This should have the
+effect of faulting them into memory.  However, in the absense of the
+<B>--dyn-lock-pages</B>
+
+option, these pages are still subject to being paged out.
+<P>
+
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>OPTIONS (FOR USE WITH SIGIO)</H2>
+
+
+<P>
+<DL COMPACT>
+<DT><B>-a</B>
+
+<DD>
+<DT><B>--sigio-accepts</B>
+
+<DD>
+Use asynchronous notification via SIGIO to accept new connections.
+Asynchronous notification may sound costly at first
+but consider that some form of asynchronous notification
+may be the only way for an application that is in the middle of
+something (e.g., computation) to find out about a connection requests.
+<P>
+<DT><B>-k</B>
+
+<DD>
+<DT><B>--sigio-use-procmask</B>
+
+<DD>
+To disable and later enable
+asynchronous notification of incoming requests when using SIGIO
+one can use
+<B>fcntl()</B>
+
+to turn off and on asynchronous notification
+or use
+<B>sigprocmask().</B>
+
+Be careful of race conditions.
+By default the server uses
+<B>fcntl()</B>
+
+but this option says to use
+<B>sigprocmask()</B>
+
+instead.
+<P>
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H2>OPTIONS (FOR ASYNCHRONOUS I/O)</H2>
+
+
+<P>
+This is experimental and currently the userver only makes
+use of asynchronous socket I/O.
+This is still under development and is being tested.
+See aio_layer.h for a definition of the interface that the userver
+uses to interact with the underlying asynchronous layer.
+Note that not all of the calls in aio_layer.h are meant to be asynchronous.
+Some are simply required in order to complete the layer.
+E.g., aio_sock_create is synchronous but it is used to create a socket
+that can be used asynchronously.
+<P>
+<DL COMPACT>
+<DT><B>--use-aio-accept</B>
+
+<DD>
+<DT><B>--use-aio-read</B>
+
+<DD>
+<DT><B>--use-aio-write</B>
+
+<DD>
+<DT><B>--use-aio-close</B>
+
+<DD>
+Use the asynchronous version of the corresponding system calls
+for socket I/O.
+These definitions exist but are all currently only used together.
+It's pretty unlikely that any of these could be used independently.
+<P>
+<DT><B>--use-socket-aio</B>
+
+<DD>
+Use ansynchronous I/O for sockets.
+This turns on all of the above options.
+<P>
+<DT><B>--use-aio-wait</B>
+
+<DD>
+There are two ways to get events from the AIO layer.
+The aio_wait call returns available events of all types
+in a single array. It's then up to the userver to handle
+them in the order they appear or to sort through them.
+This is not on by default and by default the userver uses
+multiple calls to aio_sock_getevents which only gets events
+events of a specified type.
+Using aio_sock_getevents permits us to get all events of
+a specified type and to process them. This enables us
+to order events to be processed by event type.
+<P>
+<DT><B>--aio-accept-thold</B>=<B>N</B>
+
+<DD>
+This is meant to control the maximum number of outstanding
+accept calls that can be initiated (preposted).
+Using this in conjunction with
+--accept-count (-m) we should be able to
+impact the accept rate.
+I think that larger values of --aio-accept-thold
+used in conjunction with --accept-count 0 (-m 0)
+should be pretty aggressive about accepting new connections.
+This hasn't been tested very extensively.
+Especially in conjunction with different values of --accept-count.
+<P>
+<DT><B>--aio-read-before-accept</B>
+
+<DD>
+With this option the userver calls aio_sock_read_accept
+whenever a new connection should be accepted.
+This initiates a read call before initiating an accept call.
+This informs the underlying system of where the read buffer
+is located so that when data is available it can be immediately
+placed into the specified buffer.
+<P>
+<DT><B>--aio-read-before-write</B>
+
+<DD>
+With this option the userver initiates a read call
+before it tries to write a request.
+Again this is meant to permit arriving data to be
+copied directly into the specified read buffer.
+It can only be initiated after the request has been
+parsed and is deemed to be complete.
+Otherwise a prepost might possibly allow the read buffer
+to be overwritten.
+<P>
+<DT><B>--aio-accept-events-limit</B>=<B>N</B>
+
+<DD>
+Limits how many accept completion events to get out of
+the accept completion queue at one time.
+The idea is that it might be possible to use
+this and the read and write limits below
+in order to control how the work being
+processed is balanced.
+Note that one might actually prefer to adjust
+these values dynamically.
+<P>
+<DT><B>--aio-write-events-limit</B>=<B>N</B>
+
+<DD>
+Limits how many write completion events to get out of
+the write completion queue at one time.
+<P>
+<DT><B>--aio-read-events-limit</B>=<B>N</B>
+
+<DD>
+Limits how many read completion events to get out of
+the read completion queue at one time.
+<P>
+<DT><B>--aio-completion-order</B>=<B>string</B>
+
+<DD>
+Set the order in which completion events will get processed.
+The string must contain 'r', 'w', and 'a' characters.
+Read completions are specified with 'r', write completions with 'w',
+and accept completions with 'a'.
+So &quot;rwa&quot; means process read completions, then, write completions
+followed by accept completions.
+Note that it is possible to specify a string like: &quot;rwrwa&quot;.
+<P>
+<DT><B>--aio-complq-count</B>=<B>[1|3]</B>
+
+<DD>
+Specifies how many completion queus to use.
+Currently only supports 1 or 3.
+Note that for a single completion queues
+limits specified on --aio-write-events-limit,
+--aio-read-events-limit,
+or
+--aio-accept-events-limit
+don't really apply.
+Instead the sum of these is used to limit the
+number of events handled at one time (in the 1 queue case).
+<P>
+
+</DL>
+<A NAME="lbAL">&nbsp;</A>
+<H2>OPTIONS (FOR OPEN FILE AND HEADER CACHING)</H2>
+
+
+<P>
+<DL COMPACT>
+<DT><B>-C </B>
+
+<DD>
+<DT><B>--caching-on</B>
+
+<DD>
+Turns caching on.
+<P>
+<DT><B>--cache-table-size=</B><I>N</I>
+
+<DD>
+Specifies the size of the hash table used to cached files.
+One entry is used per cached file.
+NOTE: if the
+<B>--cache-max-load-factor</B>
+
+is exceeded the server will print a message and exit.
+We do not automatically increase the size of the hash table
+because we want to ensure
+identical and repeatable behaviour from one experiment
+to the next.
+<P>
+<DT><B>--cache-max-load-factor=</B><I>N</I>
+
+<DD>
+Specifies the maximum proportion of entries that can be filled
+in the hash table, expressed as a fraction of the table size.
+For example
+<B>--cache-max-load-factor = 0.70</B>
+
+will not permit the hash table to become greater than 70% full.
+If it does, a message is printed and the server exits.
+<P>
+<DT><B>--cache-max-bytes=</B><I>N</I>
+
+<DD>
+Specifies the maximum number of bytes cached.
+<P>
+<DT><B>--cache-max-file-size=</B><I>N</I>
+
+<DD>
+Don't cache files larger than
+<I>N</I>
+
+bytes.
+<P>
+<DT><B>--cache-table-print</B>
+
+<DD>
+When the program ends, print out the contents of the hash table
+used for caching.
+<P>
+<DT><B>--cache-for-spec</B>
+
+<DD>
+This enables a special hash function that does perfect hashing on
+URLs requested by SPECweb99.
+This is intended for experimentation only.
+<P>
+<DT><B>--cache-lock-pages</B>
+
+<DD>
+Lock all cached pages into memory (must run as root for this to work).
+<P>
+<DT><B>--cache-warm</B><I>&lt;filename&gt;</I>
+
+<DD>
+If specified and caching is enabled then read a list of
+files and/or directories in &lt;filename&gt;.  For each file add
+it to the userver cache and touch each page.  If it's
+a directory, cache and touch each file in the directory.
+If --cache-table-print is declared then print the cache
+after it's been primed.
+<P>
+
+</DL>
+<A NAME="lbAM">&nbsp;</A>
+<H2>OPTIONS (FOR DEBUGGING)</H2>
+
+
+<P>
+<DL COMPACT>
+<DT><B>-D [0x]N</B>
+
+<DD>
+<DT><B>--debug-mask=</B><I>[0x]N</I><B>]</B>
+
+<DD>
+Specify a debug mask.  If prefixed with '0x', the argument is interpreted as
+hexadecimal; otherwise it is interpreted as decimal.
+For maximum debugging detail use
+<B>--debug-mask =</B>
+
+<I>0xffffffff.</I>
+
+To turn debugging messages off use
+<B>--debug-mask =</B>
+
+<I>0x0.</I>
+
+See debug.h for details.
+Note: that to compile without debugging also see debug.h.
+<P>
+<DT><B>--trace-summary</B>
+
+<DD>
+Keep track of information regarding system calls and print a summary.
+If tracing is enabled a list of each event being traced will be dumped
+to a trace output file.
+<P>
+<DT><B>--trace-summary-only</B>
+
+<DD>
+Keep track of information regarding system calls and print a summary.
+If this option is enabled individual events are not actually recorded
+but instead information to produce a summary of each event type
+is tracked. For example, minimum, maximum and average call times for
+each system call being traced.
+<P>
+<DT><B>--trace-filename path</B>
+
+<DD>
+Specify the name of the file to write tracing output to, when tracing
+is enabled.
+<P>
+<DT><B>-i</B>
+
+<DD>
+<DT><B>--interactive</B>
+
+<DD>
+Turns on interactive mode.
+The server stops between calls to process events
+and prompts the user for input.
+This permits the user to query some of the state of the
+server or to step through server execution.
+At the prompt type 'h' or '?' for a list of commands.
+<P>
+<DT><B>-P</B>
+
+<DD>
+<DT><B>--count-sigpipes</B>
+
+<DD>
+Install a signal handler that simply counts the number of
+SIGPIPE signals received.
+<P>
+
+</DL>
+<A NAME="lbAN">&nbsp;</A>
+<H2>OPTIONS (FOR EXPERIMENTS RELATED TO BOUNDING PERFORMANCE)</H2>
+
+
+<P>
+These options are designed to have the server stop processing
+a request at various stages of a requests life.
+It stops handling the request by closing it's end of the socket
+and not working on that request anymore.
+I've attempted to list these in the order of earliest time to
+drop the request to latest.
+The idea is that by running a series of experiments
+by using each of these options one might be able to get a sense
+of how much additional stage costs.
+<P>
+<DL COMPACT>
+<DT><B>-n</B>
+
+<DD>
+<DT><B>--no-accepts</B>
+
+<DD>
+<DT><B>--listen-only</B>
+
+<DD>
+This puts the server into a mode where it only ever listens
+to requests.
+It never makes any attempt to process requests.
+So it never even accepts any requests.
+The believe is that this might be used to provide insights into
+the amount of overhead incurred when kernel TCP SYN queues and
+application listen queues become full.
+<P>
+<DT><B>-A</B>
+
+<DD>
+<DT><B>--accepts-only</B>
+
+<DD>
+<DT><B>--close-after-accept</B>
+
+<DD>
+In this mode the server accepts and closes incoming connection
+requests as quickly as possible.
+At the time this was done
+<I>close()</I>
+
+would block until the call completed
+(despite the fd being in non blocking mode).
+So immediately after accepting, call
+<I>close().</I>
+
+to terminate the connection.
+<P>
+<DT><B>--close-after-sock-init</B>
+
+<DD>
+The server accepts a connection, initializes the socket
+(setting socket options like socket buffer sizes, non blocking mode, etc)
+and then it closes the connection.
+<P>
+<DT><B>--close-after-read</B>
+
+<DD>
+The server accepts a connection, initializes the socket
+reads the request and then closes the connection.
+<P>
+<DT><B>--close-after-parse</B>
+
+<DD>
+The server accepts a connection, initializes the socket
+reads the request, parses the requests and then closes the connection.
+<P>
+<DT><B>--fake-writing</B>
+
+<DD>
+The server accepts a connection, initializes the socket
+reads the request, parses the requests and then reads the entire
+file before sending a fake response (HTTP OK with size 0).
+Note that this only works when read/write are being used (currently
+this happens only when the file descriptor and response header are not cached
+and when sendfile is not used).
+<P>
+
+</DL>
+<A NAME="lbAO">&nbsp;</A>
+<H2>OPTIONS (FOR USE WITH THE SEND ENHANCED KERNEL)</H2>
+
+
+<P>
+WARNING: these options are highly experimental and
+subject to continuous change.
+<P>
+These options specify how the
+<B>userver</B>
+
+interacts with new Linux
+Scalable Event Notification and Delivery (SEND)
+kernel mechanisms.
+See [Ostrowski-2000] for more details on SEND.
+<P>
+<DL COMPACT>
+<DT><B>-K [0x]N</B>
+
+<DD>
+<DT><B>--kdebug-mask=</B><I>[0x]N</I><B>]</B>
+
+<DD>
+Specify a debugging mask which is passed to the
+<I>evtctl</I>
+
+system call to set a kernel debugging mask for the
+SEND related parts of the kernel.  If prefixed with '0x', the argument is
+interpreted as hexadecimal; otherwise it is interpreted as decimal.
+<P>
+<DT><B>--send-polls-for-accepts</B>
+
+<DD>
+The send loop polls for new connections.
+<P>
+<DT><B>-B</B>
+
+<DD>
+<DT><B>--block-for-send_events</B>
+
+<DD>
+When there are not more events to process, block
+and wait for one or more new events by calling
+<I>evtctl().</I>
+
+<P>
+<DT><B>-E</B>
+
+<DD>
+<DT><B>--send-events</B>
+
+<DD>
+Use send events. This version does not do notification.
+<P>
+<DT><B>-G</B>
+
+<DD>
+<DT><B>--use-getpid</B>
+
+<DD>
+If we aren't blocking to wait for events (by calling evtctl)
+we may wish to make a system call to give the kernel a chance
+to deliver events to the application (since they are delivered
+when returning from a syscall.
+In this case we use
+<I>getpid()</I>
+
+because it is likely fast.
+<P>
+<DT><B>-Y</B>
+
+<DD>
+<DT><B>--send-io-events</B>
+
+<DD>
+Use send events. This version does do notification.
+<P>
+<DT><B>-N</B>
+
+<DD>
+<DT><B>--send-loop</B>
+
+<DD>
+<BR>
+
+Use the send loop.
+Can potentially get and process send events even
+while using select.
+This bypasses the use of the select call.
+<P>
+<DT><B>-b N</B>
+
+<DD>
+<DT><B>--ecb-buf-entries=</B><I>N</I>
+
+<DD>
+How many events can be stored in the application's
+event control buffer (ecb).
+<P>
+<DT><B>-Q N</B>
+
+<DD>
+<DT><B>--ecb-hi-water=</B><I>N</I>
+
+<DD>
+Set the high water mark used for the event control buffer (ecb).
+One of the things we've tried is to turn event delivery off when the
+<I>--ecb-hi-water</I>
+
+mark is reached
+and then to turn delivery back on when the
+<I>--ecb-low-water</I>
+
+mark is reached.
+<P>
+<DT><B>-q N </B>
+
+<DD>
+<DT><B>--ecb-low-water=</B><I>N</I>
+
+<DD>
+Set the low water mark used for the event control buffer (ecb).
+One of the things we've tried is to turn event delivery off when the
+<I>--ecb-hi-water</I>
+
+mark is reached
+and then to turn delivery back on when the
+<I>--ecb-low-water</I>
+
+mark is reached.
+<P>
+<DT><B>-U</B>
+
+<DD>
+<DT><B>--auto-accept</B>
+
+<DD>
+Turn on the SEND kernel's auto accept mechanisms.
+When new connection requests arrive the kernel automatically
+accepts them (auto accepts 'em) and notifies the application
+with an event containing the new connection's fd.
+<P>
+<DT><B>--auto-accept-aperture</B>
+
+<DD>
+Control the difference between the number of connections the
+kernel has autoaccepted and the number of connections the
+application has closed.
+Without this type of control the autoaccepting can get out of
+control and the kernel can spend too much time auto accepting
+new connections and the application is not able to make much
+forward progress on existing connections.
+<P>
+<DT><B>--use-accept-send</B>
+
+<DD>
+Use a special version of accept that returns event information
+related to the accepted connection/socket.
+<P>
+<DT><B>-j</B>
+
+<DD>
+<DT><B>--kernel-info</B>
+
+<DD>
+Experimental: was to tell the application that the kernel
+has an interface available for obtaining more information
+about the size and number of entries in some of the kernel
+queues (e.g., the TCP SYNQs and the application's listenq).
+
+</DL>
+<A NAME="lbAP">&nbsp;</A>
+<H2>OPTIONS (FOR CHOOSING AND CONTROLLING A VICTIM)</H2>
+
+
+<P>
+WARNING: These are just some hacks to try out some ideas.
+<DL COMPACT>
+<DT><B>-F</B>
+
+<DD>
+<DT><B>--victim string</B>
+
+<DD>
+Set the specified string as a victim string.
+Any uri that contains this string is declared a victim. How it
+is victimized depends on the value used in the --victim-skip option.
+If the --victim-skip option is not set there is no affect on the specified victim file.
+<P>
+<DT><B>--victim-skip N</B>
+
+<DD>
+If N is &gt; 0, then writes to the client socket will be skipped N-1 times.
+The idea is to slow down the response to any client that requests the specified
+victim file.
+Specifically, when the event mechanism indicates that the socket is ready
+for writing the write will just be skipped.
+Note that this probably won't work with epoll if you are using edge triggered
+events. Also note that the amount of slow down depends on the number of other
+sockets that are ready for processing when the event mechanisim returns and
+the amount of processing required for each of those events.
+<P>
+If N = -1 then no writes are skipped but instead the server uses madvise
+after it has written the bytes to advise the operating system that it
+doesn't need the bytes for this file anymore.
+<P>
+<DT><B>--cache-miss-skip N</B>
+
+<DD>
+This is specific to BSD (possibly FreeBSD).
+If N is &gt; 0, then sendfile calls that would block because of disk I/O (i.e.,
+a file cache miss) will be skipped N times.
+The idea is to slow down the response to any client that requests a file
+that might require disk I/O.
+In theory this may permit us to favour requests for files that are in 
+the file cache.
+Specifically, when the event mechanism indicates that the socket is ready
+for writing the sendfile call will be made with the flag SF_NODISKIO.
+<P>
+Currently this isn't intended to be used in conjunction with
+--victim and --victim-skip (i.e., I haven't thought through the behaviour).
+<P>
+
+</DL>
+<A NAME="lbAQ">&nbsp;</A>
+<H2>OUTPUT</H2>
+
+This section describes portions of the output produced
+during the execution of the
+<B>userver.</B>
+
+<P>
+<P>
+
+The first portion of output lists the program name
+and the command line parameters.
+The second portion of output lists the setting of all options.
+This is the most reliable way to find out the
+default settings for some options.
+<P>
+<P>
+
+The next two sections identify operating system and
+per user or process limits.
+<P>
+
+The remainder of the output provides more information about
+default settings of various parameters and a large
+number of statistics about the execution of the server.
+<P>
+
+<A NAME="lbAR">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+<B>userver</B>
+
+was developed by Tim Brecht by starting with
+some micro web servers originally developed by
+Abhishek Chandra and David Mosberger [Chandra-2001].
+David Pariag contributed the current caching engine.
+One of the hash functions
+is from Bob Jenkin's web site.
+<P>
+
+<A NAME="lbAS">&nbsp;</A>
+<H2>BUGS</H2>
+
+Probably many.
+<P>
+NOTE: very few if any checks are performed to see if the combination
+of options being used makes sense.
+For example, the behaviour from using both the
+<B>--select-loop</B>
+
+and
+<B>--send-loop</B>
+
+options is undefined.
+<P>
+Always be sure to double-check results and don't fall
+prey to measuring client-performance instead of server performance!
+The tool
+<B>httperf</B>
+
+is very good at generating loads.
+<P>
+Many of the single letter options are difficult to relate
+to anything meaningful. As the number of options grew I
+eventually started to run out of alphabet and added long options.
+<P>
+The user-interface definitely could be improved.  A simple configuration
+file might be more suitable than the many command-line options.
+<P>
+
+<A NAME="lbAT">&nbsp;</A>
+<H2>REFERENCES</H2>
+
+<P>
+<DL COMPACT>
+<DT>[Shukla-2006]<DD>
+Amol Shukla and Tim Brecht,
+TCP Connection Management Mechanisms for Improving Internet Server Performance,
+First IEEE Workshop on Web Systems and Technologies (HotWeb 2006),
+Boston, MA, November, 2006.
+<P>
+<DT>[Brecht-2006]<DD>
+Tim Brecht, G. (John) Janakiraman, Brian Lynn, Vikram Saletore, Yoshio Turner,
+Evaluating Network Processing Efficiency with
+Processor Partitioning and Asynchronous I/O,
+Proceedings of EuroSys 2006,
+Leuven, Belgium, April 2006.
+<P>
+<DT>[Gammo-2004]<DD>
+Louay Gammo, Tim Brecht, Amol Shukla, and David Pariag,
+Comparing and Evaluating epoll, select, and poll Event Mechanisms,
+Ottawa Linux Symposium, July, 2004.
+<P>
+<DT>[Brecht-2004]<DD>
+Tim Brecht, Louay Gammo, and David Pariag,
+accept()able Strategies for Improving Web Server Performance,
+2004 USENIX Annual Technical Conference: General Track, Boston,
+June, 2004.
+<P>
+<DT>[Brecht-2001]<DD>
+Tim Brecht and Michal Ostrowski,
+Exploring the Performance of Select-based Internet Servers,
+HP Labs Technical Report HPL-2001-314, November, 2001.
+<P>
+<DT>[Chandra-2001]<DD>
+A. Chandra and D. Mosberger,
+Scalability of Linux Event-Dispatch Mechanisms,
+Proceedings of the 2001 USENIX Annual Technical Conference, June 2001.
+<P>
+<DT>[Ostrowski-2000]<DD>
+Michal Ostrowski,
+A Mechanism for Scalable Event Notification and Delivery in Linux,
+M.Math Thesis, Department of Computer Science, University of Waterloo,
+November, 2000.
+<P>
+</DL>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">EXAMPLES</A><DD>
+<DT><A HREF="#lbAF">OPTIONS</A><DD>
+<DT><A HREF="#lbAG">OPTIONS (GENERAL)</A><DD>
+<DT><A HREF="#lbAH">OPTIONS (FOR CONTROLLING SOCKETS)</A><DD>
+<DT><A HREF="#lbAI">OPTIONS (FOR SERVING DYNAMIC CONTENT)</A><DD>
+<DT><A HREF="#lbAJ">OPTIONS (FOR USE WITH SIGIO)</A><DD>
+<DT><A HREF="#lbAK">OPTIONS (FOR ASYNCHRONOUS I/O)</A><DD>
+<DT><A HREF="#lbAL">OPTIONS (FOR OPEN FILE AND HEADER CACHING)</A><DD>
+<DT><A HREF="#lbAM">OPTIONS (FOR DEBUGGING)</A><DD>
+<DT><A HREF="#lbAN">OPTIONS (FOR EXPERIMENTS RELATED TO BOUNDING PERFORMANCE)</A><DD>
+<DT><A HREF="#lbAO">OPTIONS (FOR USE WITH THE SEND ENHANCED KERNEL)</A><DD>
+<DT><A HREF="#lbAP">OPTIONS (FOR CHOOSING AND CONTROLLING A VICTIM)</A><DD>
+<DT><A HREF="#lbAQ">OUTPUT</A><DD>
+<DT><A HREF="#lbAR">AUTHORS</A><DD>
+<DT><A HREF="#lbAS">BUGS</A><DD>
+<DT><A HREF="#lbAT">REFERENCES</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:46:50 GMT, January 30, 2011
+</BODY>
+</HTML>

@@ -1,0 +1,79 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004-2010  Tim Brecht
+#    Based on the file originally Copyright (C) 2004  Hewlett-Packard Company
+#
+#    Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+#
+
+----------------------------------------------------------------------
+These are some useful test scripts for running httperf - mainly 
+for testing the userver.
+
+See the source for details.
+
+run           - do a specified number of requests (all for the same file)
+run100K       - request a 100K byte file a specified number of times
+run10K        - request a 100K byte file a specified number of times
+run1K         - request a 100K byte file a specified number of times
+runlog        - used to request files in a logfile 
+                (see genfiles/genlog the runlog)
+runlograte    - used to request files in a logfile at a specified rate
+                (see genfiles/genlog the runlog)
+runmix        - specify the
+runmixrate
+runpersist    - do a specified number of requests using only one connection
+runrate       - specify a rate and the number of requests
+runrate1K     - specify a rate and number of requests (requests larger file)
+runsesslog    - specify a session log file to run (e.g., specweb99-like log)
+                (see also genspec99sesslogs.c)
+runuri        - request a specified file
+----------------------------------------------------------------------
+There are some programs that are useful for generating test workloads.
+
+Makefile
+
+gen.h
+genfiles.c
+genlogs.c
+  These files are used to generate and run some test 
+  cases for testing the caching component of the server
+
+genspec99sesslogs.c
+  This program can be used to generate session log files that adhere
+  to the distributions consistent with a specweb99 workload
+
+permutesesslog 
+  This program takes an httperf specific session log file
+  and permutes it so that the same files are requested
+  in a different order. This is useful so that you can
+  have different clients requesting different sequences of files.
+
+genspeclogs.c
+  A precuror to genspec99sesslogs.c
+
+kill-server
+  Kill the server
+Kill-server
+  Kill -9 the server
+
+----------------------------------------------------------------------

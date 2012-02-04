@@ -1,0 +1,75 @@
+----------------------------------------------------------------------
+Copyright (C) 2005-2010 Tim Brecht <brecht@cs.uwaterloo.ca>
+
+----------------------------------------------------------------------
+The userver originally started out as separate implementations. 
+Each implementation was in one file and each was about 1000 lines of code. 
+Different files implemented event handling in a different manner.
+It looks as if those implementations were created by
+copying an existing implementation and then modifying the code to use
+a different event handling mechanism. So there was significant amounts
+of code that were common across the different files/implementations.
+
+That code was written by:
+  David Mosberger <david.mosberger@hp.com> and
+  Abhishek Chandra <abhishek@cs.umass.edu>
+and is Copyright (C) 2001 Hewlett-Packard Company
+
+While on sabbatical at HP Labs I (Tim Brecht) created new versions
+based on other event mechanisms we'd worked on at the
+University of Waterloo.
+
+Eventually, it became too difficult to ensure that when experiments
+were run using the different programs/files that they were comparing
+apples with apples because it was too easy for the different files to diverge
+in places that didn't have solely to do with the event mechanisms.
+So I create a unified version that used different event
+mechanisms by choosing the event mechanism via command line arguments.
+
+----------------------------------------------------------------------
+Much of the code related to using the Scalable Event Notification
+and Delivery Mechanisms (SEND) were taken from bits of code
+originally written by Michal Ostrowski as part of his M.Math thesis
+at the University of Waterloo.
+http://bcr2.uwaterloo.ca/~brecht/theses.html
+  Michal Ostrowski <mostrows@speakeasy.net>
+----------------------------------------------------------------------
+The majority of the caching code was contributed by:
+  David Pariag <db2paria@cs.uwaterloo.ca>
+----------------------------------------------------------------------
+The logging code was contributed by:
+  David Pariag <db2paria@cs.uwaterloo.ca>
+----------------------------------------------------------------------
+One of the hash functions (I've named do_hash_bob)
+was taken from Bob Jenkin's Dr. Dobbs article from September, 1997.
+http://www.burtleburtle.net/bob/hash/doobs.html
+This code is also part of his public domain code lookup2.c.
+http://www.burtleburtle.net/bob/c/lookup2.c
+  Bob Jenkins <bob_jenkins@burtleburtle.net>
+----------------------------------------------------------------------
+The FastCGI code was contributed by:
+  Craig Barkhouse <cabarkho@uwaterloo.ca>
+It is based on the FastCGI Specification version 1.0 written by
+Mark R. Brown of Open Market, Inc.
+http://www.fastcgi.com/devkit/doc/fcgi-spec.html
+----------------------------------------------------------------------
+The perl script script/permutesesslog was contributed by:
+  Yoshio Turner
+----------------------------------------------------------------------
+The code for warming the cache and for performing tests with
+encryption was contributed by:
+  Brian Lynn <brian.lynn@hp.com>
+----------------------------------------------------------------------
+The code for printing options using xml was contributed
+by Troy Moure
+----------------------------------------------------------------------
+The code for tracking when dynamic buffers are available
+(i.e., when sendfile is finished with them)
+was contributed by Mark Groves.
+
+The Linux kernel mods to determine when the sendfile
+buffers were available for reuse was contributed by Elad Lahav
+----------------------------------------------------------------------
+The SSL support was originally done by Mark Groves
+with merging and debugging from Tyler Szepesi and Tim Brecht
+----------------------------------------------------------------------

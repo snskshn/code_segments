@@ -1,0 +1,298 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004-2010  Tim Brecht
+#    Based on the file originally Copyright (C) 2004  Hewlett-Packard Company
+#
+#    Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+#
+
+DESCRIPTION
+===========
+
+The userver is a micro web server that is meant to be used to experiment
+with the design and implementation of web servers.
+
+It was derived from several different servers that were originally
+written by Abhishek Chandra and David Mosberger.
+
+  Scalability of Linux Event-Dispatch Mechanisms 
+  Abhishek Chandra and David Mosberger,
+  Proceedings of the 2001 USENIX Annual Technical Conference, June 2001. 
+
+In particular the original intention with userver was to permit
+experimental comparisons of different event dispatch mechanisms within
+the same application framework.  For this reason there are lots and lots
+and lots of parameters. They are mainly used to control the behaviour
+of the server.
+
+Some of the design philosophy and experimental results obtained using
+this server are described in:
+
+  Exploring the Performance of Select-based Internet Servers 
+  Tim Brecht and Michal Ostrowski, 
+  HP Labs Technical Report HPL-2001-314, November, 2001. 
+
+Much of the design and code is being developed to experiment with
+a new Scalable Event Notification and Delivery Mechanism (SEND)
+for Linux, which was originally developed by Michal Ostrorwski.
+
+  A Mechanism for Scalable Event Notification and Delivery in Linux, 
+  Michal Ostrowski, M.Math Thesis, 
+  Department of Computer Science, University of Waterloo, November, 2000. 
+
+An additional design decision of note is that all data structures are
+allocated at initialization and are not resized (grown).  This helps
+to ensure that experiments can be repeated because with dynamic sizing
+of data structures different loads could result in different server
+behaviour.
+
+This micro web server is not meant to be a full-blown web server.
+It is specifically designed for conducting performance experiments.
+For that reason design decisions were made in favour of producing
+repeatable experiments.
+
+For more information see the man page (% make man) and view
+either userver.txt userver.ps or userver.pdf and/or the documents
+described above.
+
+A brief description of each subdirectory:
+
+ o docs      - contains not documentation but a bunch of files
+               of various sizes that can be used for testing
+ o scripts   - contains some shell scripts and log file generators
+               that can be used to drive small tests using httperf
+ o fastcgi   - third-party and miscellaneous files related to FastCGI
+
+
+SOME FEATURES
+=============
+
+ o Event / Finite state machine based/driven
+ o Reasonably small, simple, modifiable, fast, expandable
+ o Support for a variety of event mechanisms 
+    (e.g., select, poll, epoll, SEND, SIGIO)
+ o Supports mmap, madvise, mlock for cached files
+ o Supports write, writev, sendfile, TCP_CORK/UNCORK
+ o Built in ability to explore a large variety of server implementation
+   options
+ o Extensive debugging and tracing facilities.
+ o Extensive performance related statistics
+
+CONTAINS CODE TO USE THE FOLLOWING EVENT MECHANISMS:
+====================================================
+ o select
+ o poll
+ o epoll 
+   - requires recent versions of Linux)
+ o SEND (Scalable Event Notification and Deliver)
+   - requires kernel patches (currently available for 2.4.19 on x86.
+ o SIGIO/signals (hasn't been tested in a long time)
+
+ o Hope to add support for Linux (aio)
+
+To add a new event mechanism:
+
+ - You need to be able to tell the system which fds you are interested in
+   (declare interest).
+     [see interest_set.h interest_set.c]
+ - You need to be able to enable and disable the notification of
+   new connections
+     [this is done using the interest set routines that get called
+      via do_socket_new_conn_on and do_socket_new_conn_off]
+   By default you probably shouldn't need to do anything here.
+ - You need to be able to determine which new events have occurred and 
+   process/handle them.  See:
+      process_sds.c                 (for select-based events)
+      process_poll_events.c         (for poll-based events)
+      process_epoll_events.c        (for epoll-based events)
+      send_handler.c and
+      send_handler_array.c          (for SEND-based events)
+      sigstuff.c : sigio_handler()  (for SIGIO-based connection request)
+
+   Some of the existing code uses the routines:
+      int event_set_is_readable_or_writable(int sd);
+      int event_set_is_readable(int sd);
+      int event_set_is_writable(int sd);
+   [Note: the interest set is used to let the system know which events
+    one is interested in and the event set is used to let the application
+    know which of the events of interest occurred.]   
+
+To add processing for new types of requests
+  - Look for options.acting_as and make appropriate changes/additions
+    in these areas.
+
+CONFIGURING
+===========
+
+Large number of open files
+--------------------------
+
+In order to be able to use more than the default number of
+open file descriptors you may need to:
+	o increase the limit on the total number of open files
+		/proc/sys/fs/file-max  (on Linux systems)
+	o increase the size of FD_SETSIZE
+			- the way I often do this is to figure out which
+				include file __FD_SETSIZE is defined in, copy
+				that file into an appropriate directory in
+				./include, and then modify it so that if you 
+				use -DBIGGER_FD_SETSIZE the larger size gets used
+
+		For example on a RH 9.0 distribution I've copied
+			/usr/include/bits/typesizes.h into 
+		 ./include/i386-linux/bits/typesizes.h
+
+		Then I modify typesizes.h to look something like:
+
+		#ifdef BIGGER_FD_SETSIZE
+		#define __FD_SETSIZE            32767
+		#else
+		#define __FD_SETSIZE            1024
+		#endif
+
+		Note that the since I'm moving and testing the userver
+		on may different machines the Makefiles are set up
+		to use -I ./include/$(HOSTTYPE)
+
+		This way if you redefine the FD_SETSIZE it will get
+		used instead of the default original file.
+
+Various compile time options
+----------------------------
+See Makefile.base and Makefile.send for some of options that can
+be configured at compile time. Makefile.base is divided into
+sections. Those that are specific to the target OS and near
+the bottom are those options that the user may wish to define and use.
+
+COMPILING
+=========
+
+Needs/requires gnu make.
+
+It has been compiled and tested under IA32 Linux.
+It has been compiled and only likghtly tested on IA64 Linux.
+This has been compiled and only lightly run (not tested) on HP-UX (PA-RISC).
+This has been compiled and only lightly run (not tested) on Solaris.
+
+gcc was used on all of these platforms except HP-UX.
+
+To get maximum performance ensure that NDEBUG is defined (see Makefile.base).
+I believe that this will also turn debugging and tracing off.
+
+To turn on/off debugging see debug.h (when NDEBUG is not defined).
+To turn on/off tracing see   trace.h (when NDEBUG is not defined).
+
+There are some problems with make depend.
+
+To compile a new version from scratch (or after make vclean)
+you may need to do:
+
+  # Figure out if you want debugging and/or tracing on or off
+	# edit debug.h and trace.h
+
+  % make userver-depend
+  % make userver
+
+Or for the SEND based version
+  % make userver-send-depend
+  % make userver-send
+
+
+
+Instructions for compiling for use with the SEND kernel.
+
+You need a copy of the Scalable Event Notification and Delivery
+(SEND) Linux Kernel mods.
+% ln -s <where-ever-send-kernel-lives> ~/linux
+
+  # Figure out if you want debugging and/or tracing on or off
+	# edit debug.h and trace.h
+
+  % make vclean
+  % make userver-send-depend
+  % make userver-send
+
+An example set of options for running the userver using the SEND interface:
+  ./userver-send -E -U -Y -m 0 -c 10 -f 20 -D 0xffffffff -K 0xffffffff
+
+
+RUNNING
+=======
+
+It is probably best to read the HP Technical Report to figure out
+how different parameters impact performance but a very simple server
+can be run by just running userver.
+
+% ./userver
+
+Note that by default it listens on port 6800.
+
+Some programs and shell scripts can be found in scripts that
+are useful for testing, debugging and generating loads of various types
+using httperf as a client.
+
+THE SOURCE
+==========
+
+Some code was written by people who use emacs and some code was written
+by people who use vi. As a result the code can sometimes appear to be
+incorrectly formated.
+
+For vi I think that most of the code will look fine if you use:
+:set ts=8
+:set sw=2
+
+I'm not sure with emacs.
+
+I'm hoping to try to fix this up in future releases.
+
+FOR MORE INFORMATION
+====================
+http://www.hpl.hp.com/research/linux/userver
+
+
+FASTCGI
+=======
+
+Modify DEFAULT_TOP_DIR in fastcgi/specweb99-fcgi.c
+to point at the directory where the specweb99 
+directory can be found.
+
+Modify my $topdir in fastcgi/specweb99-fcgi.pl
+to point at the directory where the specweb99
+directory can be found.
+
+E.g., in my case I have a small file set in
+/home/brecht/specweb99/file_set so I point
+both of these at /home/brecht.
+
+You need to install some perl code into the proper locations.
+This is done by:
+
+cd fastcgi/fcgi-2.4.0/perl
+perl Makefile.PL
+make
+make install
+
+
+
+

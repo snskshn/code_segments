@@ -1,0 +1,149 @@
+<options>
+
+  <category name='general'>
+    <opt name='content_type'> 0 </opt>
+    <opt name='count_sigpipes'> 0 </opt>
+    <opt name='cpu_mask'>
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111
+    </opt>
+    <opt name='appserv_cpu_mask'>
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111
+    </opt>
+    <opt name='delay'> 0 </opt>
+    <opt name='state_delay'> -1 </opt>
+    <opt name='doc_root'>  </opt>
+    <opt name='hostname'> app32.future.co.kr </opt>
+    <opt name='interactive'> 0 </opt>
+    <opt name='min_file_size'> -1 </opt>
+    <opt name='max_file_size'> -1 </opt>
+    <opt name='numprocs'> 1 </opt>
+    <opt name='pid_filename'> userver.pid </opt>
+    <opt name='port'> 6800 </opt>
+    <opt name='sigio_cntl'> 0 </opt>
+    <opt name='stats_interval'> 0 </opt>
+    <opt name='skip_header'> 0 </opt>
+    <opt name='trace_filename'> userver.trace </opt>
+    <opt name='trace_summary'> 0 </opt>
+    <opt name='trace_summary_only'> 0 </opt>
+    <opt name='use_logging'> 0 </opt>
+    <opt name='fake-writing'> 0 </opt>
+  </category>
+
+  <category name='file-descriptors'>
+    <opt name='free_fd_thold'> 0 </opt>
+    <opt name='ignore_fd_setsize'> 0 </opt>
+    <opt name='max_fds'> 127999 </opt>
+    <opt name='process_sds_order'> 1 </opt>
+    <opt name='use_max_open_sd'> 0 </opt>
+  </category>
+
+  <category name='connections'>
+    <opt name='conn_off'> 0 </opt>
+    <opt name='conn_on'> 0 </opt>
+    <opt name='do_multiaccept'> 1 </opt>
+    <opt name='extra_freq'> 2147483647 </opt>
+    <opt name='get_connections'> 0 </opt>
+    <opt name='get_connections_in_server_loop'> 0 </opt>
+    <opt name='get_connections_on_close'> 0 </opt>
+    <opt name='idle_threshold'> 15 </opt>
+    <opt name='listenq'> 128 </opt>
+    <opt name='maxconns'> 63990 </opt>
+    <opt name='multiaccept_max'> -1 </opt>
+  </category>
+
+  <category name='sockets'>
+    <opt name='close_with_reset'> 0 </opt>
+    <opt name='dont_intr_select'> 0 </opt>
+    <opt name='read_sock_buf_lowat'> -1 </opt>
+    <opt name='read_sock_buf_size'> -1 </opt>
+    <opt name='select_timeout'> 3600 </opt>
+    <opt name='use_tcp_cork'> 0 </opt>
+    <opt name='write_sock_buf_lowat'> -1 </opt>
+    <opt name='write_sock_buf_size'> -1 </opt>
+   </category>
+
+  <category name='memory'>
+    <opt name='blocking_sendfile'> 0 </opt>
+    <opt name='call_readable_from_new_conn'> 0 </opt>
+    <opt name='call_writable_from_readable'> 0 </opt>
+    <opt name='loop_on_readable'> 0 </opt>
+    <opt name='use_madvise'> 0 </opt>
+    <opt name='use_memcopy'> 0 </opt>
+    <opt name='use_sendfile'> 0 </opt>
+  </category>
+
+  <category name='buffers'>
+    <opt name='dyn_buffer_size'> 1048576 </opt>
+    <opt name='dyn_lock_pages'> 0 </opt>
+    <opt name='dyn_touch_pages'> 0 </opt>
+    <opt name='num_dyn_buffers'> 0 </opt>
+    <opt name='num_dyn_buffers_per_app'> -1 </opt>
+    <opt name='num_dyn_buffers_per_app_server'> 2 </opt>
+    <opt name='read_buffer_size'> 512 </opt>
+    <opt name='reply_buffer_size'> 1024 </opt>
+  </category>
+
+  <category name='apps'>
+    <opt name='app_count'> 0 </opt>
+    <opt name='appserver_count'> 0 </opt>
+    <opt name='app_req_queue_size'> -1 </opt>
+  </category>
+
+  <category name='polling-method'>
+    <opt name='epoll_edge_triggered'> 0 </opt>
+    <opt name='epoll_modify_listeners'> 0 </opt>
+    <opt name='use_epoll'> 0 </opt>
+    <opt name='use_epoll2'> 0 </opt>
+    <opt name='use_epoll_ctlv'> 0 </opt>
+    <opt name='use_poll'> 0 </opt>
+  </category>
+
+  <category name='caching'>
+    <opt name='caching_on'> 0 </opt>
+    <opt name='cache_for_spec'> 0 </opt>
+    <opt name='cache_max_bytes'> 20971520.000000 </opt>
+    <opt name='cache_max_file_size'> 1048576.000000 </opt>
+    <opt name='cache_max_load_factor'> 2.000000 </opt>
+    <opt name='cache_lock_pages'> 0 </opt>
+    <opt name='cache_table_print'> 0 </opt>
+    <opt name='cache_table_size'> 100 </opt>
+    <opt name='cache_warm_file'>  </opt>
+    <opt name='victim'>  </opt>
+    <opt name='victim_skip'> 0 </opt>
+    <opt name='cache_miss_skip'> 0 </opt>
+  </category>
+
+  <category name='request-life'>
+    <opt name='noaccepts'> 0 </opt>
+    <opt name='accepts_only'> 0 </opt>
+    <opt name='close_after_sock_init'> 0 </opt>
+    <opt name='close_after_read'> 0 </opt>
+    <opt name='close_after_parse'> 0 </opt>
+  </category>
+
+</options>
+

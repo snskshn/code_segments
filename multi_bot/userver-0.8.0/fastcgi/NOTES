@@ -1,0 +1,414 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004  Craig Barkhouse
+#
+#    Authors: Craig Barkhouse <cabarkho@uwaterloo.ca>
+#             Info about FCGI_STDOUT_BUFSIZE from:
+#             Gary Yeung <ghsyeung@cs.uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+
+
+#
+# vim: ft=text sw=2 sts=2 tw=78 et
+
+
+
+BACKGROUND
+~~~~~~~~~~
+
+FastCGI was conceived by Open Market, Inc. as an improved interface between
+web servers and CGI applications.  There are several advantages of FastCGI
+versus traditional fork-and-exec CGI.  These are best described by material on
+the official FastCGI website http://www.fastcgi.com/.  See especially the
+whitepaper http://www.fastcgi.com/devkit/doc/fastcgi-whitepaper/fastcgi.htm.
+
+The primary motivation for integrating FastCGI support into userver is to
+satisfy the need for a method of dynamic content generation (so we can run
+specweb99, for instance) without incurring costly overhead due to forking and
+without having to block waiting for the dynamic content to be output.
+
+
+
+OVERVIEW
+~~~~~~~~
+
+A normal view of a web server that delivers static content involves two
+entities: a client and a web server.  A complete request cycle involves two
+phases.  First, the client initiates a connection to the web server and sends
+sends an HTTP request [RFC 2616].  Second, the web server sends an HTTP reply
+to the client, and either closes the connection or leaves it open for more
+request/reply cycles.
+
+                            Static content model
+                            ~~~~~~~~~~~~~~~~~~~~
+
+                  +--------+  1. HTTP request   +-----------+
+                  |        | =================> |   web     |
+                  | client |                    |  server   |
+                  |        | <================= | (userver) |
+                  +--------+    2. HTTP reply   +-----------+
+
+
+When dynamic content is added to the above scenario using a traditional CGI
+model, the above view does not really change conceptually.  Only the way in
+which the web server generates the content changes.  Instead of reading the
+content from a disk file or cache, the web server must either construct the
+content on the fly or invoke an application to construct the content.
+
+However, when a FastCGI dynamic content model is used, the above view must be
+changed slightly to incorporate a third entity, an application server.  The
+application server can be the same physical machine as the web server, or it
+may be a separate machine.  The two phases in a request cycle become four.
+After the client sends an HTTP request, the web server must translate the
+HTTP request into a FastCGI request and send that to the application server.
+The application server then sends back a FastCGI reply which the web server
+must translate into an HTTP reply and send that to the client.
+
+                        FastCGI dynamic content model
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  +--------+  1. HTTP request   +-----------+  2. FCGI request   +-----------+
+  |        | =================> |   web     | =================> |   app     |
+  | client |                    |  server   |                    |  server   |
+  |        | <================= | (userver) | <================= | (FastCGI) |
+  +--------+    4. HTTP reply   +-----------+    3. FCGI reply   +-----------+
+
+
+In theory, the application server might even rely on another server, say a
+database server, to help generate the dynamic content.  Then the four phases
+would become six.  From the web server's point of view, this is immaterial.
+
+
+
+RECOGNIZING DYNAMIC REQUESTS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Different web servers can define different mechanisms for defining what
+constitutes a dynamic request and where to find the application that is used
+to generate the reply content.  For instance, the web server could just treat
+any executable file as a CGI program and run it as such.
+
+The userver requires that you define applications on the command line using
+the --app option.  An application is characterized by a specific URI.
+Currently, there is no provision for wildcards or regular expressions, so the
+URI must match exactly.  For each application (read: unique URI), you specify
+the type of application and one or paths to application servers to handle
+dynamic requests to the URI.  See userver.1 for usage of --app.
+
+When an HTTP GET request arrives whose URI contains a question mark (?), the
+portion of the URI after the question mark is treated as a query string and
+the request is considered dynamic.  All HTTP POST requests are considered
+dynamic.  All other requests are considered static.
+
+For requests that are considered static, the userver attempts to match the URI
+with that of a defined application (see above).  If no matching application
+exists, userver returns 404 Not Found; it does not fall back to treating the
+request as static.
+
+
+
+APPLICATION SERVERS
+~~~~~~~~~~~~~~~~~~~
+
+The application servers are fundamentally the same as CGI programs, but
+incorporate an additional FastCGI layer on top for communication with the web
+server.  An application server could be written in Perl, C, or another
+language.
+
+The userver currently does not manage application servers in any way.  All of
+the FastCGI applications are expected to be started and listening before the
+userver is started.
+
+For writing FastCGI applications in Perl, search for and download the FCGI
+module from CPAN http://search.cpan.org/.  Converting an existing Perl CGI
+application to FastCGI is little more than adding a few lines of code and
+wrapping the main body of code in a while loop.  The following is an example,
+where the CGI processing occurs between "BEGIN CGI" and "END CGI".
+
+                      Perl FastCGI wrapper example
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #!/usr/bin/perl
+    use FCGI;
+    my %ORIGENV = %ENV;           # save original environment
+    my $sockpath = ":8888";
+    if (defined $ARGV[0]) { $sockpath = $ARGV[0]; }
+    my $socket = FCGI::OpenSocket($sockpath, 5);
+    my $fcgi = FCGI::Request(\*STDIN, \*STDOUT, \*STDERR, \%ENV, $socket);
+    use CGI;
+    while ($fcgi->Accept() >= 0) {
+      CGI::initialize_globals();  # initialize the CGI library
+      # override any CGI globals here
+      ...
+      $cgi = new CGI;             # initialize a CGI object
+      ########################## BEGIN CGI ############################
+      print "Content-type: text/plain\r\n\r\n";
+      ...
+      ########################### END CGI #############################
+      $cgi->delete();             # destroy the CGI object
+      %ENV = %ORIGENV;            # restore original environment
+    }
+    FCGI::CloseSocket($socket);
+
+
+
+WEB SERVER INITIALIZATION
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+At server initialization time, userver calls fcgi_create() for each
+application server defined for each application.  fcgi_create() creates a
+socket and calls socket_connect() to establish a reliable (SOCK_STREAM)
+connection to the application server.  If the connection cannot be
+established, userver aborts with an error.  Otherwise, we allocate an info
+struct for the sd, and mark the sd as special (see sock_special.c).  All of
+this occurs after listening sockets are created.  Thus, the order of sds used
+in userver is listening sds followed by special sds followed by regular sds
+(those used for incoming connections from clients).
+
+The decision to have FastCGI application servers use the same info struct as
+the clients was made so that we can integrate FastCGI socket processing as
+seamlessly as possible into the userver using as many common code paths as
+possible.  For instance, code to look for events (select() et al) and read
+and write socket data is mostly shared.  Where different behaviour is needed,
+we look at the info struct's .type field to determine whether the associated
+sd is a regular one (INFO_CLIENT), a listener (INFO_LISTENER), or a FastCGI
+socket (INFO_FASTCGI).  Currently, we don't really make use of the fact that
+we've marked the sd as special (see above).
+
+The FastCGI sds begin outside of the interest sets for our chosen event
+selection mechanism (select() et al).  This is because FastCGI applications
+are not expected to generate content spontaneously.  Later, we vary our read
+and/or write interest according to state.
+
+* Exception to the above paragraph:  We have observed that the Perl FCGI
+  library automatically closes the connection if it does not receive any data
+  within two seconds.  There is a long comment in the Perl FCGI code
+  explaining how this works around a bug.  However, we perceive this two
+  second timer as itself a bug, or at least a nuisance.  To work around this
+  nuisance, we now send out an FCGI_GET_VALUES message to each FastCGI
+  application server immediately after connecting.  We add the sd to the read
+  interest set so that we eventually read the FCGI_GET_VALUES_RESULT through
+  our usual read code path.  This should not ultimately affect performance,
+  as it is a one-time exchange of information at initialization time.
+
+
+
+REQUEST PROCESSING
+~~~~~~~~~~~~~~~~~~
+
+Here we describe in more detail the propagation of a FastCGI request through
+the userver code.
+
+
+  Phase 1: Receive HTTP request
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The initial request is parsed as before, using parse_bytes().  parse_bytes()
+  recognizes POST requests and query strings within URIs.  If a query string
+  is present, the info struct's .query_string pointer will point to the
+  trailing portion of .uri[] following the question mark; otherwise
+  .query_string will be NULL.  Additionally, parse_bytes() recognizes certain
+  HTTP request headers from the client.  If the 'Content-Length' header is
+  specified (required for POST, forbidden for others), .content_len holds the
+  converted integer value; otherwise .content_len holds 0.  If one or more
+  'Cookie' headers are specified, .cookie[] holds a semi-colon delimited
+  string of cookies; otherwise .cookie[] is empty.
+
+  At the end of parsing, a new function analyze_req() is called, whose primary
+  purpose is to classify the request as static or dynamic (see above).  The
+  request is considered dynamic if .method is HTTP_POST or if .query_string
+  is not NULL.  Then, for dynamic requests, analyze_req() calls find_app() to
+  locate information about the defined application; this information is stored
+  in an app_t structure (see app.h).
+
+  Once a request has been classified as dynamic and the corresponding
+  application has been located, we must direct the request to that application
+  somehow.  First, userver searches through all of the application's defined
+  server sds for one that is idle (to be defined momentarily); if one is
+  found, userver "joins" the request sd with the application sd by way of the
+  reply struct's fd field (ip->rep.fd).  Hence, an "idle" application server
+  is one that is not yet joined to a client, i.e. whose rep.fd is -1.
+
+              Conceptual joining of client sd with FastCGI sd
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                   client                        FastCGI
+            +--- struct info ---+         +--- struct info ---+
+            |                   |         |                   |
+            |                sd |<---+ +->| sd                |
+       1.   |                   |    | |  |                   |   3.
+      ====> | req.buf[]         |    | |  |         req.buf[] | <====
+            |                   |  +-|-+  |                   |
+      <==== | rep.buf[]         |  | |    |         rep.buf[] | ====>
+        4.  |            rep.fd |--+ +----| rep.fd            |  2.
+            |                   |         |                   |
+            +-------------------+         +-------------------+
+
+
+  One subtle point to observe in the above diagram is that FastCGI request
+  messages are sent out the reply buffer (phase 2), while FastCGI replies are
+  received in the request buffer (phase 3).  The reason is so that existing
+  code assumes that data received is a request and data sent out is a reply.
+  In order to reuse existing code as much as possible, we tolerate this
+  misnomer.  We could avoid confusion by renaming "req" and "rep".
+
+  If there are no idle FastCGI application servers for a particular FastCGI
+  application (URI) at the time a new FastCGI request arrives, the request sd
+  is queued in the app's .req_q struct for later processing.  The only way a
+  request sd can be taken off of this queue is for a suitable FastCGI
+  application to finish processing a prior request.  Only if .req_q is empty
+  will we mark that application server as idle (by setting its rep.fd to -1).
+
+  Whether we immediately join the request to an application server or queue it
+  for later processing, we remove the client sd from the read interest set.
+  We do not expect to read any more data from the client yet.  Note that in
+  the case of a POST request with .content_len > 0, we will eventually need
+  to read more bytes.
+
+
+  Phase 2: Send FastCGI request
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Once a FastCGI application server is ready to service a request, either
+  because it was idle at the time of the request or because it dequeued a
+  request upon becoming idle, we add its sd to the write interest set.  This
+  eventually leads to repeatedly invoking fcgi_add_to_reply_buffer_httpd() to
+  build outgoing FastCGI messages to send.  In order, we send these messages
+  to the FastCGI application server (see FastCGI whitepaper):
+    1. FCGI_BEGIN_REQUEST
+    2. one or more FCGI_PARAMS
+    3. an empty FCGI_PARAMS
+    4. for HTTP_POST only, one or more FCGI_STDIN
+    5. an empty FCGI_STDIN
+
+  The final, empty FCGI_STDIN message implicitly completes the request, and
+  we remove the sd from the write interest set.
+
+
+  Phase 3: Receive FastCGI reply
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  We receive replies from the FastCGI application server through the usual
+  code path via socket_readable() and then post_sock_read().  In order, we
+  expect the following messages from the FastCGI application server:
+    1. one or more FCGI_STDOUT and/or FCGI_STDERR, interleaved haphazardly
+    2. FCGI_END_REQUEST
+
+  The FCGI_END_REQUEST explicitly completes the reply, and we add the client
+  sd to the write interest set so we can begin to send it an HTTP reply.
+
+
+  Phase 4: Send HTTP reply
+  ~~~~~~~~~~~~~~~~~~~~~~~~
+  In the current architecture, we do not begin sending an HTTP reply to the
+  client until the entire reply is received from the FastCGI application.
+  This is because we need to know the content length, and we typically don't
+  know that until we receive the FCGI_END_REQUEST and count how many bytes we
+  received.
+
+  As with static requests, we use setup_http() to build the HTTP header text
+  in the client reply buffer.  One slight caveat is that the FastCGI
+  application typically sends some HTTP headers of its own as part of the
+  FCGI_STDOUT data.  Therefore, we prepend our HTTP headers in front of the
+  FastCGI reply data, then scan the reply data for a "\r\n\r\n" sequence; we
+  then consider the scanned portion to be part of the HTTP reply headers
+  instead of the content.
+
+  For HTTP_HEAD requests, the aforementioned HTTP headers are all we send.
+  However, in the typical case, we have to send content as well.  For static
+  requests, when not using sendfile(), this involves repeatedly reading
+  portions of the file from disk or cache into the client reply buffer, then
+  draining the buffer by writing to the socket.  For FastCGI requests, we
+  mimic the operation of reading the file by repeatedly moving portions of the
+  reply data from the FastCGI request buffer to the client reply buffer.
+
+
+
+FASTCGI VARIANT: SHARED MEMORY
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to reduce select() and read() overhead incurred by userver when
+receiving the FastCGI reply from the application server, we have introduced
+a variant of FastCGI ("FastCGI-sharedmem") wherein the FCGI_STDOUT/FCGI_STDERR
+messages coming from the application server are replaced with writes into a
+shared memory region.  This requires that the application server runs on the
+same machine as the webserver, and that it uses a specially modified version
+of the standard FastCGI library.
+
+Our implementation of FastCGI-sharedmem introduces a new management message
+type, FCGI_SET_VALUES.  Whereas an FCGI_GET_VALUES is used to query the
+application server for its capabilities or limits, an FCGI_SET_VALUES is used
+analogously to enable capabilities or to set limits.  The format of an
+FCGI_SET_VALUES message is a sequence of name/value pairs, as in FCGI_PARAMS.
+
+When shared memory support is enabled on the userver command line (by way of
+the FastCGI-sharedmem application type -- see userver.1), the interaction
+between the web server and the application server differs in a few important
+ways, but is otherwise similar to plain FastCGI.  The differences are as
+follows:
+
+o At initialization time, after first establishing a connection to the
+  application server, the web server send values for SHAREDMEM_FILENAME and
+  SHAREDMEM_SIZE to the application server, using an FCGI_SET_VALUES message.
+  SHAREDMEM_FILENAME is the name of a file on the local filesystem to open
+  and memory map; SHAREDMEM_SIZE is the maximum number of bytes in the shared
+  memory area that can be used for any given FastCGI reply.  These settings
+  remain in effect for the life of the application server, or until they are
+  changed using another FCGI_SET_VALUES message.
+
+o For any given dynamic request, just before the web server sends the
+  FCGI_BEGIN_REQUEST message to the application server, the web server sends
+  a value for SHAREDMEM_OFFSET, using an FCGI_SET_VALUES message.  This is
+  the offset within the shared memory area where the FastCGI reply should be
+  assembled.  Thus, if 'start' is the starting shared memory address, then the
+  reply buffer is effectively start[offset] .. start[offset+size-1].  The
+  reason for the offset is to permit a design that uses a single large shared
+  memory region, subdivided into smaller regions for individual requests.
+  This in fact describes the userver implementation.  In the absense of a
+  SHAREDMEM_OFFSET value, the application server assumes an offset of zero.
+
+o The web server then sends the usual FCGI_BEGIN_REQUEST, FCGI_PARAMS, etc.
+  over the socket to the application server.  However, instead of sending back
+  FCGI_STDOUT/FCGI_STDERR messages, the application server assembles the reply
+  in the shared memory region.  When the reply is complete, there needs to be
+  a way for the web server to know how many data bytes were assembled.  To
+  communicate this information, the application server sends a decimal string
+  value for SHAREDMEM_DATALEN, using an unsolicited FCGI_GET_VALUES_RESULT
+  message over the socket (normally the web server only expects this after
+  sending an FCGI_GET_VALUES).  Finally the application server sends the usual
+  FCGI_END_REQUEST message over the socket.
+
+
+
+LIMITATIONS AND FUTURE WORK
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+o Currently we require that the entire FastCGI reply data fit within a single
+  buffer, the FastCGI request buffer.  The problem is that the reply can be
+  arbitrarily large, so no fixed buffer size can handle all replies.  A
+  solution to handle large replies might be to buffer to a disk file
+  (preferably memory-mapped), either right from the start or only once the
+  reply crosses a certain size threshold.
+----------------------------------------------------------------------
+You can set the size of the output buffer size by setting the
+environmental variable FCGI_STDOUT_BUFSIZE.
+
+The actual code is inside fcgi-2.4.0/libfcgi/fcgiapp.c:FCGX_Init().
+
+Gary
+----------------------------------------------------------------------

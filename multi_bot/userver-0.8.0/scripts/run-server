@@ -1,0 +1,39 @@
+#!/bin/csh
+# Tue Feb 13 11:26:52 PST 2001
+# Note: as root do run-setup first to change some /proc stuff
+
+set SRV_NUMCONNS=15000
+set SRV_BIN=/home/brecht/userver/bin
+# set server=./t-server
+set server=t-event4
+
+# set extra_options=$argv[*]
+# echo extra_options = $extra_options
+# exit
+
+echo -n "/proc/sys/fs/file-max "
+cat /proc/sys/fs/file-max
+
+echo -n "/proc/sys/kernel/rtsig-max "
+cat /proc/sys/kernel/rtsig-max
+
+echo -n "/proc/sys/net/ipv4/tcp_max_syn_backlog "
+cat /proc/sys/net/ipv4/tcp_max_syn_backlog
+
+echo ""
+limit
+
+echo ""
+cat /proc/version
+echo ""
+cat /proc/cpuinfo
+echo ""
+cat /proc/cmdline
+echo ""
+
+# /usr/sbin/readprofile
+# echo ""
+$SRV_BIN/$server -c $SRV_NUMCONNS $argv[*]
+# echo ""
+# /usr/sbin/readprofile
+

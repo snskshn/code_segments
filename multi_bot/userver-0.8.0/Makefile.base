@@ -1,0 +1,474 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004-2010  Tim Brecht
+#    Based on the file originally Copyright (C) 2004  Hewlett-Packard Company
+#
+#    Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+#
+
+# SHELL        = /bin/csh
+
+# NOTE CVS tag version should be the same as the dist version but with dashes
+# (cvs can't deal with dots).
+VERSION      = 0
+SUBVER       = 8
+SUBSUBVER    = 0
+DIST_VER     = $(VERSION).$(SUBVER).$(SUBSUBVER)
+CVS_TAG_VER  = $(VERSION)-$(SUBVER)-$(SUBSUBVER)
+DIST_NAME    = userver-$(DIST_VER)
+# In this case the version string is the same as the distribution name
+VERSION_STR  = userver-$(DIST_VER)
+
+# Try to figure out some things about the system
+OS           = $(shell uname -s 2>/dev/null || echo unknown)
+OSALT        = $(shell uname -o 2>/dev/null || echo unknown)
+HOSTARCH     = $(shell uname -m 2>/dev/null || echo unknown)
+
+FCGI = fcgi-2.4.0
+FCGI_INC = fastcgi/$(FCGI)/include
+FCGI_LIB = fastcgi/$(FCGI)/libfcgi/.libs/libfcgi.a
+
+ifeq ($(OSALT), Cygwin)
+  CSH        = /bin/tcsh
+else
+  ifeq ($(OS), CYGWIN_NT-5.0)
+    CSH      = /bin/tcsh
+  else
+    ifeq ($(OS), CYGWIN_NT-5.1)
+      CSH      = /bin/tcsh
+    else
+      CSH      = /bin/csh
+    endif
+  endif
+endif
+HOSTTYPE     = $(shell $(CSH) -c 'echo $$HOSTTYPE')
+CC           = gcc
+MKDEP        = gcc -M
+
+ifeq ($(OS),HP-UX)
+  MAKE         = gmake
+  CC           = cc
+else
+  ifeq ($(OS),SunOS)
+    MAKE         = gmake
+  else
+    ifeq ($(OS),FreeBSD)
+      MAKE         = gmake
+    else
+      MAKE         = make
+    endif
+  endif
+endif
+
+INITLDFLAGS =
+
+
+CSRC = cache_simple.c cntl_conns.c cntl_intr.c common.c debug.c do_close.c \
+       do_new_connections.c fork_servers.c init_ecb.c interactive_mode.c \
+       lru.c options.c process_args.c process_sds.c \
+       q.c select_loop.c send_handler.c send_loop.c send_reply.c \
+       send_utils.c sigstuff.c socket_new_conn.c socket_readable.c \
+       socket_writable.c stats.c syscalls.c trace.c userver.c util.c parse.c \
+       server_sock.c state.c cache_mapped.c do_write.c do_sendfile.c \
+       do_writev.c reply_status.c netstat.c hash.c spec_hash.c  \
+       cache_mapped_new.c bob_hash.c getopt.c getopt1.c interest_set.c \
+       rusage.c poll_loop.c send_do_io.c process_poll_events.c \
+       epoll_loop.c process_epoll_events.c init_ecb_array.c \
+       send_handler_array.c send_utils_array.c close_idle_conns.c \
+       server_loop_top.c sock_listener.c sock_special.c \
+       aio_layer.c aio_loop.c  \
+       aio_fake.c process_aio_events.c add_to_reply.c sys_epoll.c \
+       sys_sched_affinity.c info.c makedocs.c \
+       inet.c bitmap.c bufpool.c queue.c app.c fcgi.c spec_dyn_req.c \
+       logging.c dll.c myassert.c call_stats.c \
+			 u_ssl_utils.c
+
+
+HSRC = cache.h cache_simple.h cntl_conns.h cntl_intr.h common.h debug.h \
+       do_new_connections.h interactive_mode.h lru.h myassert.h \
+       options.h q.h send.h send_utils.h sigstuff.h stats.h \
+       syscalls.h trace.h cache_mapped.h reply_status.h netstat.h \
+       cache_mapped_new.h getopt.h interest_set.h rusage.h state.h \
+       local_debug.h sock_listener.h sock_special.h aio_layer.h \
+       post_sock.h add_to_reply.h sys_epoll.h \
+       sys_sched_affinity.h info.h util.h \
+       inet.h bitmap.h bufpool.h queue.h app.h fcgi.h \
+       spec_dyn_req.h primes.h logging.h dll.h sys_sock.h call_stats.h \
+			 u_ssl_utils.h
+
+OBJS = lru.o do_close.o do_new_connections.o options.o process_args.o \
+       common.o send_reply.o \
+       socket_writable.o stats.o util.o parse.o socket_readable.o \
+       process_sds.o select_loop.o debug.o fork_servers.o cache_simple.o \
+       syscalls.o q.o interactive_mode.o trace.o init_ecb.o \
+       server_sock.o state.o \
+       cntl_conns.o cntl_intr.o cache_mapped.o do_write.o do_sendfile.o \
+       do_writev.o reply_status.o netstat.o hash.o spec_hash.o \
+       cache_mapped_new.o bob_hash.o interest_set.o rusage.o poll_loop.o \
+       send_do_io.o process_poll_events.o sigstuff.o \
+       epoll_loop.o process_epoll_events.o \
+       send_loop.o send_utils.o send_handler_array.o send_handler.o \
+       send_utils_array.o init_ecb_array.o close_idle_conns.o \
+       server_loop_top.o sock_listener.o sock_special.o userver.o \
+       aio_layer.o aio_loop.o \
+       socket_new_conn.o process_aio_events.o add_to_reply.o \
+       sys_epoll.o sys_sched_affinity.o info.o \
+       inet.o bitmap.o bufpool.o queue.o app.o fcgi.o spec_dyn_req.o aio_fake.o \
+       logging.o dll.o myassert.o call_stats.o \
+			 u_ssl_utils.o
+
+OSRC = Makefile Makefile.base Makefile.gprof Makefile.nogprof \
+       Makefile.send Makefile.send-gprof \
+
+MAN  = userver.1 userver.txt userver.ps userver.pdf userver.html send.2
+DIST = AUTHORS CHANGELOG README ROADMAP $(MAN) COPYING \
+       warm-list-1 warm-list-2 warm-list-3 cachewarmfile
+SCRIPTS = \
+	scripts/*.[ch] scripts/Makefile \
+	scripts/dynamic.log \
+	scripts/kill-server \
+	scripts/Kill-server \
+	scripts/kill-server-send \
+	scripts/prime-cache \
+	scripts/prime-cache-clear \
+	scripts/README \
+	scripts/run \
+	scripts/run100K \
+	scripts/run10K \
+	scripts/run1K \
+	scripts/runaddr \
+	scripts/runaddr-1.0 \
+	scripts/runaddrhead \
+	scripts/runaddrhead-1.0 \
+	scripts/runaddrpersist \
+	scripts/runaddrport \
+	scripts/runaddrrate \
+	scripts/runaddrrate-1.0 \
+	scripts/runaddrrate1K \
+	scripts/runaddrrateuri \
+	scripts/runaddrsesslog \
+	scripts/runaddrsesslogtimeout \
+	scripts/runaddruri \
+	scripts/runaddruri-1.0 \
+	scripts/runaio \
+	scripts/runfcgitest \
+	scripts/runhead \
+	scripts/runhead-1.0 \
+	scripts/runlog \
+	scripts/runlograte \
+	scripts/runmix \
+	scripts/runmixrate \
+	scripts/runpersist \
+	scripts/runpersisturi \
+	scripts/runrate \
+	scripts/runrate1K \
+	scripts/run-server \
+	scripts/runsesslog \
+	scripts/runsesslogclient \
+	scripts/run-setup \
+	scripts/runspec \
+	scripts/runspecdynamic \
+	scripts/run-spec \
+	scripts/runtux \
+	scripts/runuri \
+	scripts/runuri-1.0 \
+	scripts/runurirate \
+	scripts/sesslog.log \
+	scripts/specweb99.log \
+	scripts/stats-clear \
+	scripts/stats-print \
+	scripts/httpspec99-d-1-longsess.log \
+	scripts/httpspec99-d-1.log \
+	scripts/httpspec99-test-cache.log \
+	scripts/TODO \
+	scripts/tryaio-01 \
+	scripts/tryaio-02 \
+	scripts/tryaio-03 \
+	scripts/tryaio-04a \
+	scripts/tryaio-04b \
+        scripts/run-hup1 \
+        scripts/run-hup5 \
+        scripts/run-hup10 \
+        scripts/run-hup-reset1 \
+        scripts/run-hup-reset5 
+
+INCLUDE = include
+
+FASTCGI = \
+	fastcgi/Makefile \
+	fastcgi/NOTES \
+	fastcgi/README \
+	fastcgi/fcgi-2.4.0.patch \
+	fastcgi/fcgiclient.c \
+	fastcgi/fcgiserv \
+	fastcgi/specweb99-fcgi.pl.patch \
+	fastcgi/test-fcgi.c \
+	fastcgi/fcgi-2.4.0.tar.gz \
+	fastcgi/test-fcgi.pl
+
+
+TESTDOCS  = docs/*.txt
+
+# SRC  = $(CSRC) $(HSRC) $(FASTCGI)
+SRC  = $(CSRC) $(HSRC)
+
+DIST_LIST = $(SRC) $(OSRC) $(DIST)
+SCRIPTS_LIST = $(SRCIPTS)
+
+ifeq ($(OSALT), Cygwin)
+  CPPFLAGS += -DUSE_GETOPT_LONG
+  CPPFLAGS += -I$(FCGI_INC)
+endif
+
+
+ifeq ($(OS),HP-UX)
+ CFLAGS = +O4 +ESlit -Ae +DA2.0 $(GPROF)
+ INITLDFLAGS += +O4
+ THREADLIB = -lcma
+ OBJS += getopt.o getopt1.o
+ CPPFLAGS += -DHPUX -D_USE_BIG_FDS # -D_GNU_SOURCE
+ CPPFLAGS += -DHPUX -Iinclude/$(HOSTTYPE)
+ CPPFLAGS += -DHAVE_SENDFILE -DUSE_GETOPT_LONG
+ CPPFLAGS += -DHAVE_LIMITS
+ # Gets definitions like socklen_t, etc
+ CPPFLAGS += -D_XOPEN_SOURCE_EXTENDED
+endif
+
+ifeq ($(OS), SunOS)
+  CFLAGS += -g -O2 $(GPROF)
+  ifeq ($(CC), gcc)
+    CFLAGS += -g -O2 $(GPROF) -Wall -Werror
+  else
+    CFLAGS += -g -O2 $(GPROF)
+  endif
+  OBJS += getopt.o getopt1.o
+  CPPFLAGS += -DUSE_GETOPT_LONG # -DHAVE_GETOPT_LONG
+  CPPFLAGS += -DSUNOS -D_GNU_SOURCE
+  CPPFLAGS += -DHAVE_LIMITS
+  CPPFLAGS += -DFD_SETSIZE=64000
+  CPPFLAGS += -I$(FCGI_INC)
+#
+#  Even though it looks like sendfile is supported in Solaris 8.
+#  Running nm on the library shows that only sendfilev is supported.
+#  LDFLAGS =  -lsendfile -lsocket -lnsl $(GPROF)
+  LDFLAGS =  -lsocket -lnsl $(GPROF)
+endif
+
+ifeq ($(OS), Linux)
+  # LDFLAGS  += -static
+  # LDFLAGS  += -lefence
+  CFLAGS += -g -O2 $(GPROF)
+  CFLAGS += -Wall
+  CFLAGS += -Werror
+  # Note send is set elsewhere
+  CPPFLAGS += $(SEND) -DHAVE_NETSTAT -DHAVE_SENDFILE -DHAVE_IFCONFIG
+  # CPPFLAGS += $(SEND) -DHAVE_NETSTAT -DHAVE_IFCONFIG
+  CPPFLAGS += -DUSE_GETOPT_LONG -DHAVE_GETOPT_LONG  -DHAVE_PROC_FILE_INFO
+  CPPFLAGS += -DTBB_FIX -D_GNU_SOURCE
+  CPPFLAGS += -DHAVE_LIMITS
+  CPPFLAGS += -DBIGGER_FD_SETSIZE
+  CPPFLAGS += -I$(FCGI_INC)
+
+  #---------------------------------------------------------------------- 
+  # AIO -- NOTE THIS DOES NOT WORK ANY ANY PUBLICLY AVAILABLE SYSTEMS
+  # Define when using an AIO layer
+  # CPPFLAGS += -DHAVE_AIO_LAYER
+  # CPPFLAGS += -DAIO_WORKAROUND_BUGS
+  # CPPFLAGS += -DAIO_PURGE_EVENTS
+  # Define when using the fake AIO implementation for simple
+  # testing/debugging (currently broken/obsolete).
+  # CPPFLAGS += -DAIO_FAKE
+  #
+  # Define the path to the library or libraries that implement
+  # the AIO interface.
+  # LDFLAGS += /path/to/libraries
+  
+  #---------------------------------------------------------------------- 
+  # EPOLL
+  # Turn this on if epoll exists in the kernel
+  CPPFLAGS += -DHAVE_EPOLL
+  #
+  # Turn this on if you are using a distribution
+  # that does not have /usr/include/sys/epoll.h or stubs in libc
+  # for epoll related system calls
+  # CPPFLAGS += -DPROVIDE_EPOLL_HEADERS
+  #
+  # Point this at the kernel you will be booting and running
+  # that includes EPOLL (this isn't needed if your have
+  # a distribution that is using a 2.6 kernel.
+  # Below are two examples
+  # CPPFLAGS += -I/home/brecht/linux-2.6.4-ctlv/include
+  # CPPFLAGS += -I/home/ashukla/linux-2.6.8.1/include
+  #
+  # Turn this on if you have a kernel that supports epoll_ctlv
+  # See the Ottawa Linux Symposium Paper.
+  # CPPFLAGS += -DHAVE_EPOLL_CTLV
+  
+  #---------------------------------------------------------------------- 
+  # SCHED AFFINITY
+  # Turn this on if the kernel supports sched_setaffinity
+  # and sched_getaffinity.
+  CPPFLAGS += -DHAVE_SCHED_AFFINITY
+  CPPFLAGS += -DHAVE_CPUSET
+  #
+  # Turn this on if you are using a distribution
+  # that does not have /usr/include/sched.h or stubs in libc
+  # for sched_setaffinity/sched_getaffinty.
+  # NOTE:  There are several versions of glibc floating around which provide
+  #        *different* interfaces to the schedule affinity system calls.
+  #        Currently the only portable way to access these system calls is by
+  #        providing our own stubs.  So, I recommend leaving the following in
+  #        for now, until the library situation becomes more stable.  --CAB
+  # CPPFLAGS += -DPROVIDE_SCHED_AFFINITY_HEADERS
+  
+  #---------------------------------------------------------------------- 
+  # NOTE: This stuff may be broken and the sendfile stuff doesn't
+  # really work properly with fastcgi/dynamic requests.
+  #
+  # Apparently on Linux sendfile returns before the write is complete (even
+  # if the socket is in blocking mode.
+  # Therefore, we need to avoid reusing dynamic buffers (used to communicate
+  # data from the appserver to the userver) until we know that the sendfile
+  # has been completed. In our case that is only after a read happens.
+  # Note: this may increase the number of dynamic buffers required.
+  # CPPFLAGS += -DAVOID_BUF_REUSE
+
+  # This is a test. If the kernel is configured properly, it can use
+  # getsockopt() calls to get the wmem_queued variable which, when 0,
+  # indicates a buffer that has been completely sent and can be reused.
+  # So this tests a simple queue of used buffers, checking the head of
+  # the queue to see if we can reuse it
+  CPPFLAGS += -DQUEUE_BUFS
+  #---------------------------------------------------------------------- 
+
+  
+  #
+  # At one time we had a new system call that did a multiaccept
+  # i.e., one system call would accept up to N new connections.
+  # acceptv - may have been a better name ala readv/writev.
+  # CPPFLAGS += -DMACCEPT
+  #
+ifeq ($(HOSTARCH), ia64)
+  CPPFLAGS += -DIA64
+  HOSTTYPE = ia64
+  CPPFLAGS += -Iinclude/$(HOSTTYPE)
+# Was a macro bug in a .h file in version being used.
+  CPPFLAGS += -DMACROBUG
+   #CPPFLAGS += -DEPOLL_ASM
+   #OBJS += sys_epoll_ia64.o
+# Define when compiling in support for generating SPECweb99 responses
+# Note that this code from TUX is not 64-bit clean
+#  CPPFLAGS += -DMOD_SPECWEB99
+else
+  CPPFLAGS += -Iinclude/$(HOSTTYPE)
+# Define when compiling in support for generating SPECweb99 responses
+# CPPFLAGS += -DMOD_SPECWEB99
+endif
+endif
+
+ifeq ($(OS), FreeBSD)
+  CPPFLAGS += -DFreeBSD
+  CPPFLAGS += -D_GNU_SOURCE
+  CPPFLAGS += -DHAVE_IFCONFIG
+  CPPFLAGS += -DUSE_GETOPT_LONG 
+  CPPFLAGS += -DHAVE_GETOPT_LONG
+  CPPFLAGS += -DHAVE_LIMITS
+  CPPFLAGS += -DHAVE_SENDFILE
+  CPPFLAGS += -DFD_SETSIZE=11000
+  CPPFLAGS += -I$(FCGI_INC)
+  CFLAGS   += -g -O2 -Wall $(GPROF)
+  CFLAGS   += -Werror
+endif
+
+ifeq ($(OS), Darwin)
+  CPPFLAGS += -DDARWIN
+  CPPFLAGS += -DFreeBSD
+  CPPFLAGS += -D_GNU_SOURCE
+  CPPFLAGS += -DHAVE_IFCONFIG
+  CPPFLAGS += -DUSE_GETOPT_LONG
+  CPPFLAGS += -DHAVE_GETOPT_LONG
+  CPPFLAGS += -DHAVE_LIMITS
+  CPPFLAGS += -D_XOPEN_SOURCE
+  CPPFLAGS += -DHAVE_SENDFILE
+  CPPFLAGS += -I$(FCGI_INC)
+  CFLAGS   += -g -O2 -Wall $(GPROF)
+  CFLAGS   += -Werror
+  LDFLAGS  += -lcrypto
+endif
+
+# Applies to all systems
+# INITLDFLAGS += -static
+LDFLAGS +=  $(GPROF)
+THREADLIB += -lpthread
+
+# Applies to all systems
+CPPFLAGS += -DVERSION=\"$(VERSION_STR)\"
+
+# Select caching code (currently the only one that works)
+CPPFLAGS += -DCACHE_MAPPED_NEW
+
+# Permit only one socket to listen for new connections
+# NOTE: this probably doesn't work any more
+#       it is retained if we ever work on the SEND stuff again
+# DON'T USE THIS
+# CPPFLAGS += -DONE_LISTENER
+
+# Track the maximum open fd (instead of the max ever fd)
+# CPPFLAGS += -DMAXOPENFD
+
+#---------------------------------------------------------------------- 
+# Turn this on if you want to allow the userver to do encryption.
+# Thanks to Brian Lynn for this code.
+# NOTE: currently uses functions not available on SOLARIS
+# CPPFLAGS += -DHAVE_ENCRYPTION
+  
+#---------------------------------------------------------------------- 
+# DEBUGGING
+# Disable all debugging, tracing and assertion code
+# NDEBUG stands for NO DEBUGGING so use this option
+# to turn debugging off (note that this also disables tracing).
+# CPPFLAGS += -DDEBUG_ON
+# CPPFLAGS += -DTRACE_ON
+# CPPFLAGS += -DDEBUG_OUTPUT_BUFS
+# CPPFLAGS += -DDEBUG_READ_BUFS
+# Should leave these on
+CPPFLAGS += -DASSERT_ON
+
+# Both on or both off
+# Requires one to install openssl libraries 
+CPPFLAGS += -DHAVE_SSL
+LDFLAGS += -lssl
+
+# CPPFLAGS += -DCALL_STATS
+
+# CHANGES to try to fix problems we were having when clients
+# time out and generate EPOLLHUPs
+# CPPFLAGS += -DFIXHUP
+
+# Under some conditions client sockets seem to be getting stuck.
+# This code adds some tracking information to each connections
+# to determine what has happened with that connection, e.g., state
+# history, history of the previous connection that used that sd,
+# the number of read calls, the session length, (probably the same) etc.
+# CPPFLAGS += -DTRACK_STUCK_CONNS
+
+# vim: sts=2 sw=2

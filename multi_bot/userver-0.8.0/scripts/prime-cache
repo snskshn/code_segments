@@ -1,0 +1,25 @@
+#!/bin/csh
+# Usage: runsesslog logfile #sessions #sessionrate
+# E.g.   runsesslog specweb99.log 30000 500
+#
+# Runs a session log file using the specified file
+# 
+set rate        = ""
+set numsessions = "1"
+set thinktime   = "0"
+set logfile     = httpspec99-prime.log
+# set server      = "--server 192.168.10.103"
+# set server      = "--server 192.168.10.100"
+# set server      = "--server 192.168.10.101"
+set server      = "--server $1"
+# set print       = --print-reply
+set print       = ""
+# set timeout     = "--timeout 20"
+set timeout     = ""
+set port        = "--port 6800"
+set version     = "--http-version 1.1"
+set others      = "--verbose --hog"
+echo Using logfile = $logfile
+echo Number of sessions = $numsessions
+echo Rate = $rate
+~/bin/httperf $server $others $rate $print $port $version $timeout --wsesslog $numsessions,$thinktime,$logfile

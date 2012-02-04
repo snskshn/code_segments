@@ -1,0 +1,64 @@
+# connect to xtm
+ssh://admin:admin_01@10.85.50.200
+
+# create directories
+mkdir /utm/log/multi_bot
+cd /utm/log/multi_bot
+
+# download attack tool images
+sftp ssson@10.25.1.44:/future/ssson/work/bot/multi_bot
+sftp> get attack_cc
+sftp> get attack_cc_header
+sftp> get attack_normal
+sftp> quit
+
+# ip & arp setting (method 1)
+- web server
+ifconfig eth0 9.0.0.2 netmask 255.0.0.0
+route add -net 8.0.0.0/8 gw 9.0.0.1 eth0
+arp -s 9.0.0.1 aa:bb:cc:dd:ee:ff
+
+- bot
+ifconfig eth0 8.0.0.2 netmask 255.0.0.0
+route add -net 9.0.0.0/8 gw 8.0.0.1 eth0
+arp -s 8.0.0.1 00:11:22:33:44:55
+
+- ping test...
+
+- in the case of windows webserver (open cmd as administrator)
+netsh interface ip set address "로컬 영역 연결" static 9.0.0.2 255.0.0.0
+route add 8.0.0.0 mask 255.0.0.0 8.0.0.1
+netsh interface ip delete neighbors
+netsh interface ip add neighbors "로컬 영역 연결" "9.0.0.1" "00-26-9E-2E-36-36"
+
+# ip setting (method 2)
+- for web server
+ulimit -n 1000000
+ifconfig eth0 9.0.0.2 netmask 255.0.0.0
+route add -net 8.0.0.0/8 gw 9.0.0.1 eth0
+
+- for bot
+ulimit -n 1000000
+ifconfig eth0 9.0.0.2 netmask 255.0.0.0
+
+- when testing, make sure that /proc/sys/fs/file-max was modified.
+
+# web server setting
+- modify __FD_SETSIZE from 64000 to 128000 in userver-0.8.0/include/i386-linux/bits/typesizes.h
+
+./userver -C -2 -T 8080 --cache-max-bytes 100000 --cache-max-file-size 100000 -f 100000 -F -c 100000 -u
+
+- when testing, make sure that /proc/sys/fs/file-max was modified.
+
+# attack
+./attack_normal 9.0.0.2 8888 8.0.0.2 100 10 100
+./attack_cc 9.0.0.2 8888 8.0.0.2 100 10 100
+./attack_cc_header 9.0.0.2 8888 8.0.0.2 100 10 100
+
+# debugging
+netstat -an | grep ESTABLISH | wc -l
+netstat -an | grep TIME_WAIT | wc -l
+telnet 9.0.0.2 8080
+GET / HTTP/1.0
+
+

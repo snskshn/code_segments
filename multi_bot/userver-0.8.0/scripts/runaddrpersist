@@ -1,0 +1,35 @@
+#!/bin/csh
+# Request one file at a time for the specified number of requests
+# using the same connection for all requests
+
+# Some basic configuration
+set show_replies = 0
+
+if ($#argv != 2) then
+  echo "Usage : $0 server num_requests"
+  exit 1
+endif
+
+set server      = "--server $1"
+set numcalls    = "--num-calls $2"
+set conns       = "--num-conns 1"
+set rate        = ""
+
+# Request 10 byte file (assume userver is started in src dir)
+set uri         = "--uri docs/10B.txt"
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 20"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts $server $port $httpversion $uri \
+         $conns $timeout $print $rate $numcalls
+
+exit $status

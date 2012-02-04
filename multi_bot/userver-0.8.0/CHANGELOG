@@ -1,0 +1,480 @@
+/*
+    userver -- (pronounced you-server or micro-server).
+    This file is part of the userver, a high-performance web server designed for
+    performance experiments.
+          
+    Original Copyright (C) 2004 Hewlett Packard Company
+    Copyright (C) 2005-2010  Tim Brecht
+
+    Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+    See AUTHORS file for list of contributors to the project.
+  
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 2 of the
+    License, or (at your option) any later version.
+  
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+  
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+    02111-1307 USA
+*/
+
+userver-0.8.0
+  o Released: Sun 30 Jan 2011 11:35:31 EST
+  o TBB - Added --fake-writing option for the read/write path (little mod used
+          for understanding performance)
+  o TBB - Fixed a bug in the path that uses reads and writes (do_write_not_cached)
+          the would result in peristent connections getting closed after the first request
+  o TBB - Added file reading stats (tracking bytes read from files using "read")
+  o TBB - Small mods so things will compile and run on MAC OS X Snow Leopard
+  o TBB - Cleaning up passfd code, writing a recv_fd into fcgiapp.c so don't need 
+          passfd.c and passfd.h 
+  o TBB - Merging Gary's passfd code so it works with fcgi-2.4.0/libfcgi 
+          and FCGI-0.67
+  o TBB - Tyler Szepesi and I merged in and debugged Mark Groves SSL code.
+
+userver-0.7.0
+  o Released: Sat Sep  4 12:21:26 EDT 2010
+  o TBB - Tried to fix up headers/copyright notices to better 
+          reflect my understanding of how things are meant to be done.
+  o TBB - Added support for php scripts.
+  o TBB - Changed the way that cache warming is done. 
+          There was one way is sendfile was being used and another
+          if it wasn't. There is now only one way which seems to be
+          doing what we want it to (at least on FreeBSD)
+  o TBB - Added some options to change the way that cache warming is done
+  o TBB - Added --call-stats option 
+  o TBB - Added ability to correlate caller id information with the server through
+          a new Client-Id: header.  Client-Id: X Y
+          X = client number
+          Y = call number/request number within the client
+          We've modified httperf to pass this as a header.
+  o TBB - Mods and Fixes for FreeBSD
+  o TBB - Added some code (a hack) to madvise the OS that the victim file
+          could be removed from the file cache
+  o TBB - Added some code (a hack) to slow down a specified "victim".
+  o TBB - Fixed up some of the testdyn targets so that
+    there was enough time to start the appserver before
+    trying to connect with the userver
+  o TBB - Added --server-id option (from other local versions)
+  o TBB - Fixed --extra-accepts option (wasn't working with multiple listeners)
+  o TBB - Don't allow --ignore-fd-setsize with options that require it.
+  o TBB - Trying to fix problems that EPOLLHUPs are causing (see #ifdef FIXHUP code)
+  o TBB - fixed problem in fcgi.c, POSTs were not sending QUERY_STRING causing
+          the appservers to crash on Solaris
+  o TBB - mods for compiling with SUNPRO compiler and gcc on Solaris
+  o TBB - fixing one of the FIXHUP problems (FIXHUP was FIXUP and
+          code actually wasn't getting compiled or used).
+          
+
+userver-0.6.0
+  o Released Mon Jun 11 16:30:59 EDT 2007
+  o TBB - resized some info struct fields because they were too small
+  o TBB - added support for a single completion queue for the AIO code
+  o TBB - did some special data structure sizing/padding for better cache
+          alignment on IA64
+  o TBB - changed where warming the cache is done to fix a bug
+          that ends up creating listener sockets with very larger fds
+	  than was expected -- added code to also check for this
+	  in the future (see MAX_LISTENERS).
+  o TBB - minor mods to compile and run on CYGWIN again
+  o TBB - Added changes from David Pariag to include a bigger list of
+          prime numbers. These are used to size the cache table size
+          to the next largest prime number.
+  o TBB - Allow a limited number of entries in the cache table and to
+          evict entries when there are not availble slots in the cache table.
+  o TBB - changed code so that --select-timeout=-1 (or any negative value)
+          will have select/poll/epoll/aio_wait wait indefinitely for
+          an event to occur.
+  o TBB - some modifications to process_aio_events.c to handle/count purged
+          events better
+  o TBB - tried to make it easier to use some of the 2.6 functionality
+          on systems without libc support and with libc support
+  o CAB - added --num-dyn-buffers-per-appserver to give a more practical way
+          to specify the number of dynamic buffers
+  o CAB - added --app-req-queue-size option to specify the size of the queue
+          that each application uses to defer requests until a resource
+	  (application server or buffer space) becomes available
+  o TBB - added finite state machine diagrams (fig and eps) to the doc 
+          directory of the CVS repository.
+  o CAB - several improvements to alloc_aligned() and related code:
+           - ALLOC_MMAP_FILE will get you a file-backed memory mapped region
+           - ORing in ALLOC_MLOCK will mlock() the region
+           - alloc_track[] slots can be reused once they are freed
+           - new function free_alloced_track() exposes the alloc_track[] slot
+           - new function free_alloced_all() frees everything in alloc_track[]
+  o CAB - added --dyn-lock-pages option to mlock() the dynamic buffers
+  o CAB - added sendfile support for dynamic content
+  o CAB - added --cfg-filename option
+  o CAB - added --start-app-server option to specify application server
+          processes that userver is responsible for starting
+  o TBB - changed the way that some of the epoll calls are done inside
+          of TRACE calls.
+  o TBB - added encryption functionality from Brian Lynn
+  o TBB - added some encryption tests to the Makefile
+  o TBB - made some changes to the epoll code to handle a couple of problems
+             o -p # wasn't working correctly
+	     o connections weren't getting turned on and off properly
+	  *** NOTE: this has been fixed for the --epoll-good option only ****
+  o TBB - added Amol Shukla's mods to get things working on MAC OS.
+  o TBB - added support for cpu_set_t for sched_set/getaffinity
+  o TBB - fixed a problem with printing out the URI properly when logging.
+  o TBB - fixed minor problem with --extra-accepts
+  o TBB - added AVOID_BUF_REUSE flag for odd sendfile behaviour ;-)
+  o TBB - attempted fix for bug with caching on and no sendfile with files
+          of size 0 (http://rocket:8080/test/issue1)
+  o TBB - if using --cache-warm check to see if --caching-on has been set
+  o TBB - added a few checks to ensure that the --reply-buffer-size
+          is large enough to hold the reply header
+  o TBB - readded code for cpu_set_t for cpu sched affinity for the server
+  o TBB - added code for cpu_set_t for sched affinity for the app servers
+  o TBB - tried out some new code for printing the cpu_set/cpu_mask to stdout
+  o TBB - trying to get the userver to close connections to the appserver
+          when it is shutting down
+  o TBB - print a message when exit is called because of a problem rather
+          than because it is being shutdown via a signal.
+
+userver-0.5.1
+  o Released Nov 29, 2004
+  o CAB - reworked fastcgi buffering/copying code to remove extra copy.
+  o TBB - changed the way --aio-completion-order is specified.
+          Now uses a string of 'rwa' characters.
+  o TBB - added some preposted and current connections to trace output for aio
+  o CAB - now assemble FastCGI replies in dynamically-allocated buffers (from
+	  a pre-allocated pool); characteristics of this pool are specified
+	  using the new --dyn-buffer-size, --num-dyn-buffers, and
+	  --num-dyn-buffers-per-app options
+  o TBB - added --aio-dont-wait option to allow for simply busy looping
+          until new events are available
+  o TBB - added --skip-header command line option 
+  o CAB - changes to compile with g++
+  o TBB - a few changes after the g++ changes
+  o TBB - added --aio-dont-close and --aio-initial-prepost-only options
+  o TBB - got things up and running on FreeBSD 
+
+userver-0.5.0
+  o Released Oct 19, 2004
+  o CAB - added FastCGI support; see fastcgi/NOTES for detailed description
+  o CAB - added --app option to specify application servers (currently
+	  FastCGI and SPECweb99 types are supported)
+  o CAB - added stats for FastCGI
+  o CAB - major rewrite of parse_bytes()
+	  now parse headers; Cookie and Content-Length are recognized
+	  currently (needed for FastCGI), but adding support for other
+	  headers should be easy
+	  now support POST requests and "simple" HTTP/1.0 GET requests
+  o AS  - added handling of SPECweb99 requests (if MOD_SPECWEB99 is defined)
+  o CAB - now determine server hostname at startup (needed for FastCGI)
+	  added --hostname option to override determined hostname
+  o CAB - now determine the IP address + port # of incoming connections
+	  this is needed for FastCGI, and could also allow us to reject an
+	  incoming connection or take other special actions post-accept
+  o CAB - added support for "simple" HTTP requests of the form "GET uri"
+	  these are treated as HTTP/1.0 requests, headers not allowed
+  o CAB - added code to perform DNS lookups of hostnames
+	  you can now specify a hostname anywhere an IP address is expected
+	  (e.g. --ip-addr, --app)
+  o CAB - updates to userver(1) man page
+  o TBB - a few minor IA64 related mods (e.g., can't used MOD_SPECWEB99)
+  o TBB - added permutesesslog contributed by Yoshio Turner
+  o TBB - adding more code to handle errors in the aio case
+  o TBB - added call to aio_reset_stats when clearing userver stats
+  o TBB - removed one of the calls to print out memory registration stats 
+          (was printed twice)
+  o BKL - added code for warming the cache before doing new connections
+  o TBB - added a few tests for the --cache-warm option.
+  o TBB - added a way to easily add new completion event orderings and
+          to specify on the command line which one to use
+  o CAB - fixed a bug that could cause leaking of cache entries
+  o TBB - fixed bug with tracing specified events
+  o TBB - increased several limitations on sizes of cache entries, etc.
+
+userver-0.4.7
+  o Release Aug 17, 2004
+  o TBB - now only print cache table info if caching is on
+  o TBB - fixed issues with not handling --aio-accept-thold=0
+	  properly
+  o TBB - added ability to specify document root directory using
+	  option --doc-root
+  o TBB - fixed a problem with using --ignore-fd-setsize that
+	  was causing ordinary sockets to appear as though they
+	  were listening sockets
+  o TBB - fixed problem with AIO state machine
+	  it turns out that an accept completion can arrive while
+	  in the state FSM_READ_ARRIVED_WHILE_WRITING
+  o TBB - in aio_loop avoid closing idle connections
+  o TBB - added stats to count replies to bad/unhandled requests of
+	  various types
+  o TBB - added call to print aio collected stats
+  o CAB - now properly check for mmap() returning MAP_FAILED (not NULL)
+  o CAB - check for overflows when calculating how much memory to
+	  allocate in info_init()
+  o TBB - fixes so that special escape url's work with AIO
+  o TBB - fixed escape url's so they work when --doc-root is specified
+  o TBB - needed to track more info for listeners so now use info_listen
+          for all version and not just edge triggered epoll (added parent_sd)
+	  to info field too.
+  o TBB - AIO mods so that one listener doesn't prepost all available
+          connections or thresholds. We now divide connections and
+	  --aio-accept-thold by the number of listening sockets.
+  o CAB - you can now specify an empty string for the pid filename
+	  (--pid-filename=), and userver won't attempt to create a pid file
+  o TBB - made stdout line buffered
+  o TBB - made some changes to sock_special to account for trying
+          to use fds that are larger than FD_SETSIZE and --ignore-fd-setsize
+
+userver-0.4.6
+  o Released June 20, 2004
+  o TBB - fixes to compile on IA64 with EPOLL
+  o TBB - fixed problems with epoll/epoll2 caused by move to new
+	  info/connection data structures (check if epoll_ctlv works)
+  o TBB - changed a couple of %d's to %zd for size_t printfs in trace.c
+  o TBB - changed the way Not found, etc are handled.
+	  created reply_status_fill and let it fill in the buffer
+	  and be written properly by the rest of the system
+	  (fixes problems with 1.0 vs 1.1 and AIO)
+  o TBB - added info_map_valid function to use to see if
+	  the connection has been closed (changed send_do_io)
+  o TBB - changed print_time to work use info_map_valid
+  o TBB - added more stats for epoll/epoll2/epoll_ctlv
+  o TBB - changed Makefile.base to include more test scripts
+  o TBB - added more tests to the Makefile (e.g., epoll/epoll2/epoll_ctlv)
+  o TBB - check return value on aio_sock_init
+  o TBB - added code for using epoll with edge triggering USE_EPOLL_ET
+  o TBB - added code for handling read before write for AIO
+  o TBB - modified parsing code to improve handling of methods
+	  that are not implemented
+  o TBB - added more information about AIO options to the man page.
+  o TBB - added more information about AIO to the NOTES file.
+  o CAB - removed the src/docs directory from the distribution; there is
+	  now a utility called makedocs (source included) which creates and
+	  populates the src/docs directory during the build process
+  o CAB - fixed pid file bug (e.g. --pid-filename="%s" would crash us)
+  o CAB - now delete pid file at exit
+  o TBB - added support for SKIP_HEADER with AIO
+  o TBB - changed the way EPOLL_CTL_DEL is done/used when using epoll_ctlv
+	  (we no longer put them in the ctlv array but instead issue epoll_ctl
+	   calls immediately)
+  o TBB - changed the way AIO events and preposting are handled to be more
+	  state machine driven
+  o TBB - added --ignore-fd-setsize option which can be used when not using
+	  select and/or SEND.
+
+userver-0.4.5
+  o Released May 5, 2004
+  o TBB - minor changes to fix compile problems on CYGWIN
+  o TBB - fixed a couple of off by one errors in new code for
+	  mapping sds to info (was causing segfaults under some conditions)
+  o TBB - did more work on timing out idle connections (needs more testing)
+  o TBB - fixed problem with listening sockets for poll case
+  o TBB - adding stuff for preposting aio reads before aio accepts
+  o TBB - added code to do cleanup (gets called by installing with atexit)
+  o TBB - changed the way repeat_accept works to avoid running over num_idle
+  o TBB - changed the way cached header buffers are allocated
+  o TBB - tried to do some alignment without much success
+	  (see posix_memalign calls) - for some reason they fail
+	  under some tests
+  o TBB - added new aio test suite that allows us to use remove clients
+  o TBB - added code to handle aio_sock_write and aio_sock_writev
+	  returning 0 bytes (indicating that the client
+	  connection has been closed)
+  o TBB - fixed problem with HTTP/1.0 requests with aio
+  o TBB - added code to allow memory alignment specification
+  o TBB - fixing problem with new accept requests exceed --aio-accept-thold
+  o TBB - added some of the new test scripts into the distribution
+  o TBB - fixed problem with HTTP 1.0 requests and aio
+	  Thanks to Brian Lynn for pointing out the problem
+  o TBB - now try to have header specify correct HTTP version on reply
+  o TBB - limit the number of bytes being returned on an error
+	  in reply_status (used for errors)
+	  Thanks to Michel Arboi for pointing out the problem and
+	  Amol Shukla for the fix.
+  o TBB - added new HTTP 1.0 tests to Makefile for AIO
+  o TBB - fixed problem with when/where select_timeout gets set if using
+	  stats_interval
+
+
+userver-0.4.4
+  o Released April 5, 2004
+  o TBB - changed the order in which some of the initialization is done
+  o TBB - changed how some of the signals are used (no longer use SIGUSR1
+	  and no longer install a default handler for SIGALRM)
+  o TBB - added a testaio target to the Makefile
+  o TBB - added more debugging output for aio code
+  o TBB - added more stats for aio
+  o TBB - fixed the event mask used to call aio_wait
+  o TBB - recompiled on CYWIN and did a few small changes to compile
+  o TBB - fixed a major bug in the caching code.
+	  The problem was that under certain circumstances files
+	  that were in the cache _and_being_served_ could be ejected.
+	  I've implemented reference counting and only evict files
+	  with a reference count of zero.  If we are ever in
+	  a situation where we can't find a file to evict with a reference
+	  count of zero we print an appropriate message and exit.
+	  The reason for crashing is that the cache is sized too small
+	  and performance could really be hurt.
+	  That is, you should resize the cache and rerun the experiment.
+  o TBB - mods to write trace files for multiple processes to different files
+	  now when -p # is used they get written to userver-#.trace
+  o TBB - added code to permit setting cpu mask on Linux 2.6.x systems
+	  (i.e., --use-cpu-mask option combined with sched_setaffinity)
+  o TBB - added Louay Gammo's code to do aperture control with the SEND kernel
+	  and added information about --auto-accept-aperture to man page
+  o TBB - mods to use new version of epoll_ctlv we've created
+  o TBB - modified how connection/info data structure is indexed
+  o TBB - modified how lru data structure is indexed
+  o TBB - small mod to how idle connections are timed out (still needs
+	  some more work).
+
+userver-0.4.3:
+  o Released January 27, 2004
+  o TBB - added stuff to try a new epoll_ctlv system call we're exploring
+  o TBB - updates for 2.6.1 on IA64
+  o TBB - changed aio code to use memory regions
+  o TBB - added some code to aio_fake.c to fake some memory
+	  region use and checks
+  o TBB - small changes to the way poll is working because there may
+	  be a bug/problem with 2.6.0 returning events that we haven't
+	  expressed an interest in
+  o TBB - added changes so that output from different processes (-p #)
+	  will be written to different files (userver-#.log)
+  o TBB - added support for aio_sock_writev and added code for testing
+	  to aio_fake.c
+  o TBB - fixed up printing of stats and trace files when using aio_fake.c
+
+userver-0.4.2:
+  o Released January 21, 2004
+  o TBB - slight reorg to some of the makefiles and added comments
+  o TBB - reworked the testsend target for testing the userver
+	  with the SEND kernel
+  o TBB - created interest_set_change routine in order to move towards
+	  a more efficient implementation of epoll changed all
+	  select/poll/epoll code to use this instead of fuctions
+	  interest_set_add_readable/writable
+	  interest_set_del_readable/writable
+	  interest_set_done
+  o TBB - added --use-epoll2 option
+	  this is used to explore fewer calls to epoll_ctl at the
+	  possible expense of more events that we are not interested
+	  in from epoll_wait
+	  (see the man page -- userver.1 userver.txt for details)
+  o TBB - added functions to call _syscalls for epoll so that
+	  they show up in gprof (called sys_epoll_ctl, sys_epoll_wait,
+	  and sys_epoll_create)
+  o TBB - added the number of open connections to the --stats-interval output
+  o TBB - added FSM_LISTENING state and put listening sockets into this state
+  o TBB - added more running stats and improved code for formatting that output
+  o TBB - added and fixed up some of the stats for the aio code
+  o TBB - added the ability to do running stats for socket aio
+
+userver-0.4.1:
+  o Released December 30, 2003
+  o TBB - reordered the CHANGELOG so it goes from most recent to
+	  oldest versions
+  o TBB - fixed some SEND kernel related code to work with multiple listeners
+  o TBB - modifying a few things for epoll to work with the 2.6.0 kernel
+	  (this still needs a bit of work as it may be a bit inefficient)
+  o TBB - adding some simple running performance stats (to be expanded later)
+	  this is enabled by using --stats-interval=N where N is the
+	  interval between stats in seconds
+
+userver-0.4.0:
+  o Released November 18, 2003
+  o TBB - incremented the sub version number because this version
+	  reflects some pretty major changes
+  o TBB - changed the way that versioning is done in the Makefile
+  o TBB - added info to the man page about specifying IP address and port
+	  as in --ip-addr 127.0.0.1:6806
+  o TBB - minor mods so things will compile again on CYGWIN
+  o TBB - fairly major reworkings so that we can support an
+	  asynchronous I/O model.
+  o TBB - added a check to the close_idle_conns function to try to ensure that
+	  it doesn't close down any listening sockets.
+	  The SEND and AIO interfaces may not provide information about which
+	  listening socket (i.e., the one we call accept on) a new connection
+	  comes from (i.e., the parent) so we may not be able to call
+	  lru_acess on that socket - which could make it stale and a candidate
+	  to be closed. Another possible solution would be to call lru_access
+	  at the time an accept call is made (whether successful or not).
+  o TBB - implemented a simple fake aio layer that helps to do a bit of
+	  debugging of the aio_layer code and to provide a bit of an
+	  example of how the layer is used and what the underlying
+	  implementations need to provide.
+  o TBB - trying to restructure to make it easier to support other
+	  non http servers and to support dynamic requests
+  o TBB - setting better defaults for the maximum connections and
+	  the maximum fds
+  o TBB - info.req.read_buf has been added and --read_buffer-size option
+	  this was needed for AIO and could be useful for other
+	  types of services
+  o TBB - changed info.rep.file_buf to info.rep.reply_buf
+	  and added --reply-buffer-size option
+  o TBB - reorganizing to try to permit filling of reply_buf
+	  and then having the rest of the code just drain it.
+  o TBB - changed he way the parsing of requests is done to be more
+	  compliant with the protocol
+  o TBB - made some changes to give slightly better default options
+	  (e.g., enable --use-sendfile and --use-tcp-cork if they are available)
+	  Caching is also now turned on (but the cache table size, cache
+	  size etc. will still need to be adjusted)
+  o TBB - changed the way versioning gets done (versions are now controlled in
+	  Makefile.base)
+  o TBB - changed some of the default behaviour for --use-socket-aio
+	  (i.e., caching is on and should use mmapped caching)
+  o TBB - added code to register and deregister memory for socket aio.
+
+userver-0.3.3:
+  o Released October 9, 2003
+  o TBB - adding code to allow server to listen on multiple interfaces/sockets
+	  NOTE!: this isn't quite working yet with the SEND kernel code
+  o TBB - added some simple regression testing to Makefile
+	  (see test*: targets in the Makefile)
+	  NOTE: requires httperf
+  o TBB - added include directory to the distribution to show examples
+	  of how to compile with larger FD_SETSIZE
+  o TBB - changed the way the --version flag works
+	  (thanks to Ian Wienand <ianw@gelato.unsw.edu.au>) for pointing
+	  out the problem.
+  o TBB - added some code to support "special" sockets, i.e., those that
+	  should not be treated like regular client connections.
+	  These might be back end processors like another server, an external
+	  CGI or PHP process, etc.
+
+userver-0.3.2:
+  o Released October 3, 2003
+  o TBB - cleaned up select_loop, poll_loop, epoll_loop, send_loop
+	  to use more common code.
+  o TBB - added some of the test scripts and httperf log file generator
+	  code to the distribution
+  o TBB - cleaned up, commented and added usage for the scripts
+	  in the scripts directory
+  o TBB - updated the README in the scripts directory
+  o TBB - fixed incorrect closing of connections for special escape uri's
+  o DP  - Added some code to optimize transfer of zero-byte file.
+  o DP  - Added some code to trace accept, read, write, close, and
+	  reply rates at the server side (uses special escape uri's)
+  o TBB - Used inet_pton instead of inet_aton on Solaris
+  o TBB - Added docs (test files) directory to the distribution
+
+userver-0.3.1:
+  o Released August 25, 2003
+  o TBB - Modified some comparisons of sd (socket descriptor) with FD_SETSIZE
+  o TBB - Added new option, --version to print version of the server
+  o TBB - Print ifconfig info on Linux
+	  (for experimental config info e.g., txqueuelen)
+  o TBB - Print /proc/cpuinfo on Linux
+	  (for experimental config info)
+  o TBB - Added stats for ListenOverflows and ListenDrops from
+	  /proc/net/netstat
+  o TBB - Fixed glitch in getting args for --full-read
+  o TBB - Use full path now for ifconfig
+  o TBB - Added code to track replies per cache entry
+
+userver-0.3.0:
+  o Released August 1, 2003

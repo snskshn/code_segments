@@ -1,0 +1,46 @@
+#!/bin/csh
+# 
+# Generate connections at the specified rate.
+# Use persistent connections to ask for a specified number
+# of requests per connection for the specified number of connections
+
+# Some basic configuration
+set show_replies = 0
+set server      = "127.0.0.1"
+
+if ($#argv != 3) then
+  echo "Usage : $0 connection_rate requests_per_connection num_connections"
+  exit 1
+endif
+
+set tmp = `expr $1 \* $2`
+
+echo "Using connection rate = $1"
+echo "Using request rate = $tmp"
+echo "Using requests per connection = $2"
+echo "Using total connections = $3"
+set total = `expr $2 \* $3`
+echo "Total requests/replies should = $total"
+
+set rate        = "--rate $1"
+set conns       = "--num-calls $2"
+set calls       = "--num-conns $3"
+
+# Request 10 byte file (assume userver is started in src dir)
+set uri         = "--uri docs/10B.txt"
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 3"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog --rate-interval 1"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion $uri \
+         $conns $calls $timeout $print $rate
+
+exit $status

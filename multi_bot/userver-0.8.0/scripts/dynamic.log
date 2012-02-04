@@ -1,0 +1,11 @@
+# Static GET - Assumes the file below can be accessed via userver DOCROOT
+specweb99/file_set/dir00000/class3_1 
+# Reset - Requires upfgen and cadgen99 in userver DOCROOT
+# Reset and Fetch don't really need cookies
+/specweb99-fcgi.pl?command/Reset&maxload=100&pttime=100&maxthread=100&exp=1,100&urlroot=localhost:55000     
+# Dynamic GET (with cookies)
+/specweb99-fcgi.pl?/specweb99/file_set/dir00000/class3_2
+# Dynamic POST
+/specweb99-fcgi.pl? method=POST contents="urlroot=/specweb99/file_set/&dir=00000&class=2&num=1&client=10018\r\n"
+# Fetch - gets postlog 
+/specweb99-fcgi.pl?command/Fetch

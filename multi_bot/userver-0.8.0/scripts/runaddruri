@@ -1,0 +1,33 @@
+#!/bin/csh
+# Request a specified file.
+
+# Some basic configuration
+set show_replies = 1
+set server      = "$1"
+
+if ($#argv != 3) then
+  echo "Usage : $0 addr pathname count"
+  exit 1
+endif
+
+echo "Trying to get file = $2"
+set uri         = "--uri $2"
+set conns       = "--num-conns $3"
+set rate        = ""
+
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 3"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion $uri \
+         $conns $timeout $print $rate
+
+exit $status

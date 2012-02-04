@@ -1,0 +1,45 @@
+#!/bin/csh
+# Use the session log file as the workload.
+# Use the specified session rate and go through the specified
+# number of sessions provided in the specified log file.
+# Note: if the number of sessions specified is greater than
+# the number of sessions in the log file - sessions are reused
+# from the top of the specified log file.
+# 
+
+# Some basic configuration
+set show_replies = 0
+set server      = "127.0.0.1"
+set thinktime   = "0"
+
+if ($#argv != 3) then
+  echo "Usage : $0 session_rate num_sessions session_log_file"
+  exit 1
+endif
+
+echo "Using session rate = $1"
+echo "Using number of sessions = $2"
+echo "Using log file = $3"
+
+set session     = "--wsesslog $2,$thinktime,$3"
+set rate        = "--rate $1"
+set conns       = ""
+
+# Request 10 byte file (assume userver is started in src dir)
+set uri         = ""
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 10"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion \
+         $conns $timeout $print $rate $session
+
+exit $status

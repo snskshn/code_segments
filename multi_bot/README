@@ -1,0 +1,32 @@
+This program is for generating attack traffic for web server.
+We implemented thread programming using manual context switching library.
+Each thread is scheduled by sche().
+Generally, bottleneck is originated at web server.
+If you use find-tuned userver, maximum throughput may be around 200Mbps.
+
+----------------- INSTALLATION
+
+type: 
+	make
+or
+	make attack_normal
+	make attack_cc
+	make attack_cc_header
+	make userver
+
+----------------- userver-0.8.0
+Userver is designed for high performance web server could utilize various options.
+Performance bottleneck of multi_bot is at the web server.
+
+To get more performance, modify __FD_SETSIZE from 64000 to 128000 in userver-0.8.0/include/i386-linux/bits/typesizes.h
+
+----------------- r-u-dead-yet-v2.2
+To hang-up the web server, in r-u-dead-yet-v.2.2/r-u-dead-yet-v.2.2.py modify line 277:
+	Content-Length: 2000000000
+and during attack, specify the number of client more than 100.
+(hang-up test is done with PHP-capable apache web server)
+
+To use R-U-D-Y attack tool, python 2.x.x is needed (not 3.x.x).
+
+----------------- webpage
+This web page could be used for r-u-d-y attack tool.

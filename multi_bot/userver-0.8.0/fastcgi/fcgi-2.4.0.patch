@@ -1,0 +1,555 @@
+diff -ur fcgi-2.4.0.orig/include/fastcgi.h fcgi-2.4.0/include/fastcgi.h
+--- fcgi-2.4.0.orig/include/fastcgi.h	1997-09-16 11:36:32.000000000 -0400
++++ fcgi-2.4.0/include/fastcgi.h	2005-08-15 13:59:00.000000000 -0400
+@@ -58,7 +58,8 @@
+ #define FCGI_GET_VALUES          9
+ #define FCGI_GET_VALUES_RESULT  10
+ #define FCGI_UNKNOWN_TYPE       11
+-#define FCGI_MAXTYPE (FCGI_UNKNOWN_TYPE)
++#define FCGI_SET_VALUES         12
++#define FCGI_MAXTYPE (FCGI_SET_VALUES)
+ 
+ /*
+  * Value for requestId component of FCGI_Header
+diff -ur fcgi-2.4.0.orig/include/fcgiapp.h fcgi-2.4.0/include/fcgiapp.h
+--- fcgi-2.4.0.orig/include/fcgiapp.h	2001-11-21 16:10:11.000000000 -0500
++++ fcgi-2.4.0/include/fcgiapp.h	2005-08-15 13:59:00.000000000 -0400
+@@ -41,6 +41,7 @@
+ #define FCGX_PROTOCOL_ERROR -3
+ #define FCGX_PARAMS_ERROR -4
+ #define FCGX_CALL_SEQ_ERROR -5
++#define FCGX_SHAREDMEM_FAILED -6
+ 
+ /*
+  * This structure defines the state of a FastCGI stream.
+@@ -70,6 +71,25 @@
+ } FCGX_Stream;
+ 
+ /*
++ * The following structure holds various details of the shared memory
++ * region (if any).  If the webserver supports this feature, shared memory
++ * can be used for stream data (STDOUT, STDERR).  Control messages still
++ * use the communications socket.
++ * This is a uServer-specific extension to the FastCGI protocol.
++ */
++typedef struct FCGX_SharedMemInfo {
++  int inUse;
++  char *FileName;
++  int FileSize;
++  int Fd;
++  char *BuffStart;
++  int BuffOffset;
++  int BuffSize;
++  char *wrNext;
++  char *stop;
++} FCGX_SharedMemInfo;
++
++/*
+  * An environment (as defined by environ(7)): A NULL-terminated array
+  * of strings, each string having the form name=value.
+  */
+@@ -100,6 +120,7 @@
+ 
+     struct Params *paramsPtr;
+     int ipcFd;               /* < 0 means no connection */
++    FCGX_SharedMemInfo sm;
+     int isBeginProcessed;     /* FCGI_BEGIN_REQUEST seen */
+     int keepConnection;       /* don't close ipcFd at end of request */
+     int appStatus;
+diff -ur fcgi-2.4.0.orig/libfcgi/fcgiapp.c fcgi-2.4.0/libfcgi/fcgiapp.c
+--- fcgi-2.4.0.orig/libfcgi/fcgiapp.c	2001-12-12 17:54:10.000000000 -0500
++++ fcgi-2.4.0/libfcgi/fcgiapp.c	2005-08-15 13:59:09.000000000 -0400
+@@ -24,6 +24,8 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <sys/types.h>
++#include <sys/mman.h>
++#include <sys/stat.h>
+ 
+ #include "fcgi_config.h"
+ 
+@@ -64,12 +66,37 @@
+ #endif
+ 
+ /*
++ * State associated with a stream
++ */
++typedef struct FCGX_Stream_Data {
++    unsigned char *buff;      /* buffer after alignment */
++    int bufflen;              /* number of bytes buff can store */
++    unsigned char *mBuff;     /* buffer as returned by Malloc */
++    unsigned char *buffStop;  /* reader: last valid byte + 1 of entire buffer.
++                               * stop generally differs from buffStop for
++                               * readers because of record structure.
++                               * writer: buff + bufflen */
++    int type;                 /* reader: FCGI_PARAMS or FCGI_STDIN
++                               * writer: FCGI_STDOUT or FCGI_STDERR */
++    int eorStop;              /* reader: stop stream at end-of-record */
++    int skip;                 /* reader: don't deliver content bytes */
++    int contentLen;           /* reader: bytes of unread content */
++    int paddingLen;           /* reader: bytes of unread padding */
++    int isAnythingWritten;    /* writer: data has been written to ipcFd */
++    int rawWrite;             /* writer: write data without stream headers */
++    FCGX_Request *reqDataPtr; /* request data not specific to one stream */
++} FCGX_Stream_Data;
++
++/*
+  * Globals
+  */
+ static int libInitialized = 0;
+ static int isFastCGI = -1;
+ static char *webServerAddressList = NULL;
+ static FCGX_Request the_request;
++static int stdinBufflen = 0;
++static int stdoutBufflen = 0;
++static int stderrBufflen = 0;
+ 
+ void FCGX_ShutdownPending(void)
+ {
+@@ -281,13 +308,23 @@
+  */
+ int FCGX_PutChar(int c, FCGX_Stream *stream)
+ {
++    FCGX_Stream_Data *data = (FCGX_Stream_Data *)(stream->data);
++    FCGX_Request *reqDataPtr = data->reqDataPtr;
++
++    if (reqDataPtr->sm.inUse && !data->rawWrite) {
++	if (reqDataPtr->sm.wrNext != reqDataPtr->sm.stop) {
++	    return (*reqDataPtr->sm.wrNext++ = (unsigned char) c);
++	}
++	return EOF;
++    }
++
+     if(stream->wrNext != stream->stop)
+-        return (*stream->wrNext++ = (unsigned char) c);
++	return (*stream->wrNext++ = (unsigned char) c);
+     if(stream->isClosed || stream->isReader)
+-        return EOF;
++	return EOF;
+     stream->emptyBuffProc(stream, FALSE);
+     if(stream->wrNext != stream->stop)
+-        return (*stream->wrNext++ = (unsigned char) c);
++	return (*stream->wrNext++ = (unsigned char) c);
+     ASSERT(stream->isClosed); /* bug in emptyBuffProc if not */
+     return EOF;
+ }
+@@ -310,6 +347,17 @@
+ int FCGX_PutStr(const char *str, int n, FCGX_Stream *stream)
+ {
+     int m, bytesMoved;
++    FCGX_Stream_Data *data = (FCGX_Stream_Data *)(stream->data);
++    FCGX_Request *reqDataPtr = data->reqDataPtr;
++
++    if (reqDataPtr->sm.inUse && !data->rawWrite) {
++	if (n <= (reqDataPtr->sm.stop - reqDataPtr->sm.wrNext)) {
++	    memcpy(reqDataPtr->sm.wrNext, str, n);
++	    reqDataPtr->sm.wrNext += n;
++	    return n;
++	}
++	return -1;
++    }
+ 
+     /*
+      * Fast path: room for n bytes in the buffer
+@@ -1135,8 +1183,9 @@
+  *
+  *----------------------------------------------------------------------
+  */
+-static int ReadParams(Params *paramsPtr, FCGX_Stream *stream)
++static int ReadParams(Params *paramsPtr, FCGX_Stream *stream, int onePkt)
+ {
++    FCGX_Stream_Data *data = (FCGX_Stream_Data *)(stream->data);
+     int nameLen, valueLen;
+     unsigned char lenBuff[3];
+     char *nameValue;
+@@ -1185,6 +1234,11 @@
+ 	}
+         *(nameValue + nameLen + valueLen + 1) = '\0';
+         PutParam(paramsPtr, nameValue);
++	if (onePkt
++		&& stream->rdNext == stream->stop
++		&& data->contentLen == 0) {
++	    break;
++	}
+     }
+     return 0;
+ }
+@@ -1291,28 +1345,6 @@
+ 
+ 
+ /*
+- * State associated with a stream
+- */
+-typedef struct FCGX_Stream_Data {
+-    unsigned char *buff;      /* buffer after alignment */
+-    int bufflen;              /* number of bytes buff can store */
+-    unsigned char *mBuff;     /* buffer as returned by Malloc */
+-    unsigned char *buffStop;  /* reader: last valid byte + 1 of entire buffer.
+-                               * stop generally differs from buffStop for
+-                               * readers because of record structure.
+-                               * writer: buff + bufflen */
+-    int type;                 /* reader: FCGI_PARAMS or FCGI_STDIN
+-                               * writer: FCGI_STDOUT or FCGI_STDERR */
+-    int eorStop;              /* reader: stop stream at end-of-record */
+-    int skip;                 /* reader: don't deliver content bytes */
+-    int contentLen;           /* reader: bytes of unread content */
+-    int paddingLen;           /* reader: bytes of unread padding */
+-    int isAnythingWritten;    /* writer: data has been written to ipcFd */
+-    int rawWrite;             /* writer: write data without stream headers */
+-    FCGX_Request *reqDataPtr; /* request data not specific to one stream */
+-} FCGX_Stream_Data;
+-
+-/*
+  *----------------------------------------------------------------------
+  *
+  * WriteCloseRecords --
+@@ -1326,26 +1358,55 @@
+ static void WriteCloseRecords(struct FCGX_Stream *stream)
+ {
+     FCGX_Stream_Data *data = (FCGX_Stream_Data *)stream->data;
++    FCGX_Request *reqDataPtr = data->reqDataPtr;
++    int sharedmem_datalen;
++    char buf[1024];
++    char *bufP = &buf[FCGI_HEADER_LEN];
++    int len, paddedLen;
++    FCGI_EndRequestRecord endRequestRecord;
++
+     /*
+      * Enter rawWrite mode so final records won't be encapsulated as
+      * stream data.
+      */
+     data->rawWrite = TRUE;
+-    /*
+-     * Generate EOF for stream content if needed.
+-     */
+-    if(!(data->type == FCGI_STDERR
+-            && stream->wrNext == data->buff
+-            && !data->isAnythingWritten)) {
+-        FCGI_Header header;
+-        header = MakeHeader(data->type, data->reqDataPtr->requestId, 0, 0);
+-        FCGX_PutStr((char *) &header, sizeof(header), stream);
+-    };
++
++    if (!reqDataPtr->sm.inUse) {
++	/*
++	 * Generate EOF for stream content if needed.
++	 */
++	if(!(data->type == FCGI_STDERR
++		&& stream->wrNext == data->buff
++		&& !data->isAnythingWritten)) {
++	    FCGI_Header header;
++	    header = MakeHeader(data->type, reqDataPtr->requestId, 0, 0);
++	    FCGX_PutStr((char *) &header, sizeof(header), stream);
++	};
++    }
++
+     /*
+      * Generate FCGI_END_REQUEST record if needed.
+      */
+-    if(data->reqDataPtr->nWriters == 1) {
+-        FCGI_EndRequestRecord endRequestRecord;
++    if (reqDataPtr->nWriters == 1) {
++
++	/*
++	 * If using shared memory, inform the webserver how many data bytes
++	 * we've written to the shared memory buffer.  We do this using an
++	 * unsolicited FCGI_GET_VALUES_RESULT message.
++	 */
++	if (reqDataPtr->sm.inUse) {
++	    sharedmem_datalen = reqDataPtr->sm.wrNext -
++		(reqDataPtr->sm.BuffStart + reqDataPtr->sm.BuffOffset);
++	    len = sprintf(bufP, "%d", sharedmem_datalen);
++	    len = sprintf(bufP, "%c%c%s%d", 17, len,
++		    "SHAREDMEM_DATALEN", sharedmem_datalen);
++	    paddedLen = AlignInt8(len);
++	    *((FCGI_Header *) buf)
++		= MakeHeader(FCGI_GET_VALUES_RESULT, FCGI_NULL_REQUEST_ID,
++                         len, paddedLen - len);
++	    FCGX_PutStr(buf, FCGI_HEADER_LEN + paddedLen, stream);
++	}
++
+         endRequestRecord.header = MakeHeader(FCGI_END_REQUEST,
+                 data->reqDataPtr->requestId,
+                 sizeof(endRequestRecord.body), 0);
+@@ -1354,7 +1415,8 @@
+         FCGX_PutStr((char *) &endRequestRecord,
+                 sizeof(endRequestRecord), stream);
+     }
+-    data->reqDataPtr->nWriters--;
++
++    reqDataPtr->nWriters--;
+ }
+ 
+ 
+@@ -1410,7 +1472,7 @@
+             stream->wrNext = data->buff;
+ 	}
+     }
+-    if(doClose) {
++    if (doClose) {
+         WriteCloseRecords(stream);
+     };
+     if (stream->wrNext != data->buff) {
+@@ -1421,6 +1483,7 @@
+         }
+         stream->wrNext = data->buff;
+     }
++
+     /*
+      * The buffer is empty.
+      */
+@@ -1454,14 +1517,18 @@
+ static int ProcessManagementRecord(int type, FCGX_Stream *stream)
+ {
+     FCGX_Stream_Data *data = (FCGX_Stream_Data *)stream->data;
++    FCGX_SharedMemInfo *sm = &data->reqDataPtr->sm;
+     ParamsPtr paramsPtr = NewParams(3);
+     char **pPtr;
+-    char response[64]; /* 64 = 8 + 3*(1+1+14+1)* + padding */
++    struct stat st;
++    char response[1024];  /* must be large enough for any response */
+     char *responseP = &response[FCGI_HEADER_LEN];
+-    char *name, value = '\0';
+-    int len, paddedLen;
++    char *name, *value = "";
++    int len, paddedLen = 0;
++    int rc;
++
+     if(type == FCGI_GET_VALUES) {
+-        ReadParams(paramsPtr, stream);
++        ReadParams(paramsPtr, stream, TRUE);
+         if((FCGX_GetError(stream) != 0) || (data->contentLen != 0)) {
+             FreeParams(&paramsPtr);
+             return FCGX_PROTOCOL_ERROR;
+@@ -1470,17 +1537,17 @@
+             name = *pPtr;
+             *(strchr(name, '=')) = '\0';
+             if(strcmp(name, FCGI_MAX_CONNS) == 0) {
+-                value = '1';
++                value = "1";
+             } else if(strcmp(name, FCGI_MAX_REQS) == 0) {
+-                value = '1';
++                value = "1";
+             } else if(strcmp(name, FCGI_MPXS_CONNS) == 0) {
+-                value = '0';
++                value = "0";
+             } else {
+                 name = NULL;
+             }
+             if(name != NULL) {
+                 len = strlen(name);
+-                sprintf(responseP, "%c%c%s%c", len, 1, name, value);
++                sprintf(responseP, "%c%c%s%s", len, 1, name, value);
+                 responseP += len + 3;
+ 	    }
+         }
+@@ -1490,6 +1557,58 @@
+             = MakeHeader(FCGI_GET_VALUES_RESULT, FCGI_NULL_REQUEST_ID,
+                          len, paddedLen - len);
+         FreeParams(&paramsPtr);
++    } else if (type == FCGI_SET_VALUES) {
++        ReadParams(paramsPtr, stream, TRUE);
++        if((FCGX_GetError(stream) != 0) || (data->contentLen != 0)) {
++            FreeParams(&paramsPtr);
++            return FCGX_PROTOCOL_ERROR;
++        }
++        for (pPtr = paramsPtr->vec; pPtr < paramsPtr->cur; pPtr++) {
++            name = *pPtr;
++	    value = strchr(name, '=');
++	    *value++ = '\0';
++            if (strcmp(name, "SHAREDMEM_FILENAME") == 0) {
++		/* check if we've already mapped this file */
++		if (sm->inUse && strcmp(sm->FileName, value) == 0) {
++		    continue;
++		}
++		/* unmap the current file, if applicable */
++		if (sm->inUse) {
++		    rc = munmap(sm->BuffStart, sm->FileSize);
++		    rc = close(sm->Fd);
++		    free(sm->FileName);
++		    sm->FileName = NULL;
++		    sm->inUse = FALSE;
++		}
++		/* map the new file, if applicable */
++		if (*value != '\0') {
++		    rc = stat(value, &st);
++		    if (rc < 0) {
++			FreeParams(&paramsPtr);
++			return FCGX_SHAREDMEM_FAILED;
++		    }
++		    sm->Fd = open(value, O_RDWR);
++		    if (sm->Fd < 0) {
++			FreeParams(&paramsPtr);
++			return FCGX_SHAREDMEM_FAILED;
++		    }
++		    sm->BuffStart = mmap(NULL, st.st_size,
++			    PROT_READ | PROT_WRITE, MAP_SHARED, sm->Fd, 0);
++		    if (sm->BuffStart == MAP_FAILED) {
++			FreeParams(&paramsPtr);
++			return FCGX_SHAREDMEM_FAILED;
++		    }
++		    sm->FileName = StringCopy(value);
++		    sm->inUse = TRUE;
++		}
++            } else if (strcmp(name, "SHAREDMEM_OFFSET") == 0) {
++		sm->BuffOffset = atoi(value);
++            } else if (strcmp(name, "SHAREDMEM_SIZE") == 0) {
++		sm->BuffSize = atoi(value);
++	    }
++        }
++	//TODO - error checking
++        FreeParams(&paramsPtr);
+     } else {
+         paddedLen = len = sizeof(FCGI_UnknownTypeBody);
+         ((FCGI_UnknownTypeRecord *) response)->header
+@@ -1498,7 +1617,8 @@
+         ((FCGI_UnknownTypeRecord *) response)->body
+             = MakeUnknownTypeBody(type);
+     }
+-    if (write_it_all(data->reqDataPtr->ipcFd, response, FCGI_HEADER_LEN + paddedLen) < 0) {
++    if (paddedLen > 0
++	    && write_it_all(data->reqDataPtr->ipcFd, response, FCGI_HEADER_LEN + paddedLen) < 0) {
+         SetError(stream, OS_Errno);
+         return -1;
+     }
+@@ -1800,7 +1920,10 @@
+     } else {
+         stream->fillBuffProc = NULL;
+         stream->emptyBuffProc = EmptyBuffProc;
+-        stream->wrNext = data->buff + sizeof(FCGI_Header);
++        stream->wrNext = data->buff;
++	if (!data->rawWrite) {
++	    stream->wrNext += sizeof(FCGI_Header);
++	}
+         stream->stop = data->buffStop;
+         stream->stopUnget = NULL;
+         stream->rdNext = stream->stop;
+@@ -2001,26 +2124,26 @@
+  */
+ void FCGX_Finish_r(FCGX_Request *reqDataPtr)
+ {
+-    int close;
++    int do_close;
+ 
+     if (reqDataPtr == NULL) {
+         return;
+     }
+ 
+-    close = !reqDataPtr->keepConnection;
++    do_close = !reqDataPtr->keepConnection;
+ 
+     /* This should probably use a 'status' member instead of 'in' */
+     if (reqDataPtr->in) {
+-        close |= FCGX_FClose(reqDataPtr->err);
+-        close |= FCGX_FClose(reqDataPtr->out);
++        do_close |= FCGX_FClose(reqDataPtr->err);
++        do_close |= FCGX_FClose(reqDataPtr->out);
+ 
+-	close |= FCGX_GetError(reqDataPtr->in);
++	do_close |= FCGX_GetError(reqDataPtr->in);
+     }
+ 
+-    FCGX_Free(reqDataPtr, close);
++    FCGX_Free(reqDataPtr, do_close);
+ }
+ 
+-void FCGX_Free(FCGX_Request * request, int close)
++void FCGX_Free(FCGX_Request * request, int do_close)
+ {
+     if (request == NULL) 
+         return;
+@@ -2030,9 +2153,17 @@
+     FCGX_FreeStream(&request->err);
+     FreeParams(&request->paramsPtr);
+ 
+-    if (close) {
++    if (do_close) {
+         OS_IpcClose(request->ipcFd);
+         request->ipcFd = -1;
++
++	if (request->sm.inUse) {
++	    munmap(request->sm.BuffStart, request->sm.FileSize);
++	    close(request->sm.Fd);
++	    free(request->sm.FileName);
++	    request->sm.FileName = NULL;
++	    request->sm.inUse = FALSE;
++	}
+     }
+ }
+ 
+@@ -2091,6 +2222,25 @@
+     p = getenv("FCGI_WEB_SERVER_ADDRS");
+     webServerAddressList = p ? StringCopy(p) : NULL;
+ 
++    if ((p = getenv("FCGI_STDIN_BUFSIZE")) != NULL) {
++	stdinBufflen = atoi(p);
++    }
++    if (stdinBufflen < 64 || stdinBufflen > 128*1024) {    /* sanity check */
++	stdinBufflen = 8192;
++    }
++    if ((p = getenv("FCGI_STDOUT_BUFSIZE")) != NULL) {
++	stdoutBufflen = atoi(p);
++    }
++    if (stdoutBufflen < 64 || stdoutBufflen > 128*1024) {  /* sanity check */
++	stdoutBufflen = 8192;
++    }
++    if ((p = getenv("FCGI_STDERR_BUFSIZE")) != NULL) {
++	stderrBufflen = atoi(p);
++    }
++    if (stderrBufflen < 64 || stderrBufflen > 128*1024) {  /* sanity check */
++	stderrBufflen = 512;
++    }
++
+     libInitialized = 1;
+     return 0;
+ }
+@@ -2177,6 +2327,8 @@
+  */
+ int FCGX_Accept_r(FCGX_Request *reqDataPtr)
+ {
++    FCGX_SharedMemInfo *sm;
++
+     if (!libInitialized) {
+         return -9998;
+     }
+@@ -2204,7 +2356,7 @@
+          * errors occur, close the connection and try again.
+          */
+         reqDataPtr->isBeginProcessed = FALSE;
+-        reqDataPtr->in = NewReader(reqDataPtr, 8192, 0);
++        reqDataPtr->in = NewReader(reqDataPtr, stdinBufflen, 0);
+         FillBuffProc(reqDataPtr->in);
+         if(!reqDataPtr->isBeginProcessed) {
+             goto TryAgain;
+@@ -2228,7 +2380,7 @@
+             PutParam(reqDataPtr->paramsPtr, StringCopy(roleStr));
+         }
+         SetReaderType(reqDataPtr->in, FCGI_PARAMS);
+-        if(ReadParams(reqDataPtr->paramsPtr, reqDataPtr->in) >= 0) {
++        if(ReadParams(reqDataPtr->paramsPtr, reqDataPtr->in, FALSE) >= 0) {
+             /*
+              * Finished reading the environment.  No errors occurred, so
+              * leave the connection-retry loop.
+@@ -2248,10 +2400,15 @@
+      * request and return successfully to the caller.
+      */
+     SetReaderType(reqDataPtr->in, FCGI_STDIN);
+-    reqDataPtr->out = NewWriter(reqDataPtr, 8192, FCGI_STDOUT);
+-    reqDataPtr->err = NewWriter(reqDataPtr, 512, FCGI_STDERR);
++    reqDataPtr->out = NewWriter(reqDataPtr, stdoutBufflen, FCGI_STDOUT);
++    reqDataPtr->err = NewWriter(reqDataPtr, stderrBufflen, FCGI_STDERR);
+     reqDataPtr->nWriters = 2;
+     reqDataPtr->envp = reqDataPtr->paramsPtr->vec;
++    sm = &reqDataPtr->sm;
++    if (sm->inUse) {
++	sm->wrNext = sm->BuffStart + sm->BuffOffset;
++	sm->stop = sm->wrNext + sm->BuffSize;
++    }
+     return 0;
+ }
+ 
+@@ -2306,4 +2463,3 @@
+     FCGX_Stream_Data *data = (FCGX_Stream_Data *)stream->data;
+     data->reqDataPtr->appStatus = status;
+ }
+-

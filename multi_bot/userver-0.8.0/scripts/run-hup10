@@ -1,0 +1,53 @@
+#!/bin/csh
+# SPECweb99 dynamic requests through httperf
+# Some basic configuration
+set show_replies = 1 
+set show_req = 1
+set server      = "127.0.0.1"
+
+if ($#argv != 1) then
+  echo "Usage : $0 num_requests/num_sessions"
+  exit 1
+endif
+
+set conns       = "--num-conns $1"
+set numsess     = $1
+
+# Empty here becase we do one request at a time
+# See also runrate
+set rate        = ""
+
+set httperf     = "httperf" 
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 10"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog "
+
+if ($show_replies) then
+  set printreply = "--print-reply"
+else
+  set printreply = ""
+endif  
+
+if ($show_req) then
+  set printreq = "--print-request"
+else
+  set printreq = ""
+endif
+
+set dynamiclog = "scripts/dynamic.log"
+set session = "--wsesslog $numsess,0,$dynamiclog"
+
+#$httperf $extraopts --server $server $port $httpversion \
+set cookie = "Cookie: my_cookie=user_id=10001&last_ad=20\n"
+
+#Static GETs, dynamic GETs with cookies and POSTs
+#$httperf $extraopts --server $server $port $httpversion \
+#         $conns $timeout $printreply $printreq $rate $session \
+#         --add-header="$cookie"
+#For dynamic GETs without cookies
+set uri = "specweb99-fcgi.pl?/specweb99/file_set/dir00000/class1_5"
+$httperf $extraopts --server $server $port $httpversion \
+         $conns $timeout $printreply $printreq $rate \
+         --uri="$uri"
+

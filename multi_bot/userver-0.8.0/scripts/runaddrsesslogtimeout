@@ -1,0 +1,46 @@
+#!/bin/csh
+# Use the session log file as the workload.
+# Use the specified session rate and go through the specified
+# number of sessions provided in the specified log file.
+# Note: if the number of sessions specified is greater than
+# the number of sessions in the log file - sessions are reused
+# from the top of the specified log file.
+# 
+
+# Some basic configuration
+set show_replies = 0
+set server      = "$1"
+set thinktime   = "0"
+
+if ($#argv != 5) then
+  echo "Usage : $0 addr session_rate num_sessions session_log_file timeout"
+  exit 1
+endif
+
+echo "Using addr = $1"
+echo "Using session rate = $2"
+echo "Using number of sessions = $3"
+echo "Using log file = $4"
+echo "Using timeout = $5"
+
+set session     = "--wsesslog $3,$thinktime,$4"
+set rate        = "--rate $2"
+set conns       = ""
+
+set uri         = ""
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout $5"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog --rate-interval 1"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion \
+         $conns $timeout $print $rate $session
+
+exit $status

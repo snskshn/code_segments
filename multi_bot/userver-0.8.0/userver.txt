@@ -1,0 +1,1304 @@
+userver(1)                                                          userver(1)
+
+
+
+NNAAMMEE
+       userver - Micro-server
+       (A fairly simple web server designed for experimentation)
+
+SSYYNNOOPPSSIISS
+       uusseerrvveerr
+
+       [--AA|----aacccceeppttss--oonnllyy|----cclloossee--aafftteerr--aacccceepptt]   [--BB|----bblloocckk--ffoorr--sseenndd__eevveennttss]
+       [--CC|----ccaacchhiinngg--oonn]    [--DD|----ddeebbuugg--mmaasskk     _[_0_x_]_N]     [--EE|----sseenndd--eevveennttss]
+       [--FF|----rreesseett--oonn--cclloossee]  [--GG|----uussee--ggeettppiidd]  [--HH|--hh|--??|----hheellpp]  [--II|----rrccvv--
+       ssoocckk--llooww--wwaatt  _N]  [--JJ|----ssnndd--ssoocckk--llooww--wwaatt  _N]  [--KK|----kkddeebbuugg--mmaasskk  _[_0_x_]_N]
+       [--LL|----ffuullll--rreeaadd  _N]  [--MM|----mmuullttii--aacccceepptt] [--NN|----sseenndd--lloooopp] [--OO|----sseelleecctt--
+       ttiimmeeoouutt _N] [--PP|----ccoouunntt--ssiiggppiippeess] [--QQ|----eeccbb--hhii--wwaatteerr _N] [--RR|----rreeaadd--ssoocckk--
+       bbuuff--ssiizzee  _N]  [--SS|----ddoonntt--iinnttrr--sseelleecctt]  [--TT|----ppoorrtt _N] [--UU|----aauuttoo--aacccceepptt]
+       [--VV|----uussee--sseennddffiillee]  [----aauuttoo--aacccceepptt--aappeerrttuurree]  [--WW|----wwrriittee--ssoocckkbbuuff--ssiizzee
+       _N]    [--YY|----sseenndd--iioo--eevveennttss]    [--ZZ|----ccoonntteenntt--ttyyppee]    [--aa|----aassyynncc--mmooddee]
+       [--bb|----eeccbb--bbuuff--eennttrriieess _N] [--cc|----mmaaxx--ccoonnnnss _N] [--dd|----ddeellaayy _N] [--ee|----eexxttrraa--
+       aacccceeppttss  _N]  [--ff|----mmaaxx--ffddss _N] [--gg|----aacccceepptt--oonn--cclloossee] [--ii|----iinntteerraaccttiivvee]
+       [--jj|----kkeerrnneell--iinnffoo]    [--kk|----ssiiggiioo--uussee--pprrooccmmaasskk]    [--ll|----lliisstteennqq     _N]
+       [--mm|----aacccceepptt--ccoouunntt _N] [--nn|----nnoo--aacccceeppttss|----lliisstteenn--oonnllyy] [--oo|----pprroocceessss--ffdd--
+       oorrddeerr  [uupp|ddoowwnn|wwrriitteess--ddoowwnn|wwrriitteess--uupp|llrruu|lliiffoo|ffiiffoo]]]  [--pp|----pprrooccss   _N]
+       [--qq|----eeccbb--llooww--wwaatteerr  _N]  [--rr|----eeaaggeerr--rreeaaddss] [--ss|----ccoonnnnss--iinn--sseerrvveerr--lloooopp]
+       [--tt|----ffrreeee--ffdd--tthhrreesshhoolldd  _N]   [--uu|----ttrraacckk--mmaaxx--ffdd   _N]   [--vv|----uussee--ppoollll]
+       [--ww|----eeaaggeerr--wwrriitteess] [--xx|----ssiiggiioo--aacccceeppttss] [--yy|----mmeemmccppyy] [--zz|----rreejjeeccttiioonn--
+       rraattee] [--11|----uussee--eeppoollll] [--22|----uussee--eeppoollll22] [--33|----uussee--eeppoollll--ccttllvv]  [----ccffgg--
+       ffiilleennaammee _p_a_t_h] [----cclloossee--aafftteerr--ssoocckk--iinniitt] [----cclloossee--aafftteerr--rreeaadd] [----cclloossee--
+       aafftteerr--ppaarrssee]    [----sseenndd--ppoollllss--ffoorr--aacccceeppttss]    [----ccaacchhee--ttaabbllee--ssiizzee    _N]
+       [----ccaacchhee--mmaaxx--bbyytteess  _N] [----ccaacchhee--mmaaxx--ffiillee--ssiizzee _N] [----ccaacchhee--mmaaxx--llooaadd--ffaacc--
+       ttoorr _N]  [----ccaacchhee--lloocckk--ppaaggeess]  [----ccaacchhee--ttaabbllee--pprriinntt]  [----ccaacchhee--ffoorr--ssppeecc]
+       [----ccaacchhee--wwaarrmm==ppaatthh]  [----ttrraaccee--ssuummmmaarryy]  [----ttrraaccee--ssuummmmaarryy--oonnllyy]  [----uussee--
+       ttccpp--ccoorrkk] [----uussee--mmaaddvviissee] [----uussee--aacccceepptt--sseenndd]  [----iipp--aaddddrr  _N_._N_._N_._N_[_:_P_]]
+       [----uussee--aaiioo--aacccceepptt] [----uussee--aaiioo--rreeaadd] [----uussee--aaiioo--wwrriittee] [----uussee--aaiioo--cclloossee]
+       [----uussee--ssoocckkeett--aaiioo] [----uussee--aaiioo--wwaaiitt] [----aaiioo--rreeaadd--bbeeffoorree--aacccceepptt]  [----aaiioo--
+       rreeaadd--bbeeffoorree--wwrriittee]   [----aaiioo--wwrriittee--eevveennttss--lliimmiitt  _N]  [----aaiioo--rreeaadd--eevveennttss--
+       lliimmiitt _N] [----aaiioo--aacccceepptt--eevveennttss--lliimmiitt _N] [----aaiioo--aacccceepptt--tthhoolldd  _N]  [----aaiioo--
+       ccoommppllqq--ccoouunntt  _N] [----ppiidd--ffiilleennaammee _p_a_t_h] [----ttrraaccee--ffiilleennaammee _p_a_t_h] [----rreeaadd--
+       bbuuffffeerr--ssiizzee _N] [----rreeppllyy--bbuuffffeerr--ssiizzee _N]  [----ddyynn--bbuuffffeerr--ssiizzee  _N]  [----nnuumm--
+       ddyynn--bbuuffffeerrss  _N]  [----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aapppp  _N] [----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--
+       aappppsseerrvveerr _N] [----ddyynn--lloocckk--ppaaggeess]  [----ddyynn--ttoouucchh--ppaaggeess]  [----ssttaattss--iinntteerrvvaall
+       _N]  [----iiggnnoorree--ffdd--sseettssiizzee]  [----uussee--ccppuu--mmaasskk  _[_0_x_]_N] [----iiddllee--tthhrreesshhoolldd _N]
+       [----ddoocc--rroooott _p_a_t_h]  [----hhoossttnnaammee  _n_a_m_e]  [----aapppp  _u_r_i_,_t_y_p_e_[_,_p_a_t_h_[_,_c_o_u_n_t_]_]]
+       [----ssttaarrtt--aapppp--sseerrvveerr  _p_a_t_h_[_,_c_o_u_n_t_]_[_=_e_x_e_c___s_t_r_i_n_g_]]  [----aapppp--rreeqq--qquueeuuee--ssiizzee
+       _N] [----sskkiipp--hheeaaddeerr] [----vviiccttiimm _f_i_l_e_p_a_t_h] [----vviiccttiimm--sskkiipp _N_] [----ccaacchhee--mmiissss--
+       sskkiipp _N_] [----ccaallll--ssttaattss _N_]
+
+
+DDEESSCCRRIIPPTTIIOONN
+       uusseerrvveerr  is  a  micro web server that is meant to be used to experiment
+       with the design and implementation of web servers.  In  particular  the
+       original  intention was to permit experimental comparisons of different
+       event dispatch mechanisms within the same application  framework.   For
+       this  reason  there are lots and lots and lots of parameters.  They are
+       mainly used to control the behaviour of the server.
+
+       Some of the design philosophy and experimental results  obtained  using
+       this  server  are  described in [Brecht-2001].  One of note is that all
+       data structures are allocated at initialization  and  are  not  resized
+       (grown).  This helps to ensure that experiments can be repeated because
+       with dynamic sizing of data structures different loads could result  in
+       different server behaviour.
+
+       The  userver uses an event driven architecture.  The idea is to run one
+       event driven server per processor.  If using sendfile on Linux the file
+       system buffer cache will be shared across all servers. For high-perfor-
+       mance one would want to use sendfile since  it  doesn't  involve  extra
+       copying from the file buffer cache to socket buffers (i.e., it's a zero
+       copy implementation).
+
+
+       IIMMPPOORRTTAANNTT:: This micro web server is not meant to be  a  full-blown  web
+       server.  It is specifically designed for conducting performance experi-
+       ments.  For that reason design decisions were made in favour of produc-
+       ing repeatable experiments.
+
+
+EEXXAAMMPPLLEESS
+       userver
+              This starts the uusseerrvveerr with all of its default options.
+
+
+       userver --max-conns 300 --accept-count 25
+              This  command  causes  the uusseerrvveerr server to limit the number of
+              simultaneous connections to 300.  When an event indicating  that
+              a  new  connection  is  requested  accept is called continuously
+              until either 25 new connections are accepted, or  there  are  no
+              more outstanding connections.
+
+
+       userver --max-conns 300 --accept-count 0
+              This  command  causes  the uusseerrvveerr server to limit the number of
+              simultaneous connections to 300.  When an event indicating  that
+              a  new connection is requested accept is called repeatedly until
+              there are no more outstanding connections.  (Note that --accept-
+              count=0  means  an infinite number of connections, i.e., no lim-
+              its).
+
+
+       userver --ip-addr 192.168.10.105 --max-conns 300 --listenq 128
+
+       userver --ip-addr 192.168.20.105 --max-conns 300 --listenq 128
+              This will start up two copies of the userver each accepting con-
+              nections from a different interface.
+
+
+       userver --ip-addr 192.168.10.105:6801 --max-conns 300 --listenq 128
+
+       userver --ip-addr 192.168.20.105:6802 --max-conns 300 --listenq 128
+              Same  as  above except one listens on port 6801 and the other on
+              port 6802.
+
+
+       userver --port 6800 --max-conns 300 --listenq 128
+              This command causes uusseerrvveerr to listen  for  incoming  connection
+              requests on port 6800.  It uses a listen queue of length 128 and
+              it will permit up to 300 simultaneous connections.   Once  there
+              are  300  open  connections  it  will not accept new connections
+              until an existing connection is closed.
+
+
+       userver --port 6800 --max-conns 300 --listenq 128 --use-poll
+              This is the same as above except using  _s_e_l_e_c_t_(_)  calls  to  get
+              events the uusseerrvveerr will use _p_o_l_l_(_)_.
+
+
+       userver --port 6800 --max-conns 300 --listenq 128 --use-epoll
+              This  is  the  same  as  above  except using _p_o_l_l_(_) calls to get
+              events the uusseerrvveerr will use _e_p_o_l_l_(_)_.
+
+
+       userver   -C    --cache-table-size=10000    --cache-max-bytes=262144000
+       --cache-max-file-size=1048576
+              Caching  is  turned  on.  Caching parameters limit the number of
+              files that are cached to 10000, the total number of bytes cached
+              to  250  MB, and the size of the largest file that can be cached
+              to 1 MB.
+
+
+OOPPTTIIOONNSS
+
+       The operation of uusseerrvveerr can be controlled through a number of options.
+       The  tool  supports  both  short  (one-character)  and long (arbitrary-
+       length) option names.  Short options are prefixed with a single leading
+       dash (-), long options with a double-dash (--).  Multiple short options
+       can be grouped together (e.g., ``--rrww'' is equivalent to ``--rr --ww'')  and
+       long options can be abbreviated so long as they remain unique.  Parame-
+       ters to options can be specified either by following  the  long  option
+       name  with an equal sign and the parameter value (e.g., ----ppoorrtt==66880000) or
+       by separating the option name and value with whitespace  (e.g.,  ----ppoorrtt
+       66880000).
+
+
+OOPPTTIIOONNSS ((GGEENNEERRAALL))
+       ----iiddllee--tthhrreesshhoolldd==N
+              In  a situation where the number of open connections has reached
+              the limit (see --max-conns), the userver will  close  the  least
+              recently used connection if it has not seen activity in the last
+              N seconds.
+
+
+       ----uussee--ccppuu--mmaasskk== [[00xx]]NN
+              On systems that support  the  _s_c_h_e_d___s_e_t_a_f_f_i_n_i_t_y_(_)  system  call,
+              specifies  a  mask  of schedulable CPUs for the userver process.
+              If prefixed with '0x', the argument is interpreted as  hexadeci-
+              mal; otherwise it is interpreted as decimal.  The least signifi-
+              cant bit corresponds to the first logical  processor  number  on
+              the system.
+
+
+       --ff NN
+
+       ----mmaaxx--ffddss==_N
+              The  maximum number of open file descriptors permitted.  I can't
+              recall if this is actually enforced  but  it  is  used  to  size
+              internal  data  structures.   Note  that there is a relationship
+              between ----mmaaxx--ccoonnnnss and  ----mmaaxx--ffddss..   If  files  are  not  being
+              cached  you could (in the extreme case) have one fd used for the
+              socket connection and one fd used for the  open  file.   So  one
+              needs  to  set  ----mmaaxx--ffddss = more than 2 x ----mmaaxx--ccoonnnnss..  Note: it
+              should be greater because of some descriptors that are  used  up
+              by stdin, out, err, and a few open files, etc.
+
+
+       --mm NN
+
+       ----aacccceepptt--ccoouunntt==_N
+              Call  accept  repeatedly  until  either, ----mmaaxx--ccoonnnnss is reached,
+              aacccceepptt(()) returns EWOULDBLOCK, or _N  new  connections  have  been
+              accepted.   Note that the value of _N can make a substantial dif-
+              ference in the performance of event  dispatch  mechanisms  under
+              heavy loads.  See [Brecht-2001].
+
+
+       --TT NN
+
+       ----ppoorrtt==_N
+              Specify  the  port number that the server should listen for con-
+              nections on.
+
+
+       --ll NN
+
+       ----lliisstteennqq==_N
+              Specify the length of  the  application's  listen  queue.   This
+              specifies  how many connection requests are allowed to be queued
+              in the application before the kernel rejects incoming connection
+              requests.   WARNING:  on all version of Linux I've ever seen (up
+              to and including several 2.6.5) the kernel silently converts any
+              values  of  N that are greater than 128 to 128.  For details see
+              sys_listen and the value of SOMAXCONNS.
+
+
+       --LL[1 | 2]
+
+       ----ffuullll--rreeaadd==[1 | 2]
+              Affects how calling read works.  If this is set to 1 the  server
+              will  loop  on  reading  the  socket until the read fails.  This
+              mainly happens either because there  is  nothing  left  to  read
+              because  the  other  end  has been closed or until it would have
+              blocked (EWOULDBLOCK).
+
+              If a value of 1 is used the loop on reads  will  only  occur  on
+              calls to read that occur as a result of an event indicating that
+              the first read should be done.  If a value of 2 is used the loop
+              on  reads  occur  as  above but if ----eeaaggeerr--rreeaaddss is also set the
+              server will loop on eager reads (i.e., those that will  be  done
+              immediately  following  a  the acceptance and setup of a connec-
+              tion).
+
+
+       --HH
+
+       --hh
+
+       --??
+
+       ----hheellpp Print out the usage message.
+
+
+       --MM NN
+
+       ----mmuullttii--aacccceepptt==_N
+              Use the _m_u_l_t_i_a_c_c_e_p_t_(_) system call  to  perform  accepts.   NOTE:
+              this was a system call that we added to and experimented with in
+              Linux.  The idea here is that since we  are  repeatedly  calling
+              _a_c_c_e_p_t_(_)  to  accept  a  bunch of connections, why not provide a
+              system call that allows up to a maximum of _N connections  to  be
+              accepted in one system call.
+
+
+       --SS
+
+       ----ddoonntt--iinnttrr--sseelleecctt
+              Disable  asynchronous  event notification when calling _s_e_l_e_c_t_(_)_.
+              I believe that this was initially meant to work  for  SIGIO  and
+              for SEND.
+
+
+       --dd NN
+
+       ----ddeellaayy==_N
+              The idea was to introduce a delay that might simulate work being
+              done by the server  (like  some  computation  and/or  a  dynamic
+              request).   I  couldn't  find  a  good method for delaying for a
+              specified amount of time (note that it should be small)  with  a
+              enough accuracy.
+
+
+       --ee NN
+
+       ----eexxttrraa--aacccceeppttss==_N
+              While in the middle of processing events that have been obtained
+              (e.g., from select, or some other mechanism)  periodically  poll
+              for new connection requests.  In this case every time _N descrip-
+              tors are processed we check for new connection  requests.   Note
+              that this open was never used effectively.  I found it easier to
+              use and tune the ----aacccceepptt--ccoouunntt option.
+
+
+       --gg
+
+       ----aacccceepptt--oonn--cclloossee
+              When a connection is closed check to see if there are  any  out-
+              standing  connection  requests.   Note: that this only occurs if
+              the maximum number of connections was reached and now  a  closed
+              connection  will  reduce  the number of connections below ----mmaaxx--
+              ccoonnnnss..
+
+
+       --oo [[uupp||ddoowwnn||wwrriitteess--ddoowwnn||wwrriitteess--uupp||llrruu||lliiffoo||ffiiffoo]]
+
+       ----pprroocceessss--ffdd--oorrddeerr
+              [up|down|writes-down|writes-up|lru|lifo|fifo]
+
+              Change the order in which file descriptors  are  handled.   They
+              are numbered from 0 to _N so the options are:
+
+              up:    from 0 to N
+
+              down:  from N to 0
+
+              writes-down:
+                     to writes from N to 0, then reads from N to 0
+
+              writes-up:
+                     to writes from 0 to N, then reads from 0 to N
+
+              lru:   least recently descriptor touched first
+
+              lifo:  first descriptor (connection) added to the set first
+
+              filo:  first descriptor (connection) added to the set last
+
+
+       --pp NN
+
+       ----pprrooccss==_N
+              Start _N copies of the server.  Note that this option hasn't been
+              tested in a long time and is almost certain to cause problems.
+
+
+       --ss
+
+       ----ccoonnnnss--iinn--sseerrvveerr--lloooopp
+              Add an additional poll for new connections each time through the
+              server loop.
+
+
+       --tt NN
+
+       ----ffrreeee--ffdd--tthhrreesshhoolldd==_N
+              When  the  maximum  number of connections ----mmaaxx--ccoonnnnss is reached
+              the  server  stops  checking  for  incoming  connections.   This
+              options  controls  when  the  server  starts checking again.  It
+              starts checking again after _N connections  can  be  accommodated
+              before reaching ----mmaaxx--ccoonnnnss..
+
+
+       --uu
+
+       ----ttrraacckk--mmaaxx--ffdd
+              The server currently keeps track of the maximum fd ever used and
+              uses that as a parameter to  calls  like  select.   This  option
+              implements  code  to  dynamically keep track of the maximum file
+              descriptor currently used.  Note that this  requires  a  bit  of
+              extra processing but it's probably not noticeable, especially if
+              it can save extra overhead on copying fdsets and processing time
+              in event mechanisms (e.g., select).
+
+
+       --rr
+
+       ----eeaaggeerr--rreeaaddss
+              try to eagerly read from new connections.  Call _r_e_a_d_(_) to try to
+              read the request as soon as the new connection is accepted.   In
+              this  mode  the  server optimistically assumes that data will be
+              available for reading when a connection is made on a new  socket
+              (or  very  shortly  after).  If the assumption is incorrect, the
+              read call simply returns with the error EWOULDBLOCK.  Later  the
+              event  notification  mechanism  will indicate when the socket is
+              readable.
+
+
+       --ww
+
+       ----eeaaggeerr--wwrriitteess
+              try to eagerly  perform  writes  to  new  connections  when  the
+              response is available.  Both ----eeaaggeerr--rreeaadd and ----eeaaggeerr--wwrriittee also
+              try to take advantage of any potential locality effects by work-
+              ing on the most recently used file descriptor and socket.
+
+
+       --yy
+
+       ----mmeemmccppyy
+              Use the mmeemmccppyy library call to copy interest sets before calling
+              select.  This is done rather than doing a  straight  assignment.
+              This  exists because the size of the interest set could be large
+              and I don't know how clever a compiler would be about  assigning
+              large data structures.  NOTE: it currently copies the side of an
+              fd_set.  This should be changed to only copy the amount of  data
+              required for the maximum fd of interest.
+
+
+       --zz
+
+       ----rreejjeeccttiioonn--rraattee
+              Use  the rreejjeeccttiioonn--rraattee is not yet implemented.  The ideas would
+              be to specify the frequency with which new  connection  requests
+              should be rejected.
+
+
+       --VV
+
+       ----uussee--sseennddffiillee
+              Use the sseennddffiillee(()) call on systems that have it available.  This
+              is only used for uncached files and dynamic content.
+
+
+       ----uussee--mmaaddvviissee
+              Use _m_a_d_v_i_s_e_(_) calls to provide the kernel with hints that  files
+              are  being  read  sequentially and when they should no longer be
+              cached.
+
+
+       --vv
+
+       ----uussee--ppoollll
+              Use _p_o_l_l_(_) instead of _s_e_l_e_c_t_(_) to get events.
+
+
+       --11
+
+       ----uussee--eeppoollll
+              Use _e_p_o_l_l_(_) instead of _s_e_l_e_c_t_(_) to get events.
+
+
+       --22
+
+       ----uussee--eeppoollll22
+              Use _e_p_o_l_l_(_) instead of _s_e_l_e_c_t_(_) to get events, but attempt  some
+              optimizations  to  reduce  the  number of _e_p_o_l_l___c_t_l_(_) calls.  We
+              found the number of epoll_ctl calls  to  be  excessive  so  this
+              options  calls epoll_ctl when a new connection is added and sets
+              the interest to be READ and WRITE.  This means  that  epoll_wait
+              may  return  events  that  we aren't interested in (e.g., that a
+              socket is writable even though we are busy reading) but  we  are
+              exploring  the tradeoffs between the two approaches (--use-epoll
+              and --use-epoll2).
+
+
+       --33
+
+       ----uussee--eeppoollll--ccttllvv
+              Use _e_p_o_l_l___c_t_l_v_(_) to update events.  This requires  the  addition
+              of a new system call, epoll_ctlv.  This call permits one to col-
+              lect a bunch of epoll_ctl calls and change interest in  a  bunch
+              of  fds  at  once  instead  of  having  to  do  one  system call
+              (epoll_ctl) per change.
+
+
+       ----ccffgg--ffiilleennaammee ppaatthh
+              Read additional options from a file.  The format of the file  is
+              the  same  as  the  command line, i.e. long and/or short options
+              separated by whitespace (spaces, tabs, linefeeds).  Lines with a
+              '#'  character  in  the first column are treated as comments and
+              are ignored.  Config files can use ----ccffgg--ffiilleennaammee to nest  other
+              config files.
+
+
+       ----iipp--aaddddrr NN..NN..NN..NN
+
+       ----iipp--aaddddrr NN..NN..NN..NN::PP
+              Specify an IP address to listen for new connections on.  Option-
+              ally takes a port number P as well.  The  special  option  --ip-
+              addr  0.0.0.0  specifies  that  the userver should listen on any
+              address (this is the default).
+
+
+       ----ppiidd--ffiilleennaammee ppaatthh
+              Sets the name of the file where the userver stores  its  process
+              ID  number  while running.  Specify an empty string ("") to sup-
+              press pid file generation.  If this option is not  specified,  a
+              default value of "userver.pid" is used.
+
+
+       ----rreeaadd--bbuuffffeerr--ssiizzee NN
+              The  number  of  bytes  to  allocate  at initialization time for
+              _r_e_a_d_(_) operations on each connection.
+
+
+       ----rreeppllyy--bbuuffffeerr--ssiizzee NN
+              The number of bytes  to  allocate  at  initialization  time  for
+              _w_r_i_t_e_(_)  operations  on  each  connection  (for  static requests
+              only).
+
+
+
+       ----ssttaattss--iinntteerrvvaall NN
+              Print out some simple stats about related to server  performance
+              at a regularly specified interval.  The interval is specified in
+              seconds.  NOTE:  this  options  overrides  the  --select-timeout
+              option  in  order to be able to print out stats according to the
+              selected interval.
+
+
+       ----iiggnnoorree--ffdd--sseettssiizzee
+              If permitted this causes the userver to ignore limits placed  on
+              the number of open connections and the maximum values of an open
+              file descriptors that are required when using select (i.e.,  the
+              FD_SETSIZE).   This  option  does  not work if --track-max-fd is
+              defined or if the event mechanism being used is select or SEND.
+
+
+       --ZZ
+
+       ----ccoonntteenntt--ttyyppee
+              Use heuristics to guess  what  Content-Type  header  to  return,
+              based  on  the  uri  from  the request.  For example, if the uri
+              ended in ".gif", the userver would  assume  a  content  type  of
+              "image/gif".
+
+
+       ----ddoocc--rroooott ppaatthh
+              Set the directory of where to find the documents being server to
+              the specified directory.  When the document  root  is  specified
+              all  requests are assumed to be relative to the specified direc-
+              tory.
+
+
+       ----hhoossttnnaammee nnaammee
+              Set the name of the machine that the userver is running on.   By
+              default,  userver  uses _g_e_t_h_o_s_t_n_a_m_e_(_) to determine the hostname.
+              The hostname is only used to set the SERVER_NAME  CGI  parameter
+              when fulfilling FastCGI requests.
+
+
+
+       ----sskkiipp--hheeaaddeerr
+              Assume  that  all  files  being  served  contain a header in the
+              actual file so there is no need for the server to  generate  and
+              send  a header.  Useful for looking at the impact of things like
+              cork/uncork when used with sendfile (i.e., if the header  is  in
+              the  file  it's one sendfile system call instead of cork, write,
+              sendfile, uncork).
+
+
+       ----ccaallll--ssttaattss NN
+              Track statistics for up to N calls/requests.  This  is  designed
+              to read the Client-Id: header that we have httperf send in order
+              to correlate what is  happening  with  requests  from  different
+              clients on different servers.
+
+
+OOPPTTIIOONNSS ((FFOORR CCOONNTTRROOLLLLIINNGG SSOOCCKKEETTSS))
+
+
+       --FF
+
+       ----rreesseett--oonn--cclloossee
+              Calls _s_h_u_t_d_o_w_n_(_) instead of _c_l_o_s_e_(_)_.
+              WARNING do not use this for a real system!!!
+
+
+       --II NN
+
+       ----rrccvv--ssoocckk--llooww--wwaatt==_N
+              Sets  the  sockets  receive  buffer's  low water mark to _N_.  Not
+              available on all systems.
+
+
+       --JJN
+
+       ----ssnndd--ssoocckk--llooww--wwaatt==N
+              Sets the sockets send buffer's low water mark to _N_.  Not  avail-
+              able on all systems.
+
+
+       --OO NN
+
+       ----sseelleecctt--ttiimmeeoouutt==_N
+              Set the timeout option to the _s_e_l_e_c_t_(_) system call.
+
+
+       --RR NN
+
+       ----rreeaadd--ssoocckkbbuuff--ssiizzee==_N
+
+       --WW NN
+
+       ----wwrriittee--ssoocckkbbuuff--ssiizzee==_N
+              Set  the  size  of  the read or write socket buffers.  Note that
+              increasing these may help significantly for large transfers.
+
+
+       ----uussee--ttccpp--ccoorrkk
+              Cork the TCP queue when writing the header for the reply.   Cur-
+              rently only implemented for the sendfile portion of the code.
+
+
+
+       --cc NN
+
+       ----mmaaxx--ccoonnnnss==_N
+              The  maximum  number of simultaneous connections the server will
+              handle.  Note that this is typically limited by  the  number  of
+              open  file  descriptors  permitted.   Once the maximum number of
+              open connections is reached  incoming  connection  requests  are
+              refused  until  an existing connection is close.  Note that idle
+              connections can be timed out eventually (but  this  hasn't  been
+              tested  lately).  This is also used to size a number of internal
+              data structures that are allocated at initialization time.
+
+
+OOPPTTIIOONNSS ((FFOORR SSEERRVVIINNGG DDYYNNAAMMIICC CCOONNTTEENNTT))
+
+
+
+
+       ----aapppp uurrii,,ttyyppee[[,,ppaatthh[[,,ccoouunntt]]]]
+              Define  an  application.   Applications  are  used  to  generate
+              dynamic  content.   An application is uniquely identified by the
+              uri string, which is case sensitive.  The  type  string  is  not
+              case sensitive, and can be one of
+
+              FastCGI:
+                     General-purpose FastCGI application.
+
+                     The  path  argument  specifies the address of a listening
+                     FastCGI application, in the form of either an INET domain
+                     socket  address  (addr:port)  or  a  UNIX  domain  socket
+                     address (file path).  The optional count argument can  be
+                     specified  with  INET  domain socket addresses to specify
+                     that count consecutive ports, starting with port, are all
+                     listening  FastCGI  applications.   It  is  a shortcut to
+                     specifying them individually using multiple  --app  argu-
+                     ments.
+
+              SPECweb99:
+                     SPECweb99  server  application (only available if support
+                     is compiled in).  The userver will treat requests of  the
+                     specified  uri  as  SPECweb99 requests, and will generate
+                     responses on the fly.
+
+                     The path and count arguments are not applicable and  must
+                     be omitted.
+
+
+       ----ssttaarrtt--aapppp--sseerrvveerr ppaatthh[[,,ccoouunntt]][[==eexxeecc__ssttrriinngg]]
+              Tell   the   userver  to  start  up  the  specified  application
+              server(s).  (By default, userver assumes that they  are  already
+              started  through  some  other  means, e.g. manually or through a
+              script).  The path and optional count arguments are as described
+              for  the ----aapppp option, above.  It is an error to try to start up
+              any application servers that  aren't  defined  using  the  ----aapppp
+              option.   The optional exec_string argument is a string suitable
+              for passing to execl() to start the application server(s).  Note
+              that if exec_string contains spaces or shell metacharacters, you
+              will have to enclose it in quotes and/or escape those  metachar-
+              acters  in order for the string to be seen correctly by userver.
+              If exec_string is omitted, then it is inferred  by  interpreting
+              the  uri in the corresponding application as an actual directory
+              path rooted at the document root (see the ----ddoocc--rroooott option).
+
+
+       ----aapppp--rreeqq--qquueeuuee--ssiizzee NN
+              The number of queue  spaces,  per  application  (see  the  ----aapppp
+              option  above),  to reserve for dynamic requests.  Requests need
+              to be queued  whenever  an  application  server  or  some  other
+              resource  (such as dynamic buffer space, see above) is temporar-
+              ily unavailable.  Should the request  queue  ever  become  full,
+              userver  will  respond  to  arriving  requests  with an HTTP 503
+              error.  If not specified, this option takes on the same value as
+              ----mmaaxx--ccoonnnnss so that it is effectively impossible to overflow the
+              request queue.
+
+
+
+       ----aapppp==AAPPPP,,PPRROOTTOO,,HHOOSSTTNNAAMMEE::PPOORRTT,,NNUUMM
+              Registers one or more application servers with the userver. This
+              means  that  dynamic  requests  for APP will be forwarded to the
+              application server(s) running on HOSTNAME and listening on PORT.
+              The  optional  NUM  argument specifies the number of application
+              servers running on HOSTNAME. When NUM is greater than  one,  the
+              application  servers  listen on consecutive ports, starting with
+              PORT. The PROTO flag specifies the communication protocol.  Cur-
+              rently, only the FASTCGI protocol is supported. Here is an exam-
+              ple:
+
+              ----aapppp==ssppeeccwweebb9999--ffccggii..ppll,,FFAASSTTCCGGII,,llooccaallhhoosstt::99000000,,2244
+
+              In this example, dynamic requests for the specweb99-fcgi.pl  are
+              handled by 24 application servers running on the same machine as
+              the userver. These application servers are  listening  on  ports
+              9000  - 9023, and communicate with the userver using the FASTCGI
+              protocol.
+
+
+
+       ----ssttaarrtt--aapppp--sseerrvveerr==llooccaallhhoosstt::PPOORRTT,,NNUUMM==PPAATTHH,,MMAASSKK
+              Causes the userver to start one or more application  servers  on
+              the userver's localhost.  The NUM parameter specifies the number
+              of copies of the application server that will be started. If NUM
+              is  greater than 1, then the application server copies will lis-
+              ten on consecutive ports starting with PORT. The PATH  parameter
+              gives an absolute path to the application server executable. The
+              MASK parameter is optional, and specifies the CPU affinity  mask
+              that  will apply to the newly started application servers.  Here
+              is an example:
+
+
+              ----ssttaarrtt--aapppp--sseerrvveerr==llooccaallhhoosstt::99000000,,
+              1188==//uussrr//ssppeecc//ssppeeccwweebb9999--ffccggii..ppll,, 00xx000000dd
+
+
+              In  this  example,  18 copies of the /usr/spec/specweb99-fcgi.pl
+              script will be started.  These application servers  will  listen
+              on  ports  9000  - 9017 on the userver's localhost.  The MASK of
+              0x000d  is  the  CPU  affinity  mask,  as  interpretd   by   the
+              sched_setaffinity system call.
+
+
+
+       ----ddyynn--bbuuffffeerr--ssiizzee NN
+              The  number  of  bytes  to  allocate  at initialization time for
+              buffering replies to  dynamic  requests.   The  default  is  one
+              megabyte  (1048576  bytes).   The  number of such buffers can be
+              specified using ----nnuumm--ddyynn--bbuuffffeerrss  or  ----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aapppp
+              or  ----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aappppsseerrvveerr  (see  below).   If  none of
+              these options is specified, then by default  the  userver  allo-
+              cates 2 buffers per application server.
+
+
+       ----nnuumm--ddyynn--bbuuffffeerrss NN
+              The  number  of  buffers  to allocate at initialization time for
+              buffering replies to dynamic requests.  If this option is speci-
+              fied,  then the ----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aapppp and ----nnuumm--ddyynn--bbuuffffeerrss--
+              ppeerr--aappppsseerrvveerr options are ignored.
+
+
+       ----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aapppp NN
+              The number of buffers, per application  (see  the  ----aapppp  option
+              below), to allocate at initialization time for buffering replies
+              to dynamic requests.  If this  option  is  specified,  then  the
+              ----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aappppsseerrvveerr  option is ignored.  This option
+              is ignored if the ----nnuumm--ddyynn--bbuuffffeerrss option is specified.
+
+
+       ----nnuumm--ddyynn--bbuuffffeerrss--ppeerr--aappppsseerrvveerr NN
+              The number of buffers, per application  server  (see  the  ----aapppp
+              option  below), to allocate at initialization time for buffering
+              replies to dynamic requests.  The default is 2.  This option  is
+              ignored  if  either  the ----nnuumm--ddyynn--bbuuffffeerrss or the ----nnuumm--ddyynn--bbuuff--
+              ffeerrss--ppeerr--aapppp option is specified.
+
+
+       ----ddyynn--lloocckk--ppaaggeess
+              Lock all dynamic buffer pages into memory (must run as root  for
+              this to work).
+
+
+       ----ddyynn--ttoouucchh--ppaaggeess
+              Touch  each  dynamic  buffer  page at initialization time.  This
+              should have the effect of faulting them into  memory.   However,
+              in  the  absense of the ----ddyynn--lloocckk--ppaaggeess option, these pages are
+              still subject to being paged out.
+
+
+OOPPTTIIOONNSS ((FFOORR UUSSEE WWIITTHH SSIIGGIIOO))
+
+
+       --aa
+
+       ----ssiiggiioo--aacccceeppttss
+              Use asynchronous notification via SIGIO to  accept  new  connec-
+              tions.   Asynchronous notification may sound costly at first but
+              consider that some form of asynchronous notification may be  the
+              only  way  for an application that is in the middle of something
+              (e.g., computation) to find out about a connection requests.
+
+
+       --kk
+
+       ----ssiiggiioo--uussee--pprrooccmmaasskk
+              To disable and later enable asynchronous notification of  incom-
+              ing  requests  when  using SIGIO one can use ffccnnttll(()) to turn off
+              and on asynchronous notification or use ssiiggpprrooccmmaasskk(())..  Be care-
+              ful  of race conditions.  By default the server uses ffccnnttll(()) but
+              this option says to use ssiiggpprrooccmmaasskk(()) instead.
+
+
+OOPPTTIIOONNSS ((FFOORR AASSYYNNCCHHRROONNOOUUSS II//OO))
+
+       This is experimental and currently the userver only makes use of  asyn-
+       chronous  socket  I/O.   This  is  still under development and is being
+       tested.  See aio_layer.h for a definition of  the  interface  that  the
+       userver  uses to interact with the underlying asynchronous layer.  Note
+       that not all of the calls in aio_layer.h are meant to be  asynchronous.
+       Some  are  simply  required  in  order  to  complete  the layer.  E.g.,
+       aio_sock_create is synchronous but it is used to create a  socket  that
+       can be used asynchronously.
+
+
+       ----uussee--aaiioo--aacccceepptt
+
+       ----uussee--aaiioo--rreeaadd
+
+       ----uussee--aaiioo--wwrriittee
+
+       ----uussee--aaiioo--cclloossee
+              Use  the  asynchronous version of the corresponding system calls
+              for socket I/O.  These definitions exist but are  all  currently
+              only  used  together.   It's  pretty  unlikely that any of these
+              could be used independently.
+
+
+       ----uussee--ssoocckkeett--aaiioo
+              Use ansynchronous I/O for sockets.  This turns  on  all  of  the
+              above options.
+
+
+       ----uussee--aaiioo--wwaaiitt
+              There  are  two  ways  to  get  events  from the AIO layer.  The
+              aio_wait call returns available events of all types in a  single
+              array.  It's  then up to the userver to handle them in the order
+              they appear or to sort through them.  This is not on by  default
+              and   by   default   the   userver   uses   multiple   calls  to
+              aio_sock_getevents which only gets events events of a  specified
+              type.   Using aio_sock_getevents permits us to get all events of
+              a specified type and to process them. This enables us  to  order
+              events to be processed by event type.
+
+
+       ----aaiioo--aacccceepptt--tthhoolldd=NN
+              This  is  meant  to  control  the  maximum number of outstanding
+              accept calls that can be initiated (preposted).  Using  this  in
+              conjunction with --accept-count (-m) we should be able to impact
+              the accept rate.  I think that larger  values  of  --aio-accept-
+              thold used in conjunction with --accept-count 0 (-m 0) should be
+              pretty aggressive about accepting new connections.  This  hasn't
+              been  tested  very  extensively.  Especially in conjunction with
+              different values of --accept-count.
+
+
+       ----aaiioo--rreeaadd--bbeeffoorree--aacccceepptt
+              With this option the userver calls aio_sock_read_accept whenever
+              a new connection should be accepted.  This initiates a read call
+              before initiating an accept call.  This informs  the  underlying
+              system  of where the read buffer is located so that when data is
+              available it can be immediately placed into the  specified  buf-
+              fer.
+
+
+       ----aaiioo--rreeaadd--bbeeffoorree--wwrriittee
+              With  this  option  the  userver initiates a read call before it
+              tries to write a request.  Again this is meant to permit  arriv-
+              ing  data  to be copied directly into the specified read buffer.
+              It can only be initiated after the request has been  parsed  and
+              is  deemed  to  be complete.  Otherwise a prepost might possibly
+              allow the read buffer to be overwritten.
+
+
+       ----aaiioo--aacccceepptt--eevveennttss--lliimmiitt=NN
+              Limits how many accept completion  events  to  get  out  of  the
+              accept  completion queue at one time.  The idea is that it might
+              be possible to use this and the read and write limits  below  in
+              order to control how the work being processed is balanced.  Note
+              that one might actually prefer to adjust  these  values  dynami-
+              cally.
+
+
+       ----aaiioo--wwrriittee--eevveennttss--lliimmiitt=NN
+              Limits  how many write completion events to get out of the write
+              completion queue at one time.
+
+
+       ----aaiioo--rreeaadd--eevveennttss--lliimmiitt=NN
+              Limits how many read completion events to get out  of  the  read
+              completion queue at one time.
+
+
+       ----aaiioo--ccoommpplleettiioonn--oorrddeerr=ssttrriinngg
+              Set  the  order  in  which completion events will get processed.
+              The string must contain 'r', 'w', and 'a' characters.  Read com-
+              pletions are specified with 'r', write completions with 'w', and
+              accept completions with 'a'.  So "rwa" means process  read  com-
+              pletions,  then,  write  completions  followed by accept comple-
+              tions.  Note that it is  possible  to  specify  a  string  like:
+              "rwrwa".
+
+
+       ----aaiioo--ccoommppllqq--ccoouunntt=[[11||33]]
+              Specifies how many completion queus to use.  Currently only sup-
+              ports 1 or 3.  Note that for a single completion  queues  limits
+              specified  on --aio-write-events-limit, --aio-read-events-limit,
+              or --aio-accept-events-limit don't really  apply.   Instead  the
+              sum  of  these  is used to limit the number of events handled at
+              one time (in the 1 queue case).
+
+
+OOPPTTIIOONNSS ((FFOORR OOPPEENN FFIILLEE AANNDD HHEEAADDEERR CCAACCHHIINNGG))
+
+
+       --CC
+
+       ----ccaacchhiinngg--oonn
+              Turns caching on.
+
+
+       ----ccaacchhee--ttaabbllee--ssiizzee==_N
+              Specifies the size of the hash table used to cached files.   One
+              entry  is  used per cached file.  NOTE: if the ----ccaacchhee--mmaaxx--llooaadd--
+              ffaaccttoorr is exceeded the server will print a message and exit.  We
+              do not automatically increase the size of the hash table because
+              we want to ensure identical and repeatable  behaviour  from  one
+              experiment to the next.
+
+
+       ----ccaacchhee--mmaaxx--llooaadd--ffaaccttoorr==_N
+              Specifies  the  maximum proportion of entries that can be filled
+              in the hash table, expressed as a fraction of  the  table  size.
+              For  example  ----ccaacchhee--mmaaxx--llooaadd--ffaaccttoorr == 00..7700 will not permit the
+              hash table to become greater than 70% full.  If it does, a  mes-
+              sage is printed and the server exits.
+
+
+       ----ccaacchhee--mmaaxx--bbyytteess==_N
+              Specifies the maximum number of bytes cached.
+
+
+       ----ccaacchhee--mmaaxx--ffiillee--ssiizzee==_N
+              Don't cache files larger than _N bytes.
+
+
+       ----ccaacchhee--ttaabbllee--pprriinntt
+              When  the program ends, print out the contents of the hash table
+              used for caching.
+
+
+       ----ccaacchhee--ffoorr--ssppeecc
+              This enables a special hash function that does  perfect  hashing
+              on URLs requested by SPECweb99.  This is intended for experimen-
+              tation only.
+
+
+       ----ccaacchhee--lloocckk--ppaaggeess
+              Lock all cached pages into memory (must run as root for this  to
+              work).
+
+
+       ----ccaacchhee--wwaarrmm_<_f_i_l_e_n_a_m_e_>
+              If  specified  and  caching is enabled then read a list of files
+              and/or directories in <filename>.  For each file add it  to  the
+              userver  cache  and touch each page.  If it's a directory, cache
+              and touch each file in the directory.  If --cache-table-print is
+              declared then print the cache after it's been primed.
+
+
+OOPPTTIIOONNSS ((FFOORR DDEEBBUUGGGGIINNGG))
+
+
+       --DD [[00xx]]NN
+
+       ----ddeebbuugg--mmaasskk==_[_0_x_]_N]]
+              Specify  a  debug  mask.  If prefixed with '0x', the argument is
+              interpreted as hexadecimal; otherwise it is interpreted as deci-
+              mal.    For   maximum   debugging   detail  use  ----ddeebbuugg--mmaasskk  ==
+              _0_x_f_f_f_f_f_f_f_f_.  To turn debugging messages off use  ----ddeebbuugg--mmaasskk  ==
+              _0_x_0_.   See  debug.h  for details.  Note: that to compile without
+              debugging also see debug.h.
+
+
+       ----ttrraaccee--ssuummmmaarryy
+              Keep track of information regarding system  calls  and  print  a
+              summary.   If  tracing  is  enabled  a  list of each event being
+              traced will be dumped to a trace output file.
+
+
+       ----ttrraaccee--ssuummmmaarryy--oonnllyy
+              Keep track of information regarding system  calls  and  print  a
+              summary.   If  this  option is enabled individual events are not
+              actually recorded but instead information to produce  a  summary
+              of each event type is tracked. For example, minimum, maximum and
+              average call times for each system call being traced.
+
+
+       ----ttrraaccee--ffiilleennaammee ppaatthh
+              Specify the name of the file to write tracing  output  to,  when
+              tracing is enabled.
+
+
+       --ii
+
+       ----iinntteerraaccttiivvee
+              Turns  on  interactive  mode.  The server stops between calls to
+              process events and prompts the user for input.  This permits the
+              user to query some of the state of the server or to step through
+              server execution.  At the prompt type 'h' or '?' for a  list  of
+              commands.
+
+
+       --PP
+
+       ----ccoouunntt--ssiiggppiippeess
+              Install  a  signal handler that simply counts the number of SIG-
+              PIPE signals received.
+
+
+OOPPTTIIOONNSS ((FFOORR EEXXPPEERRIIMMEENNTTSS RREELLAATTEEDD TTOO BBOOUUNNDDIINNGG PPEERRFFOORRMMAANNCCEE))
+
+       These options are designed to have the server stop processing a request
+       at various stages of a requests life.  It stops handling the request by
+       closing it's end of the socket and not working on that request anymore.
+       I've  attempted to list these in the order of earliest time to drop the
+       request to latest.  The idea is that by running a series of experiments
+       by  using each of these options one might be able to get a sense of how
+       much additional stage costs.
+
+
+       --nn
+
+       ----nnoo--aacccceeppttss
+
+       ----lliisstteenn--oonnllyy
+              This puts the server into a mode where it only ever  listens  to
+              requests.   It  never makes any attempt to process requests.  So
+              it never even accepts any requests.  The believe  is  that  this
+              might  be  used  to provide insights into the amount of overhead
+              incurred when kernel  TCP  SYN  queues  and  application  listen
+              queues become full.
+
+
+       --AA
+
+       ----aacccceeppttss--oonnllyy
+
+       ----cclloossee--aafftteerr--aacccceepptt
+              In  this  mode the server accepts and closes incoming connection
+              requests as quickly as possible.  At  the  time  this  was  done
+              _c_l_o_s_e_(_)  would  block  until  the call completed (despite the fd
+              being in non blocking mode).  So  immediately  after  accepting,
+              call _c_l_o_s_e_(_)_.  to terminate the connection.
+
+
+       ----cclloossee--aafftteerr--ssoocckk--iinniitt
+              The server accepts a connection, initializes the socket (setting
+              socket options like socket buffer sizes, non blocking mode, etc)
+              and then it closes the connection.
+
+
+       ----cclloossee--aafftteerr--rreeaadd
+              The  server  accepts  a connection, initializes the socket reads
+              the request and then closes the connection.
+
+
+       ----cclloossee--aafftteerr--ppaarrssee
+              The server accepts a connection, initializes  the  socket  reads
+              the request, parses the requests and then closes the connection.
+
+
+       ----ffaakkee--wwrriittiinngg
+              The  server  accepts  a connection, initializes the socket reads
+              the request, parses the requests and then reads the entire  file
+              before sending a fake response (HTTP OK with size 0).  Note that
+              this only works when read/write are being used  (currently  this
+              happens  only  when  the file descriptor and response header are
+              not cached and when sendfile is not used).
+
+
+OOPPTTIIOONNSS ((FFOORR UUSSEE WWIITTHH TTHHEE SSEENNDD EENNHHAANNCCEEDD KKEERRNNEELL))
+
+       WARNING: these options are highly experimental and subject to  continu-
+       ous change.
+
+       These options specify how the uusseerrvveerr interacts with new Linux Scalable
+       Event  Notification  and  Delivery  (SEND)  kernel   mechanisms.    See
+       [Ostrowski-2000] for more details on SEND.
+
+
+       --KK [[00xx]]NN
+
+       ----kkddeebbuugg--mmaasskk==_[_0_x_]_N]]
+              Specify  a  debugging  mask which is passed to the _e_v_t_c_t_l system
+              call to set a kernel debugging mask for the SEND  related  parts
+              of  the  kernel.   If prefixed with '0x', the argument is inter-
+              preted as hexadecimal; otherwise it is interpreted as decimal.
+
+
+       ----sseenndd--ppoollllss--ffoorr--aacccceeppttss
+              The send loop polls for new connections.
+
+
+       --BB
+
+       ----bblloocckk--ffoorr--sseenndd__eevveennttss
+              When there are not more events to process, block  and  wait  for
+              one or more new events by calling _e_v_t_c_t_l_(_)_.
+
+
+       --EE
+
+       ----sseenndd--eevveennttss
+              Use send events. This version does not do notification.
+
+
+       --GG
+
+       ----uussee--ggeettppiidd
+              If  we aren't blocking to wait for events (by calling evtctl) we
+              may wish to make a system call to give the kernel  a  chance  to
+              deliver events to the application (since they are delivered when
+              returning from a syscall.  In this case we use _g_e_t_p_i_d_(_)  because
+              it is likely fast.
+
+
+       --YY
+
+       ----sseenndd--iioo--eevveennttss
+              Use send events. This version does do notification.
+
+
+       --NN
+
+       ----sseenndd--lloooopp
+              Use  the send loop.  Can potentially get and process send events
+              even while using select.  This bypasses the use  of  the  select
+              call.
+
+
+       --bb NN
+
+       ----eeccbb--bbuuff--eennttrriieess==_N
+              How many events can be stored in the application's event control
+              buffer (ecb).
+
+
+       --QQ NN
+
+       ----eeccbb--hhii--wwaatteerr==_N
+              Set the high water mark used for the event control buffer (ecb).
+              One of the things we've tried is to turn event delivery off when
+              the _-_-_e_c_b_-_h_i_-_w_a_t_e_r mark is reached and  then  to  turn  delivery
+              back on when the _-_-_e_c_b_-_l_o_w_-_w_a_t_e_r mark is reached.
+
+
+       --qq NN
+
+       ----eeccbb--llooww--wwaatteerr==_N
+              Set  the low water mark used for the event control buffer (ecb).
+              One of the things we've tried is to turn event delivery off when
+              the  _-_-_e_c_b_-_h_i_-_w_a_t_e_r  mark  is  reached and then to turn delivery
+              back on when the _-_-_e_c_b_-_l_o_w_-_w_a_t_e_r mark is reached.
+
+
+       --UU
+
+       ----aauuttoo--aacccceepptt
+              Turn on the SEND kernel's auto accept mechanisms.  When new con-
+              nection  requests  arrive  the kernel automatically accepts them
+              (auto accepts 'em) and notifies the application  with  an  event
+              containing the new connection's fd.
+
+
+       ----aauuttoo--aacccceepptt--aappeerrttuurree
+              Control  the  difference  between  the number of connections the
+              kernel has autoaccepted and the number of connections the appli-
+              cation has closed.  Without this type of control the autoaccept-
+              ing can get out of control and the kernel  can  spend  too  much
+              time  auto  accepting new connections and the application is not
+              able to make much forward progress on existing connections.
+
+
+       ----uussee--aacccceepptt--sseenndd
+              Use a special version of accept that returns  event  information
+              related to the accepted connection/socket.
+
+
+       --jj
+
+       ----kkeerrnneell--iinnffoo
+              Experimental: was to tell the application that the kernel has an
+              interface available for obtaining  more  information  about  the
+              size  and  number of entries in some of the kernel queues (e.g.,
+              the TCP SYNQs and the application's listenq).
+
+OOPPTTIIOONNSS ((FFOORR CCHHOOOOSSIINNGG AANNDD CCOONNTTRROOLLLLIINNGG AA VVIICCTTIIMM))
+
+       WARNING: These are just some hacks to try out some ideas.
+
+       --FF
+
+       ----vviiccttiimm ssttrriinngg
+              Set the specified string as a victim string.  Any uri that  con-
+              tains  this  string  is  declared a victim. How it is victimized
+              depends on the value used in the --victim-skip option.   If  the
+              --victim-skip option is not set there is no affect on the speci-
+              fied victim file.
+
+
+       ----vviiccttiimm--sskkiipp NN
+              If N is > 0, then writes to the client socket  will  be  skipped
+              N-1  times.  The idea is to slow down the response to any client
+              that requests the specified victim file.  Specifically, when the
+              event  mechanism  indicates that the socket is ready for writing
+              the write will just be skipped.  Note that this  probably  won't
+              work  with  epoll  if  you are using edge triggered events. Also
+              note that the amount of slow down depends on the number of other
+              sockets  that are ready for processing when the event mechanisim
+              returns and the amount of processing required for each of  those
+              events.
+
+              If N = -1 then no writes are skipped but instead the server uses
+              madvise after it has written the bytes to advise  the  operating
+              system that it doesn't need the bytes for this file anymore.
+
+
+       ----ccaacchhee--mmiissss--sskkiipp NN
+              This  is  specific to BSD (possibly FreeBSD).  If N is > 0, then
+              sendfile calls that would block because of  disk  I/O  (i.e.,  a
+              file  cache  miss) will be skipped N times.  The idea is to slow
+              down the response to any client that requests a file that  might
+              require  disk  I/O.   In  theory  this  may  permit us to favour
+              requests for files that are in the  file  cache.   Specifically,
+              when  the event mechanism indicates that the socket is ready for
+              writing  the  sendfile  call  will  be  made   with   the   flag
+              SF_NODISKIO.
+
+              Currently  this  isn't  intended  to be used in conjunction with
+              --victim and --victim-skip (i.e., I haven't thought through  the
+              behaviour).
+
+
+OOUUTTPPUUTT
+       This  section describes portions of the output produced during the exe-
+       cution of the uusseerrvveerr..
+
+
+       The first portion of output lists the program name and the command line
+       parameters.   The  second  portion  of  output lists the setting of all
+       options.  This is the most reliable way to find out  the  default  set-
+       tings for some options.
+
+
+       The next two sections identify operating system and per user or process
+       limits.
+
+       The remainder of the output provides  more  information  about  default
+       settings  of  various parameters and a large number of statistics about
+       the execution of the server.
+
+
+AAUUTTHHOORRSS
+       uusseerrvveerr was developed by Tim Brecht by starting  with  some  micro  web
+       servers  originally  developed  by Abhishek Chandra and David Mosberger
+       [Chandra-2001].  David Pariag contributed the current  caching  engine.
+       One of the hash functions is from Bob Jenkin's web site.
+
+
+BBUUGGSS
+       Probably many.
+
+       NOTE: very few if any checks are performed to see if the combination of
+       options being used makes sense.  For example, the behaviour from  using
+       both the ----sseelleecctt--lloooopp and ----sseenndd--lloooopp options is undefined.
+
+       Always be sure to double-check results and don't fall prey to measuring
+       client-performance instead of server performance!  The tool hhttttppeerrff  is
+       very good at generating loads.
+
+       Many  of  the single letter options are difficult to relate to anything
+       meaningful. As the number of options grew I eventually started  to  run
+       out of alphabet and added long options.
+
+       The  user-interface  definitely could be improved.  A simple configura-
+       tion file might be more suitable than the many command-line options.
+
+
+RREEFFEERREENNCCEESS
+       [Shukla-2006]    Amol Shukla and Tim Brecht, TCP Connection  Management
+                        Mechanisms  for Improving Internet Server Performance,
+                        First IEEE Workshop on Web  Systems  and  Technologies
+                        (HotWeb 2006), Boston, MA, November, 2006.
+
+
+       [Brecht-2006]    Tim  Brecht, G. (John) Janakiraman, Brian Lynn, Vikram
+                        Saletore, Yoshio Turner, Evaluating Network Processing
+                        Efficiency  with  Processor Partitioning and Asynchro-
+                        nous I/O, Proceedings of EuroSys  2006,  Leuven,  Bel-
+                        gium, April 2006.
+
+
+       [Gammo-2004]     Louay  Gammo,  Tim  Brecht,  Amol  Shukla,  and  David
+                        Pariag, Comparing and Evaluating  epoll,  select,  and
+                        poll  Event  Mechanisms, Ottawa Linux Symposium, July,
+                        2004.
+
+
+       [Brecht-2004]    Tim   Brecht,   Louay   Gammo,   and   David   Pariag,
+                        accept()able  Strategies for Improving Web Server Per-
+                        formance, 2004  USENIX  Annual  Technical  Conference:
+                        General Track, Boston, June, 2004.
+
+
+       [Brecht-2001]    Tim Brecht and Michal Ostrowski, Exploring the Perfor-
+                        mance of Select-based Internet Servers, HP Labs  Tech-
+                        nical Report HPL-2001-314, November, 2001.
+
+
+       [Chandra-2001]   A.  Chandra  and  D.  Mosberger,  Scalability of Linux
+                        Event-Dispatch Mechanisms,  Proceedings  of  the  2001
+                        USENIX Annual Technical Conference, June 2001.
+
+
+       [Ostrowski-2000] Michal Ostrowski, A Mechanism for Scalable Event Noti-
+                        fication and Delivery in Linux, M.Math Thesis, Depart-
+                        ment  of  Computer  Science,  University  of Waterloo,
+                        November, 2000.
+
+
+
+userver-0.8.0                   30 January 2011                     userver(1)

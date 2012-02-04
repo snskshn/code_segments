@@ -1,0 +1,11 @@
+#!/bin/csh
+set server  =  localhost
+set print   = --print-reply
+# set print   = 
+set timeout = 3
+set uri     = specweb99/file_set/dir00000/class0_0
+set port    = 6800
+set conns   = $1
+# set rate   = "--rate 2000"
+set rate   = ""
+httperf --verbose --hog --server $server --port $port --http-version 1.1 --uri $uri --num-conns $conns $rate --timeout $timeout $print

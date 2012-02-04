@@ -1,0 +1,113 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004  Craig Barkhouse
+#
+#    Authors: Craig Barkhouse <cabarkho@uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+#
+
+This directory contains third-party and miscellaneous files related to
+FastCGI.  The source code that implements FastCGI in userver is integrated
+with the other source code in the src/ dir.
+
+FCGI-0.67.tar.gz (CVS distribution only)
+  FCGI.pm Perl library source.  Freely available from www.cpan.org.
+  To build FCGI.pm with the patched version of fcgiapp.c:
+    - extract the contents of FCGI-0.67.tar.gz
+    - cd into the FCGI-0.67 directory
+    - apply the patch:
+        patch -p2 < ../fcgi-2.4.0.patch
+      (adjust the path to fcgi-2.4.0.patch as necessary)
+    - build and optionally install FCGI.pm as instructed in the README:
+        perl Makefile.PL
+        make
+        make install
+
+Makefile (CVS distribution only)
+  Used to build/install FastCGI applications found in this directory.
+
+NOTES
+  Design and implementation notes.
+
+fcgi-2.4.0.patch
+  This patch modifies the standard FastCGI library source in several ways:
+    - fixes a bug which may cause ReadParams() to block forever, e.g. on
+      reception of an FCGI_GET_VALUES message
+    - adds support for three environment variables -- FCGI_STDIN_BUFSIZE,
+      FCGI_STDOUT_BUFSIZE, FCGI_STDERR_BUFSIZE -- which allow runtime tuning
+      of the stdin, stdout, and stderr buffer sizes, respectively
+    - adds support for an experimental way of transferring STDOUT/STDERR
+      data to the webserver using shared memory
+    - adds support for the new FCGI_SET_VALUES management record, which is
+      used in the shared memory support
+  This patch can be applied to the files found inside fcgi-2.4.0.tar.gz as
+  well as those found inside FCGI-0.67.tar.gz (which are in fact just taken
+  from fcgi-2.4.0.tar.gz).  See the descriptions for those files for
+  instructions on applying the patch.
+
+fcgi-2.4.0.tar.gz (CVS distribution only)
+  FastCGI development kit from Open Market.  Freely available from
+  www.fastcgi.com.
+  To build the FastCGI library with the patched version of fcgiapp.c:
+    - extract the contents of fcgi-2.4.0.tar.gz
+    - cd into the fcgi-2.4.0/libfcgi directory
+    - apply the patch:
+        patch -p1 < ../fcgi-2.4.0.patch
+      (adjust the path to fcgi-2.4.0.patch as necessary)
+    - cd up one level into the fcgi-2.4.0 directory
+    - build and optionally install the library as instructed in the README:
+        ./configure
+        make
+        make install
+
+fcgiclient.c
+  A simple FastCGI test client that sends a dummy request to a FastCGI
+  application.  Use with test-fcgi.pl.
+
+fcgiserv (CVS distribution only)
+  Shell script to start/stop SPECweb99 and test FastCGI processes.
+
+specweb99-fcgi.c (CVS distribution only)
+  FastCGI application which handles SPECweb99 requests.  Listens on port
+  9000 by default and handles requests until killed.
+  Created by porting specweb99-zisapi.c in the SPECweb99 distribution
+  from ISAPI to FastCGI.
+
+specweb99-fcgi.pl (CVS distribution only)
+  Perl equivalent of specweb99-fcgi.c.
+  Created by applying specweb99-fcgi.pl.patch (see below) to the original
+  specweb99-fcgi.pl in the SPECweb99 distribution.
+
+specweb99-fcgi.pl.patch
+  Patch to get specweb99-fcgi.pl from the SPECweb99 distribution (under
+  server-docs/) working.  To apply the patch, issue this command with
+  specweb99-fcgi.pl in the current directory:
+    patch < specweb99-fcgi.pl.patch
+  (adjust the path to specweb99-fcgi.pl.patch as necessary)
+
+test-fcgi.c
+  A simple FastCGI test application which prints out the contents of its
+  environment and a list of CGI parameters it received.  Listens on port
+  8000 by default and handles requests until killed.
+
+test-fcgi.pl
+  Perl equivalent of test-fcgi.c.  Requires FCGI.pm to be properly installed
+  (see notes on fcgiapp.c.patch).

@@ -1,0 +1,119 @@
+#
+#    userver -- (pronounced you-server or micro-server).
+#    This file is part of the userver, a high-performance web server designed for
+#    performance experiments.
+#          
+#    This file is Copyright (C) 2004-2010  Tim Brecht
+#    Based on the file originally Copyright (C) 2004  Hewlett-Packard Company
+#
+#    Authors: Tim Brecht <brecht@cs.uwaterloo.ca>
+#    See AUTHORS file for list of contributors to the project.
+#  
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
+#  
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#  
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+#    02111-1307 USA
+#
+
+Fri Nov 22 07:25:26 EST 2002
+
+NOTE: Needs gnu make.
+
+SEND: refers to Scalable Event Notification and Delivery
+This is a new interface that has been implemented in Linux by Michal Ostrowski.
+
+getopt     - contains source for getopt_long (not intergrated yet)
+include    - contains new definitions for __FD_SETSIZE for some systems
+             for use with increased limits on the number of open files
+scripts    - some scripts for starting servers and starting test clients, 
+             also includes new code for testing the cache_mapped code
+try-stuff  - directory for writing and testing small subsets of code    
+
+CHANGELOG            - track changes and which host my latest copy is at
+Makefile             - contains the main targets
+Makefile.base        - contains list of source and object files, etc.
+Makefile.gprof       - targets that define options for profiling
+Makefile.nogprof     - targets with profiling turned off
+Makefile.send        - targets for use with the SEND kernel
+RCS                  - history of changes
+README               - some info about where it's been compiled/tested
+ROADMAP              - this file
+TODO                 - long list of things that have been worked on over time
+TODO-MAIN            - this is the main list of more major things to be done
+cache.c              - simple cache, static number of entries, linear search
+cache.h
+cache_mapped.c       - better lru like cache, specify size in bytes, hash table size,
+cache_mapped.h         hash table load factor, max file size to cache, and if pages 
+                       are locked.
+cntl_conns.c         - code used to turn on and off accepting new connections
+cntl_conns.h           this is needed when the server runs out of fds
+cntl_intr.c          - code to enable/disable interrupts, some methods
+cntl_intr.h            of event delivery use interrupts so protect critical secs
+common.c             - some of the common/global definitions and variables
+common.h
+debug.c              - debugging code, uses bitmask for different parts of code,
+debug.h                Note: some modules/files have their own debugging tricks
+do_close.c           - close connection, call accept if needed, disable 
+                       new connections if out of fds
+do_new_connections.c - handles different ways of accepting new connections
+                       (i.e., repeatedly calling, multiaccept sys call, etc)
+do_new_connections.h
+fork_servers.c       - create processes : NOTE: this may be broken
+getopt               - directory with getopt long options code (unused) but
+                       should be
+include              - for new definitions of FD_SETSIZE
+init_ecb.c           - initialization code for using the SEND kernel 
+interactive_mode.c   - for debugging/testing server pauses for input
+interactive_mode.h     from the tty/user between requests 
+lru.c                - tracks when fds are used so that if they are idle
+lru.h                  for a long time and we can close and reuse them
+memcpy_test.c        - oops - doesn't belong here 
+myassert.h           - some different defs for asser/exit for debugging
+options.c            - options that impact how the server behaves,
+options.h              loose/rough correspondence with command line options 
+process_args.c       - parse the command line args and set options 
+process_sds.c
+q.c                  - queues used for tracking different ordering of fds,
+q.h                    e.g., FIFO, LIFO, LRU, etc 
+scripts              - some shell scripts for running simple tests
+select_loop.c        - main server/while loop if using select
+send.h               - defs for used with SEND kernel / interface
+send_handler.c       - event handler code to get and process SEND events
+send_loop.c          - main server/while loop if using SEND
+send_reply.c         - reads requested file and writes to output socket
+send_utils.c         - mainly output/debugging code for use with SEND
+send_utils.h
+server_sock.c        - initialize / setup the listening (server) socket
+sigstuff.c           - code to install and handle various signals
+sigstuff.h             NOTE: this includes SIGIOs inidicating new connections
+socket_new_conn.c    - accept new connection, handle errors, setup new socket
+socket_readable.c    - read from socket, parse request, check for cache hit,
+                       stat/open file, fill in reply header
+		       NOTE: special URIs for controlling server 
+socket_writable.c    - reads buffer full of file and writes to socket
+state.c              - set FSM state
+stats.c              - declarations for global variables for stats and
+stats.h                code for printing/clearing stats
+                       Note: this should be reworked to make it
+		       easier to add and print new stats and each stat
+		       should be part of a global structure.
+syscalls.c           - for collecting stats/info about some syscalls,
+syscalls.h             this was implemented before trace 
+trace.c              - trace actions and time spend in the server,
+trace.h                uses a bitmask to determine which parts of server 
+                       to trace
+traceserver          - script to trun strace on userver
+try-stuff            - directory for writing small test programs
+userver.c            - main userver 
+util.c               - small number of utilities (should be elsewhere)
+

@@ -1,0 +1,17 @@
+# session 1
+docs/1B.txt think=0
+docs/1B.txt think=0
+docs/1B.txt think=0
+docs/1B.txt think=0
+docs/1B.txt think=0
+
+#session 2
+/docs/10B.txt think=0
+/docs/10B.txt think=0
+/docs/10B.txt think=0
+/docs/10B.txt think=0
+
+# session 3
+# /docs/2K.txt think=0
+# /docs/3K.txt think=0
+

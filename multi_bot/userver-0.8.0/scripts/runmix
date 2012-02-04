@@ -1,0 +1,42 @@
+#!/bin/csh
+# 
+# Use persistent connections to ask for a specified number
+# of requests per connection for the specified number of connections
+
+# Some basic configuration
+set show_replies = 1
+set server      = "127.0.0.1"
+
+if ($#argv != 2) then
+  echo "Usage : $0 requests_per_connection num_connections"
+  exit 1
+endif
+
+echo "Using requests per connection = $1"
+echo "Using total connections = $2"
+set total = `expr $1 \* $2`
+echo "Total requests/replies should = $total"
+
+set conns       = "--num-calls $1"
+set calls       = "--num-conns $2"
+# Empty here becase we do one request at a time
+set rate        = ""
+
+# Request 10 byte file (assume userver is started in src dir)
+set uri         = "--uri docs/10B.txt"
+set httperf     = "httperf"
+set httpversion = "--http-version 1.1"
+set timeout     = "--timeout 3"
+set port        = "--port 6800"
+set extraopts   = "--verbose --hog"
+
+if ($show_replies) then
+  set print = "--print-reply"
+else
+  set print = ""
+endif
+
+$httperf $extraopts --server $server $port $httpversion $uri \
+         $conns $calls $timeout $print $rate
+
+exit $status
