@@ -1,0 +1,12 @@
+set terminal png
+set output 'result.png'
+set pm3d at b
+set parametric
+set urange [0:3./2*pi]
+set vrange [-pi/2:pi/2]
+# Parametric functions for the sphere
+r = 1
+fx(v, u) = r*cos(v)*cos(u)
+fy(v, u) = r*cos(v)*sin(u)
+fz(v) = r*sin(v)
+splot fx(v, u), fy(v, u), fz(v)
