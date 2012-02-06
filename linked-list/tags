@@ -1,0 +1,36 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+INIT_LIST_HEAD	list.h	29;"	d
+LIST_HEAD	list.h	26;"	d
+LIST_HEAD_INIT	list.h	24;"	d
+__LIST_H	list.h	2;"	d
+__list_add	list.h	/^static inline void __list_add(struct list_head *new,$/;"	f
+__list_del	list.h	/^static inline void __list_del(struct list_head *prev, struct list_head *next)$/;"	f
+__list_splice	list.h	/^static inline void __list_splice(struct list_head *list,$/;"	f
+from	linked_list_test.c	/^    int from;$/;"	m	struct:kool_list	file:
+kool_list	linked_list_test.c	/^struct kool_list {$/;"	s	file:
+list	linked_list_test.c	/^    struct list_head list;$/;"	m	struct:kool_list	typeref:struct:kool_list::list_head	file:
+list_add	list.h	/^static inline void list_add(struct list_head *new, struct list_head *head)$/;"	f
+list_add_tail	list.h	/^static inline void list_add_tail(struct list_head *new, struct list_head *head)$/;"	f
+list_del	list.h	/^static inline void list_del(struct list_head *entry)$/;"	f
+list_del_init	list.h	/^static inline void list_del_init(struct list_head *entry)$/;"	f
+list_empty	list.h	/^static inline int list_empty(struct list_head *head)$/;"	f
+list_entry	list.h	189;"	d
+list_for_each	list.h	197;"	d
+list_for_each_entry	list.h	225;"	d
+list_for_each_entry_safe	list.h	237;"	d
+list_for_each_prev	list.h	205;"	d
+list_for_each_safe	list.h	215;"	d
+list_head	list.h	/^struct list_head {$/;"	s
+list_move	list.h	/^static inline void list_move(struct list_head *list, struct list_head *head)$/;"	f
+list_move_tail	list.h	/^static inline void list_move_tail(struct list_head *list,$/;"	f
+list_splice	list.h	/^static inline void list_splice(struct list_head *list, struct list_head *head)$/;"	f
+list_splice_init	list.h	/^static inline void list_splice_init(struct list_head *list,$/;"	f
+main	linked_list_test.c	/^int main(int argc, char **argv)$/;"	f
+next	list.h	/^	struct list_head *next, *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head
+prev	list.h	/^	struct list_head *next, *prev;$/;"	m	struct:list_head	typeref:struct:list_head::
+to	linked_list_test.c	/^    int to;$/;"	m	struct:kool_list	file:
