@@ -1,0 +1,149 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsfonts}
+\pagestyle{plain}
+\oddsidemargin 0cm
+\textwidth 16cm
+\topmargin -1cm
+\parindent 0cm
+\textheight 22cm
+\parskip 3mm
+\def\E{\mathbb{E}}
+\def\bS{\mathbb{S}}
+\def\R{\mathbb{R}}
+\date{ }
+\title{{University of Manchester Institute of Science and Technology}\\ \vspace*{2cm}
+{\small UA351: Pure Topics II \hfill UA351}}
+\author{\hspace*{-14cm}For candidates taking:\hfill \\DEGREE OF MMath\\
+DEGREE OF BSc\\
+FINAL EXAMINATION in HONOURS SCHOOL OF \\
+PURE MATHEMATICS AND COMPUTATION\\ MATHEMATICS AND LANGUAGE STUDIES\\
+MATHEMATICS\\ MATHEMATICS STATISTICS AND OPERATIONAL RESEARCH\\
+MATHEAMATICS AND MANAGEMENT SCIENCES}
+\begin{document}
+\maketitle
+\vspace*{3cm}
+Date: ???????? \hfill Time: ????
+
+\vspace*{3cm}
+\begin{center}
+{\large\bf Answer Three Questions}
+\end{center}
+
+\newpage
+{\large\bf 1.}\\
+{\large\bf (i)} Given that the set of all $3\times 3$ orthogonal
+real matrices with determinant $+1$
+forms a group $SO(3)$ under matrix multiplication, prove that $SO(3)$ has a
+subgroup $R_Z$ consisting of rotations about the $z$-axis. Write down without proof
+the definitions of two other subgroups, $R_X, \, R_Y,$ of $SO(3),$ corresponding
+to rotations about the $x$-axis and $y$-axis respectively.
+
+{\large\bf (ii)} Prove that the map
+$$g:[0,2\pi]\times [-\pi/2,\pi/2]\rightarrow \E^3 :
+(u,v) \mapsto (\cos v \cos u, \cos v\sin u, \sin v)$$ provides a parametrization
+of the standard unit sphere $\bS^2.$
+
+{\large\bf (iii)} Prove that $R_Z$ defines an action on the
+standard unit sphere $\bS^2$ by the map $$\rho:R_Z\times \bS^2
+\rightarrow \bS^2 : ([A_{ij}],[p_j]) \mapsto
+[\sum_{k=1}^{k=3}A_{ik}p_k]$$ and find its orbits. Prove also that
+this action is effective but neither free nor transitive.
+
+{\large\bf (iv)} Find a parametric equation for the equator curve on $\bS^2$ in the form
+$$e:[0,2\pi]\rightarrow \bS^2$$
+and find the parameter value $t_0\in [0,2\pi]$ such that
+$$e(t_0)=(\frac{1}{\sqrt 2},\frac{1}{\sqrt 2},0) = p, \  {\rm say}.$$
+Find a parametric equation for the great circle $\gamma$ through $p$ and inclined at
+angle $\pi/6$ to the equator, so that $\gamma(t_1)=p$ for some $t_1$ in the domain
+of $\gamma$ and $\gamma'(t_1)$ makes an angle $\pi/6$ with $e'(t_0)$ at $p.$
+What is the torsion of $\gamma?$
+
+\newpage
+{\large\bf 2.}\\
+Let $\alpha :(a,b)\rightarrow \E^3$ be a regular curve with positive curvature $\kappa,$
+torsion $\tau$ and a Frenet-Serret frame field $(T,N,B).$
+
+Denote by $s:(a,b)\rightarrow \R$ the arc length function and suppose that
+$\hat{\alpha} :(c,d)\rightarrow \E^3$ is a unit speed reparametrization of $\alpha.$
+
+Denote by $\hat{\kappa}$ and
+$\hat{\tau}$ the curvature and torsion respectively of $\hat{\alpha},$ and
+by $(\hat{T},\hat{N},\hat{B})$ the Frenet-Serret frame field of $\hat{\alpha}.$
+
+{\large\bf (i)} Write down without proof
+the Frenet-Serret equations for $\hat{\alpha}$ and use the definitions
+\begin{eqnarray*}
+\kappa(t) &=& \hat{\kappa}(s(t)) \\
+\tau(t) &=& \hat{\tau}(s(t)) \\
+T(t) &=& \hat{T}(s(t)) \\
+N(t) &=& \hat{N}(s(t)) \\
+B(t) &=& \hat{B}(s(t))
+\end{eqnarray*}
+to obtain the Frenet-Serret equations for $\alpha.$
+
+{\large\bf (ii)} Prove that $\alpha$ has acceleration
+$$\alpha'' = s''T+(s')^2\kappa N$$
+with curvature
+$$\kappa = \frac{||\alpha' \times\alpha''||}{||\alpha'||^3}$$
+and torsion
+$$\tau = \frac{\alpha' \times\alpha''\cdot \alpha'''}{||\alpha'\times \alpha''||^2}.$$
+
+
+
+
+{\large\bf (iii)} Find the curvature and torsion of the twisted cubic curve
+$$\alpha: (0,1) \rightarrow \E^3 : t \mapsto (t,t^2,t^3).$$
+
+\newpage
+{\large\bf 3.} \\
+Let $\Phi:M_1\rightarrow M_2$ be a local isometry between two
+regular surfaces $M_1$ and $M_2$ in $\E^3$ with Gaussian curvatures
+$K_1,K_2,$ respectively. A famous theorem of Gauss states
+that then
+$$K_1=K_2\circ\Phi.$$
+
+Prove by counterexample that the converse is false by considering the funnel
+surface $M_1$ with patch map
+$$(u,v)\mapsto (v\cos u,v\sin u, \log v)$$
+the helicoid $M_2$ with patch map
+$$(u,v)\mapsto (v\cos u,v\sin u, u)$$
+and the diffeomorphism
+$$\Phi:M_1\rightarrow M_2:(v\cos u,v\sin u, \log v)\mapsto (v\cos u,v\sin u, u).$$
+
+Do this by showing that this $M_1$ and $M_2$ have the same curvature at corresponding
+points under $\Phi,$ but $\Phi$ is not an isometry.
+You may use without proof the Weingarten result that the determinant of the shape
+operator $S$ is given by
+$$\det S = \frac{eg-f^2}{EG-F^2}$$
+when the arc length formula is
+$$ds^2=Edu^2+2Fdudv+Gdv^2$$
+and, for a unit normal field $\hat{n}$ and a patch map $x,$ the second fundamental form
+has components given by
+$$e=\hat{n}\cdot x_{uu}, \ \ f=\hat{n}\cdot x_{uv}, \ \ g=\hat{n} \cdot x_{vv}.$$
+
+
+\newpage
+{\large\bf 4.}\\
+{\large\bf (i)}
+Draw a projection of an oriented trefoil knot $T,$ and number the overcrossings. From
+your drawing, write down without proof
+a matrix from which the Alexander polynomial ${\cal A}(T)$
+may be found as the monic factor of a determinant. Find ${\cal A}(T).$
+
+{\large\bf (ii)}
+Take an identical pair of oriented trefoil knots and by joining them together
+form an oriented sum knot, $R;$
+take two more oriented trefoil knots, one the mirror image of
+the other, and join them to form a different
+summand oriented knot, $G;$ do this in such a way that $R$ and $G$ each have
+a projection with six overcrossings. [In fact, one of your summands should be
+the square knot and the other should be the granny knot.]
+Find suitable
+such projections, number the overcrossings and then compute for $R,G$ without proof
+the Alexander polynomials ${\cal A}(R)$ and ${\cal A}(G).$
+
+{\large\bf (iii)}
+Write down an equation relating the three polynomials,
+${\cal A}(T),$ ${\cal A}(R)$ and ${\cal A}(G).$
+
+\end{document}
