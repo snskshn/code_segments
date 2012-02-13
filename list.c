@@ -24,6 +24,27 @@ int main()
     n2->b = 6;
     LIST_INSERT_AFTER(n1, n2, entries);
 
+    struct entry *temp = LIST_FIRST(&head);
+    temp = LIST_NEXT(temp, entries);
+    if(temp == NULL) {
+	temp = LIST_FIRST(&head);
+    }
+    temp = LIST_NEXT(temp, entries);
+    if(temp == NULL) {
+	temp = LIST_FIRST(&head);
+    }
+    temp = LIST_NEXT(temp, entries);
+    if(temp == NULL) {
+	temp = LIST_FIRST(&head);
+    }
+    temp = LIST_NEXT(temp, entries);
+    if(temp == NULL) {
+	temp = LIST_FIRST(&head);
+    }
+
+    printf("a:%d, b:%d\n", temp->a, temp->b);
+#if 0
+
     /* Forward traversal. */
     for (np = head.lh_first; np != NULL; np = np->entries.le_next) {
 	printf("a:%d, b:%d\n", np->a, np->b);
@@ -32,6 +53,7 @@ int main()
     while (head.lh_first != NULL) {          /* Delete. */
 	LIST_REMOVE(head.lh_first, entries);
     }
+#endif
 
     return 0;
 }
