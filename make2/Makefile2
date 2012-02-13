@@ -1,0 +1,12 @@
+.SUFFIXES: .c
+
+CC = gcc
+CFLAGS = -g -Wall
+
+SRCS = listener.c talker.c
+TARGET = $(SRCS:.c=)
+
+all: $(TARGET)
+
+clean:
+	rm -rf listener talker core
