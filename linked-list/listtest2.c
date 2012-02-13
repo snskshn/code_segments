@@ -31,12 +31,39 @@ int main()
     printf("%p\n", &head);
 
     //for( temp = head.prev; temp != &head; temp = temp->prev )
-    list_for_each( temp, &p6.list )
+    list_for_each( temp, &head )
     {
 	p = list_entry( temp, struct people, list); 
 	printf("name:%s, age:%d\n", p->name, p->age ); 
     }
 
+    puts("-------");
+
+    temp = head.next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+
+    temp = head.next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+    temp = head.next->next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+    temp = head.next->next->next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+    temp = head.next->next->next->next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+    temp = head.next->next->next->next->next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+    temp = head.next->next->next->next->next->next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
+    temp = head.next->next->next->next->next->next->next->next;
+    p = list_entry(temp, struct people, list);
+    printf("name:%s, age:%d\n", p->name, p->age);
     return 0; 
 }
 
