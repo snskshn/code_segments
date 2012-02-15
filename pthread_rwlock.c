@@ -4,17 +4,63 @@
 #include <pthread.h>
 #include <unistd.h>
 
-pthread_rwlock_t lock;
+pthread_mutex_t lock2;
 
 void *func(void* arg)
+{
+    //int i = *(int *)arg;
+    pthread_rwlock_t *lock = (pthread_rwlock_t *)arg;
+    static int count;
+    int i = count++;
+    printf("thread %d\n", i);
+
+    while(1) {
+	pthread_rwlock_wrlock(lock);
+	//printf("  lock i'm %d\n", i);
+	printf(" *");
+	fflush(stdout);
+	if(i == 1) {
+	    pthread_rwlock_unlock(lock);
+	    printf("* ");
+	    fflush(stdout);
+	    //printf("unlock i'm %d\n", i);
+	    usleep(5000);
+	    continue;
+	}
+	usleep(10000);
+	pthread_rwlock_unlock(lock);
+	printf("* ");
+	fflush(stdout);
+	//printf("unlock i'm %d\n", i);
+	usleep(500);
+    }
+
+    return NULL;
+}
+
+void *func2(void *arg)
 {
     int i = *(int *)arg;
 
     while(1) {
-	pthread_rwlock_wrlock(&lock);
-	printf("i'm %d\n", i);
-	pthread_rwlock_unlock(&lock);
-	sleep(1);
+	pthread_mutex_lock(&lock2);
+	//printf("  lock i'm %d\n", i);
+	printf(" *");
+	fflush(stdout);
+	if(i == 1) {
+	    pthread_mutex_unlock(&lock2);
+	    printf("* ");
+	    fflush(stdout);
+	    //printf("unlock i'm %d\n", i);
+	    usleep(500000);
+	    continue;
+	}
+	usleep(100000);
+	pthread_mutex_unlock(&lock2);
+	printf("* ");
+	fflush(stdout);
+	//printf("unlock i'm %d\n", i);
+	usleep(50000);
     }
 
     return NULL;
@@ -22,6 +68,8 @@ void *func(void* arg)
 
 int main()
 {
+    pthread_rwlock_t lock;
+
     pthread_t t[2];
     pthread_attr_t attr;
     int arg[2] = {1, 2};
@@ -31,10 +79,8 @@ int main()
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-
-	pthread_rwlock_wrlock(&lock);
     // make two detached state threads
-    pthread_create(&t[0], &attr, func, &arg[0]);
+    pthread_create(&t[0], &attr, func, &lock);
     pthread_create(&t[1], &attr, func, &arg[1]);
 
     while(1);
