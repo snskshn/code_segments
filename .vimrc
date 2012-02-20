@@ -14,6 +14,13 @@ fun! ShowFuncName()
 endfun
 map f :call ShowFuncName() <cr>
 
+"for man pages
+func! Man()
+	let sm = expand("<cword>")
+	exe "!man -S 2:3:4:5:6:7:8:9:tcl:n:l:p:o ".sm
+endfunc
+nmap K :call Man()<cr><cr>
+
 "set tags=/future/deepwater/work/fos20/tags,/future/deepwater/work/see_fos20
 
 set vb t_vb=  		" turn off pc speaker
