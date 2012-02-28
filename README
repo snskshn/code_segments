@@ -34,4 +34,4 @@ Belows are how to make this git repository at http://github.com
 How to use git?
 ---------------
 1. reverting edited source file to HEAD revision (equivalent to "svn revert")
-    git checkout filename
+    git checkout HEAD filename
