@@ -41,7 +41,7 @@ void cleanup(void *arg) {
     SSL_free(ssl);
     CloseSocket(clientfd);
     ssl = 0;
-    printf("free end\n");
+    printf("@@close: %d\n", clientfd);
 }
 
 void *handle_client(void *arg)
@@ -70,14 +70,14 @@ void *handle_client(void *arg)
 	on[argument.sid] = 0;
 	return NULL;
     }
-    showPeer(ssl);
+    //showPeer(ssl);
 
     pthread_cleanup_push(cleanup, ssl);
 
     // echo UDP packets
     while((echoSz = SSL_read(ssl, command, sizeof(command))) > 0) {
 	command[echoSz] = 0;
-	fputs(command, stdout);
+	//fputs(command, stdout);
 	//pkt_count[argument.sensor_id]++;
 
 	// close client
@@ -147,10 +147,10 @@ int main()
 	if(clientfd == -1) {
 	    err_sys("udp read failed");
 	}
-	printf("## got HELO\n");
+	printf("##open :%d\n", clientfd);
 
 	getpeername(clientfd, (struct sockaddr *)&peer, &socklen);
-	printf("getpeername(): %s\n", inet_ntoa(peer.sin_addr));
+	//printf("getpeername(): %s\n", inet_ntoa(peer.sin_addr));
 
 #if 1
 	// XXX: sensor_id matching by IP address
@@ -178,7 +178,7 @@ int main()
 
 	// reconnected sensor? (by IP)
 	if(on[(int)sid]) {
-	    printf("cancel thread %d\n", sid);
+	    //printf("cancel thread %d\n", sid);
 	    pthread_cancel(tid[(int)sid]);
 	    on[(int)sid] = 0;
 	}
@@ -218,7 +218,7 @@ int main()
 	//arg.ssl = ssl;
 	arg.ctx = ctx;
 	arg.sid = sid;
-	printf("make thread :%d\n", sid);
+	//printf("make thread :%d\n", sid);
 	pthread_create(&tid[(int)sid], &attr, handle_client, &arg);
 	on[(int)sid] = 1;
 
