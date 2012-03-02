@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "ssl.h" 
-//#include "cyassl_int.h"
+#include "cyassl_int.h"
 #include "cyassl_test.h"
 
 static int pkt_count[256];
@@ -12,6 +12,7 @@ static int on[256] = {0, };
 
 typedef struct arg
 {
+    int sid;
     int clientfd;
     SSL *ssl;
     SSL_CTX *ctx;
@@ -46,7 +47,7 @@ void cleanup(void *arg) {
 void *handle_client(void *arg)
 {
     ARG argument = *(ARG *)arg;
-    SSL *ssl = argument.ssl;
+    SSL *ssl;
     SSL_CTX *ctx = argument.ctx;
     int clientfd = argument.clientfd;
     char command[1024];
@@ -54,8 +55,6 @@ void *handle_client(void *arg)
 
     //sleep(1);
     //assert(ssl != NULL);
-
-    pthread_cleanup_push(cleanup, ssl);
 
     // make TLS connection
     ssl = SSL_new(ctx);
@@ -66,10 +65,14 @@ void *handle_client(void *arg)
     SetDH(ssl);
     if(SSL_accept(ssl) != SSL_SUCCESS) {
 	printf("SSL_accept failed\n");
-	printf("critical error!\n");
+	printf("                         critical error!: %d\n", ssl->options.connectState);
 	cleanup(ssl);
+	on[argument.sid] = 0;
+	return NULL;
     }
     showPeer(ssl);
+
+    pthread_cleanup_push(cleanup, ssl);
 
     // echo UDP packets
     while((echoSz = SSL_read(ssl, command, sizeof(command))) > 0) {
@@ -108,7 +111,7 @@ int main()
     pthread_attr_t attr;
 
     //signal(SIGINT, sigint_handler);
-    //sleep(1);
+    sleep(3);	// flush UDP data packet sent before
 
     // init
     tcp_listen(&sockfd);
@@ -132,7 +135,7 @@ int main()
 
     // many clients
     while(1) {
-	SSL* ssl = 0;
+	//SSL* ssl = 0;
 	int clientfd;
 	char sid;
 	struct sockaddr_in peer;
@@ -212,8 +215,9 @@ int main()
 
 	//arg.sensor_id = sid;	// XXX: not used
 	arg.clientfd = clientfd;
-	arg.ssl = ssl;
+	//arg.ssl = ssl;
 	arg.ctx = ctx;
+	arg.sid = sid;
 	printf("make thread :%d\n", sid);
 	pthread_create(&tid[(int)sid], &attr, handle_client, &arg);
 	on[(int)sid] = 1;
@@ -221,6 +225,7 @@ int main()
 	tcp_listen(&sockfd);
     }
 
+    /* Never reached */
     CloseSocket(sockfd);
     SSL_CTX_free(ctx);
 

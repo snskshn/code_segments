@@ -28,6 +28,19 @@ int main(int argc, char **argv)
 	method = DTLSv1_client_method();
 	ctx = SSL_CTX_new(method);
 
+	// XXX: prevent block in SSL_connect
+	struct timeval timeout;
+	timeout.tv_sec = 5;  
+	timeout.tv_usec = 0;  
+	int optlen = sizeof(timeout);
+	if(setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO,
+		    (void*)&timeout, (socklen_t)optlen) < 0){ 
+	    //debug(DEBUG_EVENT,"[ERROR] set server timeout error\n");
+	    close(sockfd);
+	    SSL_CTX_free(ctx);
+	    return -1; 
+	}    
+
 	caCert = "ca-cert.pem";
 	if(SSL_CTX_load_verify_locations(ctx, caCert, 0) != SSL_SUCCESS) {
 	    err_sys("can't load ca file");
@@ -39,6 +52,7 @@ int main(int argc, char **argv)
 	Sleep(100);
 #endif
 
+	puts("###################################");
 	if((ret = SSL_connect(ssl)) != SSL_SUCCESS) {
 	    printf("%d\n", SSL_get_error(ssl, ret));
 	    puts("SSL_connect failed");
