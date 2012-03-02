@@ -1,0 +1,3 @@
+CYASSL_ROOT=/root/work/cyassl/cyassl-2.0.0rc2
+gcc -g -DUSE_ANY_ADDR -DDEBUG_CYASSL -DCYASSL_DTLS -DSESSION_CERTS -DOPENSSL_EXTRA -Wall -I$CYASSL_ROOT/include/openssl -I$CYASSL_ROOT/ctaocrypt/include dtls_srv.c -o srv -lcyassl -lm -lpthread
+gcc -g -DCYASSL_DTLS -DDEBUG_CYASSL -DSESSION_CERTS -DOPENSSL_EXTRA -Wall -I$CYASSL_ROOT/include/openssl -I$CYASSL_ROOT/ctaocrypt/include dtls_cli.c -o cli -lcyassl -lm
