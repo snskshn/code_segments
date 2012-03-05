@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
 	// XXX: prevent block in SSL_connect
 	struct timeval timeout;
-	timeout.tv_sec = 5;  
+	timeout.tv_sec = 1;  
 	timeout.tv_usec = 0;  
 	int optlen = sizeof(timeout);
 	if(setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO,
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	    SSL_CTX_free(ctx);
 	    CloseSocket(sockfd);
 
-	    sleep(3);
+	    sleep(1);
 	    continue;
 	    //err_sys("SSL_connect failed");
 	}
@@ -94,6 +94,7 @@ int main(int argc, char **argv)
 		//err_sys("SSL_write failed");
 	    }
 	    usleep(500000);
+	    //sleep(5);
 
 	    /*
 	       while(sendSz) {
