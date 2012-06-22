@@ -1,0 +1,19 @@
+	.file	"args.c"
+	.text
+.globl fun
+	.type	fun, @function
+fun:
+	pushl	%ebp
+	movl	%esp, %ebp
+	movsbl	12(%ebp),%edx
+	movl	16(%ebp), %eax
+	movl	%edx, (%eax)
+	movswl	8(%ebp),%eax
+	movl	20(%ebp), %edx
+	subl	%eax, %edx
+	movl	%edx, %eax
+	popl	%ebp
+	ret
+	.size	fun, .-fun
+	.ident	"GCC: (Ubuntu 4.3.2-1ubuntu11) 4.3.2"
+	.section	.note.GNU-stack,"",@progbits

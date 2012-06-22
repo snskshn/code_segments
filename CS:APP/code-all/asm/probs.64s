@@ -1,0 +1,153 @@
+	.file	"probs.c"
+	.text
+.globl incrprob
+	.type	incrprob, @function
+incrprob:
+.LFB2:
+	addl	(%rdx), %edi
+	movl	%edi, (%rdx)
+	movslq	%edi,%rdi
+	addq	%rdi, (%rsi)
+	ret
+.LFE2:
+	.size	incrprob, .-incrprob
+.globl incrprob_u
+	.type	incrprob_u, @function
+incrprob_u:
+.LFB3:
+	addl	(%rdx), %edi
+	movl	%edi, (%rdx)
+	movslq	%edi,%rdi
+	addq	%rdi, (%rsi)
+	ret
+.LFE3:
+	.size	incrprob_u, .-incrprob_u
+.globl arithprob
+	.type	arithprob, @function
+arithprob:
+.LFB4:
+	movslq	%ecx,%rcx
+	imulq	%rdx, %rcx
+	movsbl	%sil,%esi
+	imull	%edi, %esi
+	movslq	%esi,%rsi
+	leaq	(%rcx,%rsi), %rax
+	ret
+.LFE4:
+	.size	arithprob, .-arithprob
+.globl moveprob
+	.type	moveprob, @function
+moveprob:
+.LFB5:
+	movsbq	%dil,%rdi
+	movq	%rdi, gv1(%rip)
+	movslq	%esi,%rsi
+	movq	%rsi, gv2(%rip)
+	movzbl	%dl, %edx
+	movq	%rdx, gv3(%rip)
+	mov	%ecx, %ecx
+	movq	%rcx, gv4(%rip)
+	ret
+.LFE5:
+	.size	moveprob, .-moveprob
+.globl incrprob_ls
+	.type	incrprob_ls, @function
+incrprob_ls:
+.LFB6:
+	addl	(%rdx), %edi
+	movl	%edi, (%rdx)
+	movslq	%edi,%rdi
+	addq	%rdi, (%rsi)
+	ret
+.LFE6:
+	.size	incrprob_ls, .-incrprob_ls
+.globl incrprob_lu
+	.type	incrprob_lu, @function
+incrprob_lu:
+.LFB7:
+	addl	(%rdx), %edi
+	movl	%edi, (%rdx)
+	movslq	%edi,%rdi
+	addq	%rdi, (%rsi)
+	ret
+.LFE7:
+	.size	incrprob_lu, .-incrprob_lu
+	.comm	gv1,8,8
+	.comm	gv2,8,8
+	.comm	gv3,8,8
+	.comm	gv4,8,8
+	.section	.eh_frame,"a",@progbits
+.Lframe1:
+	.long	.LECIE1-.LSCIE1
+.LSCIE1:
+	.long	0x0
+	.byte	0x1
+	.string	"zR"
+	.uleb128 0x1
+	.sleb128 -8
+	.byte	0x10
+	.uleb128 0x1
+	.byte	0x3
+	.byte	0xc
+	.uleb128 0x7
+	.uleb128 0x8
+	.byte	0x90
+	.uleb128 0x1
+	.align 8
+.LECIE1:
+.LSFDE1:
+	.long	.LEFDE1-.LASFDE1
+.LASFDE1:
+	.long	.LASFDE1-.Lframe1
+	.long	.LFB2
+	.long	.LFE2-.LFB2
+	.uleb128 0x0
+	.align 8
+.LEFDE1:
+.LSFDE3:
+	.long	.LEFDE3-.LASFDE3
+.LASFDE3:
+	.long	.LASFDE3-.Lframe1
+	.long	.LFB3
+	.long	.LFE3-.LFB3
+	.uleb128 0x0
+	.align 8
+.LEFDE3:
+.LSFDE5:
+	.long	.LEFDE5-.LASFDE5
+.LASFDE5:
+	.long	.LASFDE5-.Lframe1
+	.long	.LFB4
+	.long	.LFE4-.LFB4
+	.uleb128 0x0
+	.align 8
+.LEFDE5:
+.LSFDE7:
+	.long	.LEFDE7-.LASFDE7
+.LASFDE7:
+	.long	.LASFDE7-.Lframe1
+	.long	.LFB5
+	.long	.LFE5-.LFB5
+	.uleb128 0x0
+	.align 8
+.LEFDE7:
+.LSFDE9:
+	.long	.LEFDE9-.LASFDE9
+.LASFDE9:
+	.long	.LASFDE9-.Lframe1
+	.long	.LFB6
+	.long	.LFE6-.LFB6
+	.uleb128 0x0
+	.align 8
+.LEFDE9:
+.LSFDE11:
+	.long	.LEFDE11-.LASFDE11
+.LASFDE11:
+	.long	.LASFDE11-.Lframe1
+	.long	.LFB7
+	.long	.LFE7-.LFB7
+	.uleb128 0x0
+	.align 8
+.LEFDE11:
+	.ident	"GCC: (Ubuntu 4.3.2-1ubuntu11) 4.3.2"
+	.section	.note.GNU-stack,"",@progbits

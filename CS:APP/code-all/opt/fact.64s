@@ -1,0 +1,410 @@
+.Ldebug_abbrev0:
+.Ldebug_info0:
+.Ldebug_line0:
+.Ltext0:
+rfact:
+	cmpl	$1, %edi
+	pushq	%rbx
+	movl	$1, %eax
+	movl	%edi, %ebx
+	jle	.L3
+	leal	-1(%rbx), %edi
+	call	rfact
+	imull	%ebx, %eax
+.L3:
+	popq	%rbx
+	ret
+
+fact:
+	cmpl	$1, %edi
+	movl	$2, %edx
+	movl	$1, %eax
+	jle	.L8
+.L11:
+	imull	%edx, %eax
+	addl	$1, %edx
+	cmpl	%edx, %edi
+	jge	.L11
+.L8:
+	rep
+	ret
+
+fact_u2a:
+	cmpl	$2, %edi
+	movl	$1, %ecx
+	movl	$2, %edx
+	movl	$2, %eax
+	jle	.L24
+.L21:
+	leal	1(%rdx), %eax
+	imull	%edx, %eax
+	addl	$2, %edx
+	imull	%eax, %ecx
+	cmpl	%edx, %edi
+	jg	.L21
+	leal	-3(%rdi), %eax
+	shrl	%eax
+	leal	4(%rax,%rax), %eax
+	cmpl	%eax, %edi
+	jl	.L25
+.L20:
+	imull	%eax, %ecx
+	addl	$1, %eax
+.L24:
+	cmpl	%eax, %edi
+	jge	.L20
+.L25:
+	movl	%ecx, %eax
+	ret
+
+fact_u2b:
+	cmpl	$2, %edi
+	movl	$2, %edx
+	movl	$1, %ecx
+	movl	$2, %eax
+	jle	.L28
+.L34:
+	leal	1(%rdx), %eax
+	imull	%edx, %eax
+	addl	$2, %edx
+	imull	%eax, %ecx
+	cmpl	%edx, %edi
+	jg	.L34
+	leal	-3(%rdi), %eax
+	shrl	%eax
+	leal	4(%rax,%rax), %eax
+.L28:
+	cmpl	%edi, %eax
+	jg	.L30
+.L33:
+	imull	%eax, %ecx
+	addl	$1, %eax
+	cmpl	%eax, %edi
+	jge	.L33
+.L30:
+	movl	%ecx, %eax
+	ret
+
+fact_u2c:
+	cmpl	$2, %edi
+	jle	.L48
+	movl	$2, %edx
+	movl	$1, %ecx
+	movl	$1, %esi
+.L40:
+	leal	1(%rdx), %eax
+	imull	%edx, %ecx
+	addl	$2, %edx
+	imull	%eax, %esi
+	cmpl	%edx, %edi
+	jg	.L40
+	leal	-3(%rdi), %eax
+	shrl	%eax
+	leal	4(%rax,%rax), %eax
+	jmp	.L47
+.L44:
+	imull	%eax, %ecx
+	addl	$1, %eax
+.L47:
+	cmpl	%eax, %edi
+	jge	.L44
+	imull	%esi, %ecx
+	movl	%ecx, %eax
+	ret
+
+.L48:
+	movl	$1, %esi
+	movl	$2, %eax
+	movl	$1, %ecx
+	jmp	.L47
+fact_u3a:
+	leal	-1(%rdi), %esi
+	movl	$2, %edx
+	movl	$1, %ecx
+	movl	$2, %eax
+	cmpl	$2, %esi
+	jle	.L51
+.L57:
+	imull	%edx, %ecx
+	leal	1(%rdx), %eax
+	imull	%eax, %ecx
+	leal	2(%rdx), %eax
+	addl	$3, %edx
+	imull	%eax, %ecx
+	cmpl	%esi, %edx
+	jl	.L57
+	leal	-4(%rdi), %edx
+	movl	$-1431655765, %eax
+	mull	%edx
+	shrl	%edx
+	leal	5(%rdx,%rdx,2), %eax
+.L51:
+	cmpl	%edi, %eax
+	jg	.L53
+.L56:
+	imull	%eax, %ecx
+	addl	$1, %eax
+	cmpl	%eax, %edi
+	jge	.L56
+.L53:
+	movl	%ecx, %eax
+	ret
+
+fact_u3b:
+	leal	-1(%rdi), %esi
+	movl	$2, %edx
+	movl	$1, %ecx
+	movl	$2, %eax
+	cmpl	$2, %esi
+	jle	.L62
+.L68:
+	imull	%edx, %ecx
+	leal	1(%rdx), %eax
+	imull	%eax, %ecx
+	leal	2(%rdx), %eax
+	addl	$3, %edx
+	imull	%eax, %ecx
+	cmpl	%esi, %edx
+	jl	.L68
+	leal	-4(%rdi), %edx
+	movl	$-1431655765, %eax
+	mull	%edx
+	shrl	%edx
+	leal	5(%rdx,%rdx,2), %eax
+.L62:
+	cmpl	%edi, %eax
+	jg	.L64
+.L67:
+	imull	%eax, %ecx
+	addl	$1, %eax
+	cmpl	%eax, %edi
+	jge	.L67
+.L64:
+	movl	%ecx, %eax
+	ret
+
+fact_u3c:
+	leal	-1(%rdi), %r9d
+	cmpl	$2, %r9d
+	jle	.L82
+	movl	$2, %edx
+	movl	$1, %ecx
+	movl	$1, %r8d
+	movl	$1, %esi
+.L74:
+	leal	1(%rdx), %eax
+	imull	%edx, %ecx
+	imull	%eax, %r8d
+	leal	2(%rdx), %eax
+	addl	$3, %edx
+	imull	%eax, %esi
+	cmpl	%r9d, %edx
+	jl	.L74
+	leal	-4(%rdi), %edx
+	movl	$-1431655765, %eax
+	mull	%edx
+	shrl	%edx
+	leal	5(%rdx,%rdx,2), %eax
+	jmp	.L81
+.L78:
+	imull	%eax, %ecx
+	addl	$1, %eax
+.L81:
+	cmpl	%eax, %edi
+	jge	.L78
+	imull	%r8d, %esi
+	imull	%ecx, %esi
+	movl	%esi, %eax
+	ret
+
+.L82:
+	movl	$1, %r8d
+	movl	$1, %esi
+	movl	$2, %eax
+	movl	$1, %ecx
+	jmp	.L81
+rfact_a:
+	cmpl	$1, %edi
+	pushq	%rbx
+	movl	$1, %eax
+	movl	%edi, %ebx
+	jle	.L85
+	leal	-1(%rbx), %edi
+	call	rfact_a
+	negl	%eax
+	imull	%ebx, %eax
+.L85:
+	popq	%rbx
+	ret
+
+test:
+	subq	$8, %rsp
+	movslq	idx(%rip),%rax
+	call	*funs(,%rax,8)
+	addq	$8, %rsp
+	ret
+
+ftest:
+	pushq	%r12
+	movslq	%edi,%rdi
+	movq	funs(,%rdi,8), %r12
+	xorl	%edi, %edi
+	pushq	%rbp
+	xorl	%ebp, %ebp
+	pushq	%rbx
+	call	*%r12
+	xorl	%edi, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$1, %edi
+	movl	$1, %ebp
+	call	*%r12
+	movl	$1, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$2, %edi
+	movl	$2, %ebp
+	call	*%r12
+	movl	$2, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$3, %edi
+	movl	$3, %ebp
+	call	*%r12
+	movl	$3, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$4, %edi
+	movl	$4, %ebp
+	call	*%r12
+	movl	$4, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$5, %edi
+	movl	$5, %ebp
+	call	*%r12
+	movl	$5, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$6, %edi
+	movl	$6, %ebp
+	call	*%r12
+	movl	$6, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$7, %edi
+	movl	$7, %ebp
+	call	*%r12
+	movl	$7, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$8, %edi
+	movl	$8, %ebp
+	call	*%r12
+	movl	$8, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L91
+	movl	$9, %edi
+	call	*%r12
+	movl	$9, %edi
+	movl	%eax, %ebx
+	call	rfact
+	cmpl	%eax, %ebx
+	jne	.L102
+	popq	%rbx
+	popq	%rbp
+	popq	%r12
+	ret
+
+.L102:
+	movl	$9, %ebp
+.L91:
+	movl	%ebp, %edi
+	call	rfact
+	movl	%eax, %ebx
+	movl	%ebp, %edi
+	call	*%r12
+	movl	%ebx, %r8d
+	movl	%eax, %ecx
+	movl	%ebp, %edx
+	movl	$.LC0, %esi
+	movl	$1, %edi
+	xorl	%eax, %eax
+	call	__printf_chk
+	popq	%rbx
+	popq	%rbp
+	popq	%r12
+	ret
+
+run_test:
+	movslq	%edi,%rax
+	pushq	%rbx
+	movl	$.LC1, %esi
+	movq	test_descr(,%rax,8), %rdx
+	movl	%edi, %ebx
+	xorl	%eax, %eax
+	movl	$1, %edi
+	call	__printf_chk
+	movl	$1024, %esi
+	movl	$test, %edi
+	movl	%ebx, idx(%rip)
+	call	find_cpe
+	movl	$.LC2, %esi
+	movl	$1, %edi
+	movl	$1, %eax
+	call	__printf_chk
+	movl	%ebx, %edi
+	call	ftest
+	popq	%rbx
+	ret
+
+main:
+	subq	$8, %rsp
+	xorl	%edi, %edi
+	call	run_test
+	movl	$1, %edi
+	call	run_test
+	movl	$2, %edi
+	call	run_test
+	movl	$3, %edi
+	call	run_test
+	movl	$4, %edi
+	call	run_test
+	movl	$5, %edi
+	call	run_test
+	movl	$6, %edi
+	call	run_test
+	movl	$7, %edi
+	call	run_test
+	movl	$8, %edi
+	call	run_test
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	ret
+
+idx:
+test_descr:
+funs:
+.Lframe0:
+.Lframe1:
+.Letext0:
+.Ldebug_loc0:
+.Ldebug_ranges0:
