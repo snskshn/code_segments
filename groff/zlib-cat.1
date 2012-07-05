@@ -1,0 +1,42 @@
+.\"
+.\" This is a man page for zlib-cat(1)
+.\"     written by Namhyung Kim
+.\"
+.TH zlib-cat 1 2011-06-22 v0.1
+
+.SH NAME
+zlib-cat - show contents of a zlib'ed file
+
+.SH SYNOPSIS
+.B zlib-cat
+[
+.BR -h " | " --help " |"
+.BR -v " | " --version " |"
+.I file
+]
+
+.SH DESCRIPTION
+.B zlib-cat
+decompresses given
+.I file
+which is compressed by zlib's
+.B DEFLATE
+algorithm and writes its content to
+.IR stdout .
+
+.SH OPTIONS
+.TP
+.BR -h ", " --help
+Display help message and exit.
+
+.TP
+.BR -v ", " --version
+Display version number and exit.
+.PP
+
+.SH AUTHOR
+Namhyung Kim
+.RI < namhyung@gmail.com >.
+
+.SH SEE ALSO
+.BR zcat (1)
