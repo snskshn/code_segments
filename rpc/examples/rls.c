@@ -74,6 +74,8 @@ main(int argc, char *argv[])
           nl = nl->next) {
                 printf("%s\n", nl->name);
         }
+
+	xdr_free((xdrproc_t)xdr_readdir_res, (char *)result);
         exit(0);
 }
 
