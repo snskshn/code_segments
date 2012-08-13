@@ -12,4 +12,4 @@ HelloWorld.h: HelloWorld.class
 HelloWorld: HelloWorld.h HelloWorld.class
 
 clean:
-	rm -f HelloWorld.h Helloworld.class libHelloWorld.so
+	rm -f HelloWorld.h HelloWorld.class libHelloWorld.so
