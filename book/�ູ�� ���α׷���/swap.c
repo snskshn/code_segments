@@ -21,6 +21,11 @@ void swap_xor(int *a, int *b)
 	*a ^= *b;
 }
 
+void swap_oneline(int *a, int *b)
+{
+	*a = (*a + *b) - (*b = *a);
+}
+
 void driver(int a, int b, void (*func)(int *, int *))
 {
 	func(&a, &b);
@@ -35,6 +40,7 @@ int main(int argc, char *argv[])
 	driver(a, b, swap_temp);
 	driver(a, b, swap_notemp);
 	driver(a, b, swap_xor);
+	driver(a, b, swap_oneline);
 
 	return 0;
 }
