@@ -1,0 +1,56 @@
+The book `C Interfaces and Implementations' by David Hanson describes
+more than 20 general-purpose interfaces and their implementations. The
+source code for everything in this book is available for anonymous ftp
+as described below.
+
+The distribution directory contains the following files and
+directories. MD5 fingerprints for the files in this directory are
+listed below.
+
+README	this file.
+
+ciiXY.tar.{Z,gz}
+	compressed tar files for the distribution of version X.Y, e.g.,
+	cii10.tar.Z. The tar file is compressed with compress. A .gz
+	file is the tar file compressed with gzip instead of compress.
+
+ciiXY.zip
+	compressed archive of the distribution of version X.Y in PKZIP
+	2.04g format. ASCII files in this archive are in MS-DOS format;
+	that is, their lines are terminated with CRLF.
+
+contrib/
+	holds distribution files for user-contributed software;
+	contrib/README gives details.
+
+old/	holds previous distributions.
+
+The distribution is available via `anonymous' ftp from
+ftp.cs.princeton.edu (128.112.136.12) in the directory
+pub/packages/cii. Obtaining and extracting the distribution into its
+own directory is accomplished by the following commands. Replace `10'
+with the latest version; versions like `11b2' identify beta releases
+(which might be incomplete). As suggested, use your email address as
+the password, and use ftp's binary transfer mode.
+
+mkdir cii
+cd cii
+ftp ftp.cs.princeton.edu
+anonymous
+your email address
+cd pub/packages/cii
+binary
+get cii10.tar.Z
+quit
+zcat cii10.tar | tar xpof -
+rm cii10.tar.Z
+
+Additional information about C Interfaces and Implementations is
+available on the WWW at URL http://www.cs.princeton.edu/software/cii/.
+
+David Hanson / drh at drhanson dot net
+
+MD5 (cii11.tar.Z) = 33549588c66e39e0ad03a29f9d5693a1
+MD5 (cii11.tar.gz) = 5dba680da30c3f3bce37bf5b2486a702
+MD5 (cii11.zip) = efcfd145740505a9f15b3089431ca1cb
+Wed Nov  5 17:38:01 EST 1997
