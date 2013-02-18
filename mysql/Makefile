@@ -1,10 +1,10 @@
-CC=gcc
-CFG=`mysql_config --cflags --libs`
+CC = gcc
+CFG = `mysql_config --cflags --libs`
 
-all: version create_db
+SRCS = $(wildcard *.c)
+PROGS = $(patsubst %.c,%,$(SRCS))
 
-version: version.c
-	$(CC) $^ -o $@ $(CFG)
+all: $(PROGS)
 
-create_db: create_db.c
+%: %.c
 	$(CC) $^ -o $@ $(CFG)
